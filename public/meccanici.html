@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="MechFinder - Trova il meccanico più adatto a te">
+    <meta name="keywords" content="meccanici, riparazioni auto, officina, auto, moto">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    
+    <!-- CSS personalizzato -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <style>
+        .page-header {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('media/img/bg.jpg') center center/cover;
+            padding: 120px 0 60px;
+            color: white;
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .meccanici-filters {
+            background-color: var(--primary-color);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .meccanico-card {
+            margin-bottom: 30px;
+            transition: transform 0.3s;
+        }
+        
+        .meccanico-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .meccanico-card .card {
+            border: none;
+            box-shadow: var(--shadow);
+            border-radius: var(--radius);
+            overflow: hidden;
+            height: 100%;
+        }
+        
+        .meccanico-card .card-header {
+            background-color: var(--primary-color);
+            padding: 1.5rem;
+            text-align: center;
+            border-bottom: 1px solid var(--gray-medium);
+        }
+        
+        .meccanico-card .meccanico-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--accent-blue);
+            margin: 0 auto 1rem;
+            display: block;
+        }
+        
+        .meccanico-card .verificato-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: var(--accent-blue);
+            color: white;
+            font-size: 0.8rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .meccanico-card .card-title {
+            font-weight: 700;
+            font-size: 1.25rem;
+            margin-bottom: 0.25rem;
+            color: var(--secondary-color);
+        }
+        
+        .meccanico-card .meccanico-specializzazione {
+            color: var(--gray-dark);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .meccanico-card .meccanico-rating {
+            color: var(--accent-orange);
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .meccanico-card .rating-text {
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+            margin-left: 0.5rem;
+        }
+        
+        .meccanico-card .card-body {
+            padding: 1.5rem;
+        }
+        
+        .meccanico-card .meccanico-info {
+            margin-bottom: 1.5rem;
+        }
+        
+        .meccanico-card .info-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+        }
+        
+        .meccanico-card .info-icon {
+            width: 1.25rem;
+            color: var(--accent-blue);
+            text-align: center;
+        }
+        
+        .meccanico-card .btn-primary {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: var(--radius-full);
+        }
+        
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+        
+        .pagination {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .page-item .page-link {
+            border-radius: var(--radius);
+            color: var(--secondary-color);
+            border: 1px solid var(--gray-medium);
+            padding: 0.5rem 1rem;
+        }
+        
+        .page-item.active .page-link {
+            background-color: var(--accent-blue);
+            border-color: var(--accent-blue);
+            color: white;
+        }
+        
+        .no-results {
+            background-color: var(--primary-color);
+            border-radius: var(--radius);
+            padding: 3rem;
+            text-align: center;
+            margin: 2rem 0;
+        }
+        
+        @media (max-width: 767px) {
+            .meccanici-filters .btn {
+                width: 100%;
+                margin-top: 1rem;
+            }
+        }
+    </style>
+    
+    <title>MechFinder - Trova il meccanico più adatto a te</title>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top header_nav">
+        <div class="container-fluid">
+            <!-- Logo e brand -->
+            <a class="navbar-brand d-flex align-items-center" href="/">
+                <img src="media/img/logo.png" alt="Logo MechFinder" class="logo-img me-2">
+                <span>MechFinder</span>
+            </a>
+            
+            <!-- Toggler per mobile -->
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <!-- Offcanvas Menu -->
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title" id="offcanvasNavbarLabel">MechFinder</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                
+                <div class="offcanvas-body">
+                    <!-- Menu principale -->
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/servizi.html">Servizi</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/meccanici.html">Meccanici</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/chi-siamo.html">Chi Siamo</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/contatti.html">Contatti</a>
+                        </li>
+                    </ul>
+                    
+                    <!-- Pulsante login mobile -->
+                    <div class="d-lg-none mt-3">
+                        <a href="#" class="login-button w-100" data-bs-toggle="modal" data-bs-target="#loginModal">Accedi</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pulsante login desktop -->
+            <div class="d-none d-lg-block ms-3">
+                <a href="#" class="login-button" id="navLoginBtn" data-bs-toggle="modal" data-bs-target="#loginModal">Accedi</a>
+                <a href="#" class="login-button d-none" id="navDashboardBtn">Dashboard</a>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Header -->
+    <header class="page-header">
+        <div class="container">
+            <h1 class="fw-bold mb-3">Trova il tuo meccanico</h1>
+            <p class="lead mb-4">Scopri i meccanici professionisti più adatti alle tue esigenze nella nostra rete verificata</p>
+        </div>
+    </header>
+    
+    <main class="container">
+        <!-- Filtri di ricerca -->
+        <section class="meccanici-filters">
+            <form id="searchForm">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label for="searchInput" class="form-label">Cerca</label>
+                        <input type="text" class="form-control" id="searchInput" placeholder="Nome, officina...">
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <label for="filterSpecializzazione" class="form-label">Specializzazione</label>
+                        <select class="form-select" id="filterSpecializzazione">
+                            <option value="">Tutte le specializzazioni</option>
+                            <option value="Elettronica">Elettronica</option>
+                            <option value="Meccanica Generale">Meccanica Generale</option>
+                            <option value="Revisioni">Revisioni</option>
+                            <option value="Tagliandi">Tagliandi</option>
+                            <option value="Cambio Gomme">Cambio Gomme</option>
+                            <option value="Carrozzeria">Carrozzeria</option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <label for="filterCitta" class="form-label">Città</label>
+                        <input type="text" class="form-control" id="filterCitta" placeholder="Filtra per città">
+                    </div>
+                </div>
+                
+                <div class="row mt-3">
+                    <div class="col-md-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="filterVerificato">
+                            <label class="form-check-label" for="filterVerificato">
+                                Solo meccanici verificati
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <label for="filterOrdina" class="form-label">Ordina per</label>
+                        <select class="form-select" id="filterOrdina">
+                            <option value="valutazione">Valutazione (più alta)</option>
+                            <option value="recensioni">Numero recensioni</option>
+                            <option value="nome">Nome (A-Z)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary me-2">
+                            <i class="fas fa-search me-1"></i> Cerca
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" id="resetFilterBtn">
+                            <i class="fas fa-undo me-1"></i> Reset
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </section>
+        
+        <!-- Risultati -->
+        <section id="meccaniciContainer">
+            <div class="row" id="meccaniciResults">
+                <div class="col-12 text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Caricamento...</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Paginazione -->
+            <nav class="pagination-container d-none" id="paginationContainer">
+                <ul class="pagination">
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" aria-label="Previous" id="paginaPrecedente">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="#" aria-label="Next" id="paginaSuccessiva">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </section>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Contatti</h4>
+                    <p>MechFinder</p>
+                    <p>Piazza Sant'Eusebio, 5 - 13100 Vercelli (VC) ITALIA</p>
+                    <p>P.IVA: 000000000</p>
+                    <p>Email: <a href="mailto:info@mechfinder.it">info@mechfinder.it</a></p>
+                    <p>Tel: <a href="tel:+393475830387">+39 347 58 30 387</a></p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Link Utili</h4>
+                    <ul>
+                        <li><a href="privacy.html">Privacy Policy</a></li>
+                        <li><a href="termini.html">Termini di Servizio</a></li>
+                        <li><a href="lavora-con-noi.html">Lavora con Noi</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section social-section">
+                    <h4>Seguici</h4>
+                    <div class="social-icons">
+                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                    <div class="app-badges mt-3">
+                        <img src="media/img/app-store.svg" alt="App Store">
+                        <img src="media/img/google-play.svg" alt="Google Play">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; <span id="currentYear"></span> MechFinder. Tutti i diritti riservati</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Modal per Login -->
+    <div class="modal fade" id="loginModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="loginModalLabel">Accedi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body d-flex flex-column align-items-center">
+                    <ul class="nav nav-pills mb-4" id="loginTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="cliente-tab" data-bs-toggle="pill" data-bs-target="#cliente-login" type="button" role="tab" aria-controls="cliente-login" aria-selected="true">Cliente</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="meccanico-tab" data-bs-toggle="pill" data-bs-target="#meccanico-login" type="button" role="tab" aria-controls="meccanico-login" aria-selected="false">Meccanico</button>
+                        </li>
+                    </ul>
+                    
+                    <div class="tab-content w-100" id="loginTabContent">
+                        <!-- Login cliente -->
+                        <div class="tab-pane fade show active" id="cliente-login" role="tabpanel" aria-labelledby="cliente-tab">
+                            <form id="loginForm" class="w-100">
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="email" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">Password</label>
+                                    <input type="password" class="form-control" id="password" required>
+                                </div>
+                                <div class="mb-3 form-check">
+                                    <input type="checkbox" class="form-check-input" id="rememberMe">
+                                    <label class="form-check-label" for="rememberMe">Ricordami</label>
+                                </div>
+                                <button type="submit" class="btn login-button w-100">Accedi</button>
+                            </form>
+                        </div>
+                        
+                        <!-- Login meccanico -->
+                        <div class="tab-pane fade" id="meccanico-login" role="tabpanel" aria-labelledby="meccanico-tab">
+                            <form id="loginMeccanicoForm" class="w-100">
+                                <div class="mb-3">
+                                    <label for="emailMeccanico" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="emailMeccanico" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="passwordMeccanico" class="form-label">Password</label>
+                                    <input type="password" class="form-control" id="passwordMeccanico" required>
+                                </div>
+                                <div class="mb-3 form-check">
+                                    <input type="checkbox" class="form-check-input" id="rememberMeMeccanico">
+                                    <label class="form-check-label" for="rememberMeMeccanico">Ricordami</label>
+                                </div>
+                                <button type="submit" class="btn login-button w-100">Accedi</button>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- Sezione per registrazione -->
+                    <div class="mt-4 text-center w-100">
+                        <p>Non hai un account?</p>
+                        <div class="d-flex justify-content-center gap-2">
+                            <button class="btn btn-outline-primary" id="registerLink">Registrati come Cliente</button>
+                            <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#registerMeccanicoModal" data-bs-dismiss="modal">Registrati come Meccanico</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JavaScript Bundle con Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    
+    <!-- Script personalizzati -->
+    <script src="js/main.js"></script>
+    <script src="js/utente.js"></script>
+    <script>
+        // Imposta l'anno corrente nel footer
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+        
+        // Funzione per caricare i meccanici
+        async function loadMeccanici() {
+            try {
+                const meccaniciContainer = document.getElementById('meccaniciResults');
+                meccaniciContainer.innerHTML = `
+                    <div class="col-12 text-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Caricamento...</span>
+                        </div>
+                    </div>
+                `;
+                
+                // Ottieni i parametri di ricerca dal form
+                const searchTerm = document.getElementById('searchInput').value;
+                const specializzazione = document.getElementById('filterSpecializzazione').value;
+                const citta = document.getElementById('filterCitta').value;
+                const verificato = document.getElementById('filterVerificato').checked;
+                const ordina = document.getElementById('filterOrdina').value;
+                
+                // In un'implementazione reale, chiameresti l'API con i parametri di ricerca
+                // Per ora, simuliamo una risposta con dati di esempio
+                let meccanici;
+                
+                // Simula una chiamata API
+                await new Promise(resolve => setTimeout(resolve, 800));
+                
+                // Meccanici di esempio
+                const meccaniciEsempio = [
+                    {
+                        id: 1,
+                        nome: "Mario Rossi",
+                        nome_officina: "Officina Rossi",
+                        specializzazione: "Meccanica Generale",
+                        valutazione: 4.8,
+                        numero_recensioni: 24,
+                        verificato: true,
+                        telefono: "339 4567890",
+                        citta: "Milano",
+                        indirizzo: "Via Roma 123",
+                        avatar: "media/img/default_mechanic.png"
+                    },
+                    {
+                        id: 2,
+                        nome: "Giuseppe Verdi",
+                        nome_officina: "Autofficina Verdi",
+                        specializzazione: "Elettronica",
+                        valutazione: 4.5,
+                        numero_recensioni: 18,
+                        verificato: true,
+                        telefono: "338 1234567",
+                        citta: "Roma",
+                        indirizzo: "Via Torino 45",
+                        avatar: "media/img/default_mechanic.png"
+                    },
+                    {
+                        id: 3,
+                        nome: "Luigi Bianchi",
+                        nome_officina: "Gomme & Tagliandi",
+                        specializzazione: "Cambio Gomme",
+                        valutazione: 4.2,
+                        numero_recensioni: 15,
+                        verificato: false,
+                        telefono: "340 9876543",
+                        citta: "Torino",
+                        indirizzo: "Corso Vittorio 78",
+                        avatar: "media/img/default_mechanic.png"
+                    },
+                    {
+                        id: 4,
+                        nome: "Antonio Ferrari",
+                        nome_officina: "Carrozzeria Ferrari",
+                        specializzazione: "Carrozzeria",
+                        valutazione: 4.9,
+                        numero_recensioni: 32,
+                        verificato: true,
+                        telefono: "335 8765432",
+                        citta: "Napoli",
+                        indirizzo: "Via Mazzini 34",
+                        avatar: "media/img/default_mechanic.png"
+                    },
+                    {
+                        id: 5,
+                        nome: "Francesco Esposito",
+                        nome_officina: "Revisioni Express",
+                        specializzazione: "Revisioni",
+                        valutazione: 4.4,
+                        numero_recensioni: 21,
+                        verificato: true,
+                        telefono: "333 2345678",
+                        citta: "Firenze",
+                        indirizzo: "Corso Garibaldi 90",
+                        avatar: "media/img/default_mechanic.png"
+                    }
+                ];
+                
+                // Applica i filtri
+                meccanici = meccaniciEsempio.filter(mec => {
+                    // Filtro per termine di ricerca
+                    const matchSearch = !searchTerm || 
+                                        mec.nome.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                                        (mec.nome_officina && mec.nome_officina.toLowerCase().includes(searchTerm.toLowerCase()));
+                    
+                    // Filtro per specializzazione
+                    const matchSpecializzazione = !specializzazione || mec.specializzazione === specializzazione;
+                    
+                    // Filtro per città
+                    const matchCitta = !citta || (mec.citta && mec.citta.toLowerCase().includes(citta.toLowerCase()));
+                    
+                    // Filtro per verificato
+                    const matchVerificato = !verificato || mec.verificato;
+                    
+                    return matchSearch && matchSpecializzazione && matchCitta && matchVerificato;
+                });
+                
+                // Ordinamento
+                if (ordina === 'valutazione') {
+                    meccanici.sort((a, b) => b.valutazione - a.valutazione);
+                } else if (ordina === 'recensioni') {
+                    meccanici.sort((a, b) => b.numero_recensioni - a.numero_recensioni);
+                } else if (ordina === 'nome') {
+                    meccanici.sort((a, b) => a.nome.localeCompare(b.nome));
+                }
+                
+                // Visualizza i risultati
+                if (meccanici.length === 0) {
+                    meccaniciContainer.innerHTML = `
+                        <div class="col-12">
+                            <div class="no-results">
+                                <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                                <h3>Nessun meccanico trovato</h3>
+                                <p class="text-muted">Prova a modificare i filtri di ricerca o a cercare in un'altra zona.</p>
+                                <button class="btn btn-primary mt-3" id="resetFilterBtnEmpty">
+                                    Reimposta filtri
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Aggiungi event listener al pulsante di reset
+                    document.getElementById('resetFilterBtnEmpty').addEventListener('click', resetFilters);
+                } else {
+                    meccaniciContainer.innerHTML = meccanici.map(mec => `
+                        <div class="col-md-6 col-lg-4 meccanico-card">
+                            <div class="card">
+                                <div class="card-header position-relative">
+                                    ${mec.verificato ? `
+                                        <div class="verificato-badge">
+                                            <i class="fas fa-check-circle"></i>
+                                            <span>Verificato</span>
+                                        </div>
+                                    ` : ''}
+                                    <img src="${mec.avatar}" alt="${mec.nome}" class="meccanico-avatar">
+                                    <h3 class="card-title">${mec.nome}</h3>
+                                    <div class="meccanico-specializzazione">${mec.nome_officina || ''}</div>
+                                    <div class="meccanico-specializzazione">${mec.specializzazione}</div>
+                                    <div class="meccanico-rating">
+                                        ${'★'.repeat(Math.floor(mec.valutazione))}${'☆'.repeat(5 - Math.floor(mec.valutazione))}
+                                        <span class="rating-text">${mec.valutazione.toFixed(1)} (${mec.numero_recensioni} recensioni)</span>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="meccanico-info">
+                                        <div class="info-item">
+                                            <div class="info-icon">
+                                                <i class="fas fa-map-marker-alt"></i>
+                                            </div>
+                                            <div>${mec.indirizzo}, ${mec.citta}</div>
+                                        </div>
+                                        <div class="info-item">
+                                            <div class="info-icon">
+                                                <i class="fas fa-phone-alt"></i>
+                                            </div>
+                                            <div>${mec.telefono}</div>
+                                        </div>
+                                    </div>
+                                    <a href="meccanico-profilo.html?id=${mec.id}" class="btn btn-primary">
+                                        Visualizza profilo
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                    
+                    // Mostra la paginazione se ci sono più di 6 risultati (in un'implementazione reale)
+                    /*
+                    const paginationContainer = document.getElementById('paginationContainer');
+                    if (meccanici.length > 6) {
+                        paginationContainer.classList.remove('d-none');
+                    } else {
+                        paginationContainer.classList.add('d-none');
+                    }
+                    */
+                }
+                
+            } catch (error) {
+                console.error('Errore nel caricamento dei meccanici:', error);
+                document.getElementById('meccaniciResults').innerHTML = `
+                    <div class="col-12">
+                        <div class="no-results">
+                            <i class="fas fa-exclamation-circle fa-3x text-danger mb-3"></i>
+                            <h3>Si è verificato un errore</h3>
+                            <p class="text-muted">Non è stato possibile caricare i meccanici. Riprova più tardi.</p>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        
+        // Funzione per resettare i filtri
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('filterSpecializzazione').value = '';
+            document.getElementById('filterCitta').value = '';
+            document.getElementById('filterVerificato').checked = false;
+            document.getElementById('filterOrdina').value = 'valutazione';
+            
+            // Ricarica i meccanici
+            loadMeccanici();
+        }
+        
+        // Inizializzazione
+        document.addEventListener('DOMContentLoaded', () => {
+            // Leggi parametri dalla query string
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            // Imposta i filtri in base ai parametri URL
+            if (urlParams.has('q')) {
+                document.getElementById('searchInput').value = urlParams.get('q');
+            }
+            
+            if (urlParams.has('servizio')) {
+                document.getElementById('filterSpecializzazione').value = urlParams.get('servizio');
+            }
+            
+            if (urlParams.has('citta')) {
+                document.getElementById('filterCitta').value = urlParams.get('citta');
+            }
+            
+            // Carica i meccanici all'avvio
+            loadMeccanici();
+            
+            // Event listener per il form di ricerca
+            document.getElementById('searchForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                loadMeccanici();
+            });
+            
+            // Event listener per il reset
+            document.getElementById('resetFilterBtn').addEventListener('click', resetFilters);
+        });
+    </script>
+</body>
+</html>
