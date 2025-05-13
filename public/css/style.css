@@ -1,4 +1,4 @@
-/* Variabili dei colori */
+
 :root {
     --primary-color: #ffffff;
     --secondary-color: #1a1a1a;
@@ -7,16 +7,6 @@
     --gray-light: #f3f4f6;
     --gray-medium: #e5e7eb;
     --gray-dark: #6b7280;
-    --success: #10b981;
-    --danger: #ef4444;
-    --warning: #f59e0b;
-    --info: #3b82f6;
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
     --radius: 0.5rem;
     --radius-sm: 0.25rem;
     --radius-lg: 1rem;
@@ -24,7 +14,7 @@
     --transition: all 0.3s ease;
 }
 
-/* Reset generale */
+
 * {
     margin: 0;
     padding: 0;
@@ -52,7 +42,6 @@ ul {
     list-style: none;
 }
 
-/* Header e Navbar */
 .header_nav {
     height: 80px;
     background-color: var(--primary-color);
@@ -151,7 +140,6 @@ ul {
     background-color: var(--primary-color);
 }
 
-/* Banner principale */
 .section1 {
     padding-top: 120px;
     display: flex;
@@ -234,7 +222,6 @@ ul {
     background-color: var(--accent-orange);
 }
 
-/* Sezione Servizi */
 #servizi {
     padding: 4rem 2rem;
     display: flex;
@@ -321,7 +308,6 @@ ul {
     transform: translateX(5px);
 }
 
-/* Sezione Meccanici */
 .card_mecc {
     padding: 4rem 2rem;
     background-color: var(--gray-light);
@@ -428,7 +414,6 @@ ul {
     transform: scale(1.05);
 }
 
-/* Sezione Recensioni */
 .reviews {
     padding: 4rem 2rem;
     background-color: var(--primary-color);
@@ -480,7 +465,6 @@ ul {
     font-weight: 500;
 }
 
-/* Sezione Chi Siamo */
 .chi-siamo {
     background: linear-gradient(to right, var(--primary-color) 50%, var(--accent-blue) 50%);
     padding: 5rem 0;
@@ -586,7 +570,6 @@ ul {
     border-color: var(--accent-blue);
 }
 
-/* Footer */
 .footer {
     background-color: var(--gray-light);
     border-top: 1px solid var(--accent-orange);
@@ -671,7 +654,6 @@ ul {
     color: var(--gray-dark);
 }
 
-/* Modals */
 .modal-header {
     background-color: var(--primary-color);
     border-bottom: 1px solid var(--gray-medium);
@@ -687,7 +669,6 @@ ul {
     color: var(--secondary-color);
 }
 
-/* Media Queries */
 @media (max-width: 992px) {
     .navbar {
         margin: 0;
