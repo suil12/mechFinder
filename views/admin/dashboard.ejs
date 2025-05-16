@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Dashboard Admin - MechFinder">
+  <meta name="keywords" content="admin, dashboard, meccanici, clienti">
+  <meta name="author" content="MechFinder">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/admin.css">
+  <title>Dashboard Admin - MechFinder</title>
+</head>
+<body class="admin-body">
+  <div class="admin-container">
+    <!-- Sidebar -->
+    <div class="admin-sidebar">
+      <div class="sidebar-header">
+        <img src="/media/img/logo.png" alt="MechFinder" class="sidebar-logo">
+        <h3>MechFinder</h3>
+        <span class="badge bg-primary">Admin</span>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <ul>
+          <li class="active">
+            <a href="/admin/dashboard">
+              <i class="fas fa-tachometer-alt"></i>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li>
+            <a href="/admin/utenti">
+              <i class="fas fa-users"></i>
+              <span>Utenti</span>
+            </a>
+          </li>
+          <li>
+            <a href="/admin/meccanici">
+              <i class="fas fa-user-cog"></i>
+              <span>Meccanici</span>
+            </a>
+          </li>
+          <li>
+            <a href="/admin/riparazioni">
+              <i class="fas fa-tools"></i>
+              <span>Riparazioni</span>
+            </a>
+          </li>
+          <li>
+            <a href="/admin/servizi">
+              <i class="fas fa-cogs"></i>
+              <span>Servizi</span>
+            </a>
+          </li>
+          <li>
+            <a href="/admin/recensioni">
+              <i class="fas fa-star"></i>
+              <span>Recensioni</span>
+            </a>
+          </li>
+          <li>
+            <a href="/admin/reports">
+              <i class="fas fa-chart-line"></i>
+              <span>Report</span>
+            </a>
+        </li>
+        <li>
+          <a href="/admin/settings">
+            <i class="fas fa-cog"></i>
+            <span>Impostazioni</span>
+          </a>
+        </li>
+        <li class="sidebar-divider"></li>
+        <li>
+          <a href="/auth/logout">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+    
+    <div class="sidebar-footer">
+      <p class="version">v1.0.0</p>
+      <p class="user-info"><%= currentUser.nome %></p>
+    </div>
+  </div>
+  
+  <!-- Main Content -->
+  <div class="admin-content">
+    <div class="admin-topbar">
+      <button id="sidebarToggle" class="sidebar-toggle">
+        <i class="fas fa-bars"></i>
+      </button>
+      
+      <div class="topbar-title">
+        <h2>Dashboard</h2>
+        <p class="current-date"><%= new Date().toLocaleDateString('it-IT', {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'}) %></p>
+      </div>
+      
+      <div class="topbar-actions">
+        <div class="dropdown">
+          <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="notificationsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-bell"></i>
+            <% if (notifiche && notifiche.length > 0) { %>
+              <span class="badge bg-danger"><%= notifiche.length %></span>
+            <% } %>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end notification-dropdown" aria-labelledby="notificationsDropdown">
+            <div class="notification-header">
+              <h6 class="m-0">Notifiche</h6>
+              <% if (notifiche && notifiche.length > 0) { %>
+                <span class="badge bg-primary"><%= notifiche.length %></span>
+              <% } %>
+            </div>
+            
+            <% if (notifiche && notifiche.length > 0) { %>
+              <% notifiche.forEach(notifica => { %>
+                <li>
+                  <a class="dropdown-item notification-item <%= notifica.letta ? '' : 'unread' %>" href="<%= notifica.link %>">
+                    <div class="notification-icon">
+                      <% if (notifica.tipo === 'meccanico') { %>
+                        <i class="fas fa-user-cog"></i>
+                      <% } else if (notifica.tipo === 'riparazione') { %>
+                        <i class="fas fa-tools"></i>
+                      <% } else if (notifica.tipo === 'report') { %>
+                        <i class="fas fa-flag"></i>
+                      <% } else { %>
+                        <i class="fas fa-bell"></i>
+                      <% } %>
+                    </div>
+                    <div class="notification-content">
+                      <p class="notification-text"><%= notifica.messaggio %></p>
+                      <p class="notification-time"><%= notifica.data_creazione %></p>
+                    </div>
+                  </a>
+                </li>
+              <% }) %>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item text-center" href="/admin/notifiche">Visualizza tutte</a></li>
+            <% } else { %>
+              <li><p class="dropdown-item text-muted mb-0 py-3 text-center">Nessuna notifica</p></li>
+            <% } %>
+          </ul>
+        </div>
+        
+        <div class="dropdown ms-3">
+          <button class="btn btn-sm btn-outline-secondary dropdown-toggle admin-profile-dropdown" type="button" id="adminDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            <img src="<%= currentUser.avatar || '/media/img/admin-avatar.png' %>" alt="Admin">
+            <span><%= currentUser.nome %></span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="adminDropdown">
+            <li><a class="dropdown-item" href="/admin/profilo"><i class="fas fa-user-circle me-2"></i>Profilo</a></li>
+            <li><a class="dropdown-item" href="/admin/settings"><i class="fas fa-cog me-2"></i>Impostazioni</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="/auth/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    
+    <div class="admin-main">
+      <!-- Stats Cards -->
+      <div class="stats-row">
+        <div class="stats-card">
+          <div class="stats-icon users">
+            <i class="fas fa-users"></i>
+          </div>
+          <div class="stats-info">
+            <h3><%= statistiche.totale_clienti %></h3>
+            <p>Clienti</p>
+          </div>
+          <div class="stats-trend up">
+            <i class="fas fa-arrow-up"></i>
+            <span><%= statistiche.crescita_clienti %>%</span>
+          </div>
+        </div>
+        
+        <div class="stats-card">
+          <div class="stats-icon mechanics">
+            <i class="fas fa-user-cog"></i>
+          </div>
+          <div class="stats-info">
+            <h3><%= statistiche.totale_meccanici %></h3>
+            <p>Meccanici</p>
+          </div>
+          <div class="stats-trend up">
+            <i class="fas fa-arrow-up"></i>
+            <span><%= statistiche.crescita_meccanici %>%</span>
+          </div>
+        </div>
+        
+        <div class="stats-card">
+          <div class="stats-icon repairs">
+            <i class="fas fa-tools"></i>
+          </div>
+          <div class="stats-info">
+            <h3><%= statistiche.totale_riparazioni %></h3>
+            <p>Riparazioni</p>
+          </div>
+          <div class="stats-trend up">
+            <i class="fas fa-arrow-up"></i>
+            <span><%= statistiche.crescita_riparazioni %>%</span>
+          </div>
+        </div>
+        
+        <div class="stats-card">
+          <div class="stats-icon reviews">
+            <i class="fas fa-star"></i>
+          </div>
+          <div class="stats-info">
+            <h3><%= statistiche.totale_recensioni %></h3>
+            <p>Recensioni</p>
+          </div>
+          <div class="stats-trend up">
+            <i class="fas fa-arrow-up"></i>
+            <span><%= statistiche.crescita_recensioni %>%</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Activity Charts -->
+      <div class="charts-row">
+        <div class="chart-container">
+          <div class="chart-header">
+            <h5>Attività della piattaforma</h5>
+            <div class="chart-actions">
+              <select class="form-select form-select-sm" id="activityPeriod">
+                <option value="week">Settimana</option>
+                <option value="month" selected>Mese</option>
+                <option value="year">Anno</option>
+              </select>
+              <button class="btn btn-sm btn-light ms-2" id="refreshActivity">
+                <i class="fas fa-sync-alt"></i>
+              </button>
+            </div>
+          </div>
+          <div class="chart-body">
+            <canvas id="activityChart"></canvas>
+          </div>
+        </div>
+        
+        <div class="chart-container">
+          <div class="chart-header">
+            <h5>Distribuzione riparazioni</h5>
+            <div class="chart-actions">
+              <button class="btn btn-sm btn-light" id="refreshRepairsDistribution">
+                <i class="fas fa-sync-alt"></i>
+              </button>
+            </div>
+          </div>
+          <div class="chart-body">
+            <canvas id="repairsDistributionChart"></canvas>
+          </div>
+        </div>
+      </div>
+      
+      <div class="row g-4 mt-4">
+        <!-- Recent Mechanics -->
+        <div class="col-xl-6">
+          <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">Meccanici recenti</h5>
+              <a href="/admin/meccanici" class="btn btn-sm btn-primary">Visualizza tutti</a>
+            </div>
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table class="table admin-table mb-0">
+                  <thead>
+                    <tr>
+                      <th>Nome</th>
+                      <th>Officina</th>
+                      <th>Stato</th>
+                      <th>Registrato</th>
+                      <th>Azioni</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% if (meccaniciRecenti && meccaniciRecenti.length > 0) { %>
+                      <% meccaniciRecenti.forEach(meccanico => { %>
+                        <tr>
+                          <td>
+                            <div class="d-flex align-items-center">
+                              <img src="<%= meccanico.immagine || '/media/img/default_mechanic.png' %>" alt="<%= meccanico.nome %>" class="admin-table-img">
+                              <div class="ms-2">
+                                <p class="fw-bold mb-0"><%= meccanico.nome %></p>
+                                <p class="text-muted mb-0 small"><%= meccanico.email %></p>
+                              </div>
+                            </div>
+                          </td>
+                          <td><%= meccanico.officina %></td>
+                          <td>
+                            <% if (meccanico.verificato) { %>
+                              <span class="badge bg-success">Verificato</span>
+                            <% } else { %>
+                              <span class="badge bg-warning">In attesa</span>
+                            <% } %>
+                          </td>
+                          <td><%= new Date(meccanico.data_registrazione).toLocaleDateString('it-IT') %></td>
+                          <td>
+                            <div class="dropdown">
+                              <button class="btn btn-sm btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-ellipsis-v"></i>
+                              </button>
+                              <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="/admin/meccanici/<%= meccanico.id %>"><i class="fas fa-eye me-2"></i>Visualizza</a></li>
+                                <% if (!meccanico.verificato) { %>
+                                  <li><a class="dropdown-item" href="/admin/meccanici/<%= meccanico.id %>/verifica"><i class="fas fa-check me-2"></i>Verifica</a></li>
+                                <% } %>
+                                <li><a class="dropdown-item" href="/admin/meccanici/<%= meccanico.id %>/modifica"><i class="fas fa-edit me-2"></i>Modifica</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="#" data-bs-toggle="modal" data-bs-target="#deleteMechanicModal<%= meccanico.id %>"><i class="fas fa-trash me-2"></i>Elimina</a></li>
+                              </ul>
+                            </div>
+                            
+                            <!-- Modal Elimina Meccanico -->
+                            <div class="modal fade" id="deleteMechanicModal<%= meccanico.id %>" tabindex="-1">
+                              <div class="modal-dialog">
+                                <div class="modal-content">
+                                  <div class="modal-header">
+                                    <h5 class="modal-title">Conferma eliminazione</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                  </div>
+                                  <div class="modal-body">
+                                    <p>Sei sicuro di voler eliminare il meccanico <strong><%= meccanico.nome %></strong>?</p>
+                                    <p class="text-danger">Questa azione non può essere annullata e comporterà l'eliminazione di tutti i dati associati.</p>
+                                  </div>
+                                  <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                                    <form action="/admin/meccanici/<%= meccanico.id %>/elimina" method="POST">
+                                      <button type="submit" class="btn btn-danger">Elimina</button>
+                                    </form>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      <% }) %>
+                    <% } else { %>
+                      <tr>
+                        <td colspan="5" class="text-center py-4">Nessun meccanico recente</td>
+                      </tr>
+                    <% } %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Latest Reports -->
+        <div class="col-xl-6">
+          <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">Ultime segnalazioni</h5>
+              <a href="/admin/reports" class="btn btn-sm btn-primary">Visualizza tutte</a>
+            </div>
+            <div class="card-body p-0">
+              <% if (segnalazioniRecenti && segnalazioniRecenti.length > 0) { %>
+                <div class="report-list">
+                  <% segnalazioniRecenti.forEach(segnalazione => { %>
+                    <div class="report-item <%= segnalazione.stato === 'aperta' ? 'unresolved' : 'resolved' %>">
+                      <div class="report-badge">
+                        <% if (segnalazione.tipo === 'recensione') { %>
+                          <i class="fas fa-star"></i>
+                        <% } else if (segnalazione.tipo === 'utente') { %>
+                          <i class="fas fa-user"></i>
+                        <% } else if (segnalazione.tipo === 'meccanico') { %>
+                          <i class="fas fa-user-cog"></i>
+                        <% } else if (segnalazione.tipo === 'riparazione') { %>
+                          <i class="fas fa-tools"></i>
+                        <% } else { %>
+                          <i class="fas fa-flag"></i>
+                        <% } %>
+                      </div>
+                      
+                      <div class="report-content">
+                        <div class="report-header">
+                          <h6><%= segnalazione.titolo %></h6>
+                          <span class="report-date"><%= new Date(segnalazione.data_creazione).toLocaleDateString('it-IT') %></span>
+                        </div>
+                        <p class="report-text"><%= segnalazione.descrizione.substring(0, 100) %><%= segnalazione.descrizione.length > 100 ? '...' : '' %></p>
+                        <div class="report-footer">
+                          <span class="report-author">
+                            <% if (segnalazione.tipo_utente === 'cliente') { %>
+                              <i class="fas fa-user me-1"></i>
+                            <% } else if (segnalazione.tipo_utente === 'meccanico') { %>
+                              <i class="fas fa-user-cog me-1"></i>
+                            <% } else { %>
+                              <i class="fas fa-user-shield me-1"></i>
+                            <% } %>
+                            <%= segnalazione.nome_utente %>
+                          </span>
+                          <span class="report-status <%= segnalazione.stato === 'aperta' ? 'status-open' : 'status-closed' %>">
+                            <i class="fas <%= segnalazione.stato === 'aperta' ? 'fa-exclamation-circle' : 'fa-check-circle' %> me-1"></i>
+                            <%= segnalazione.stato.charAt(0).toUpperCase() + segnalazione.stato.slice(1) %>
+                          </span>
+                        </div>
+                      </div>
+                      
+                      <a href="/admin/reports/<%= segnalazione.id %>" class="report-link">
+                        <i class="fas fa-chevron-right"></i>
+                      </a>
+                    </div>
+                  <% }) %>
+                </div>
+              <% } else { %>
+                <div class="text-center py-4">
+                  <p class="text-muted mb-0">Nessuna segnalazione recente</p>
+                </div>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="row g-4 mt-4">
+        <!-- Recent Repairs -->
+        <div class="col-12">
+          <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">Ultime riparazioni</h5>
+              <a href="/admin/riparazioni" class="btn btn-sm btn-primary">Visualizza tutte</a>
+            </div>
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table class="table admin-table mb-0">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Cliente</th>
+                      <th>Meccanico</th>
+                      <th>Veicolo</th>
+                      <th>Data</th>
+                      <th>Stato</th>
+                      <th>Costo</th>
+                      <th>Azioni</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% if (riparazioniRecenti && riparazioniRecenti.length > 0) { %>
+                      <% riparazioniRecenti.forEach(riparazione => { %>
+                        <tr>
+                          <td>#<%= riparazione.id %></td>
+                          <td>
+                            <div class="d-flex align-items-center">
+                              <img src="<%= riparazione.avatar_cliente || '/media/img/default-avatar.png' %>" alt="<%= riparazione.nome_cliente %>" class="admin-table-img">
+                              <span class="ms-2"><%= riparazione.nome_cliente %></span>
+                            </div>
+                          </td>
+                          <td>
+                            <div class="d-flex align-items-center">
+                              <img src="<%= riparazione.immagine_meccanico || '/media/img/default_mechanic.png' %>" alt="<%= riparazione.nome_meccanico %>" class="admin-table-img">
+                              <span class="ms-2"><%= riparazione.nome_meccanico %></span>
+                            </div>
+                          </td>
+                          <td><%= riparazione.marca %> <%= riparazione.modello %></td>
+                          <td><%= new Date(riparazione.data_richiesta).toLocaleDateString('it-IT') %></td>
+                          <td>
+                            <% if (riparazione.stato === 'in_attesa') { %>
+                              <span class="badge bg-warning">In attesa</span>
+                            <% } else if (riparazione.stato === 'in_lavorazione') { %>
+                              <span class="badge bg-info">In lavorazione</span>
+                            <% } else if (riparazione.stato === 'completata') { %>
+                              <span class="badge bg-success">Completata</span>
+                            <% } else if (riparazione.stato === 'annullata') { %>
+                              <span class="badge bg-danger">Annullata</span>
+                            <% } %>
+                          </td>
+                          <td>
+                            <% if (riparazione.costo) { %>
+                              € <%= riparazione.costo.toFixed(2) %>
+                            <% } else { %>
+                              -
+                            <% } %>
+                          </td>
+                          <td>
+                            <a href="/admin/riparazioni/<%= riparazione.id %>" class="btn btn-sm btn-light">
+                              <i class="fas fa-eye"></i>
+                            </a>
+                          </td>
+                        </tr>
+                      <% }) %>
+                    <% } else { %>
+                      <tr>
+                        <td colspan="8" class="text-center py-4">Nessuna riparazione recente</td>
+                      </tr>
+                    <% } %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <footer class="admin-footer">
+      <p>&copy; <%= new Date().getFullYear() %> MechFinder. Tutti i diritti riservati.</p>
+      <p>Versione 1.0.0</p>
+    </footer>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="/js/admin.js"></script>
+</body>
+</html>

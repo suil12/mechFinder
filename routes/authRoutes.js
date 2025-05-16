@@ -4,191 +4,193 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 const { body, validationResult } = require('express-validator');
-const { Cliente, Meccanico } = require('../models/utente');
+const authController = require('../controllers/authController');
 
 // Middleware per verificare se l'utente è già autenticato
 const isNotAuthenticated = (req, res, next) => {
-    if (req.isAuthenticated()) {
-        return res.redirect('/');
+    if (!req.isAuthenticated()) {
+        return next();
     }
-    next();
+    // Redirect in base al tipo di utente
+    if (req.user.tipo === 'cliente') {
+        res.redirect('/cliente/dashboard');
+    } else if (req.user.tipo === 'meccanico') {
+        res.redirect('/meccanico/dashboard');
+    } else if (req.user.tipo === 'admin') {
+        res.redirect('/admin/dashboard');
+    } else {
+        res.redirect('/');
+    }
 };
 
-// Validazione dei dati di registrazione cliente
-const validateClienteRegistration = [
-    body('nome').trim().notEmpty().withMessage('Il nome è obbligatorio'),
-    body('cognome').trim().notEmpty().withMessage('Il cognome è obbligatorio'),
-    body('email').trim().isEmail().withMessage('Email non valida'),
-    body('password').isLength({ min: 6 }).withMessage('La password deve essere di almeno 6 caratteri'),
-    body('conferma_password').custom((value, { req }) => {
-        if (value !== req.body.password) {
-            throw new Error('Le password non coincidono');
-        }
-        return true;
-    })
-];
-
-// Validazione dei dati di registrazione meccanico
-const validateMeccanicoRegistration = [
-    ...validateClienteRegistration,
-    body('specializzazione').trim().notEmpty().withMessage('La specializzazione è obbligatoria')
-];
+// Login form (redirect a home in questo caso, visto che usi modali)
+router.get('/login', isNotAuthenticated, (req, res) => {
+    res.redirect('/');
+});
 
 // Login cliente
-router.post('/login/cliente', isNotAuthenticated, (req, res, next) => {
+// Login cliente con gestione errori migliore
+router.post('/login/cliente', (req, res, next) => {
     passport.authenticate('cliente', (err, user, info) => {
         if (err) {
-            return res.status(500).json({ success: false, message: 'Errore durante il login' });
+            req.flash('error', 'Si è verificato un errore durante il login');
+            return res.redirect('/');
         }
-        
         if (!user) {
-            return res.status(400).json({ success: false, message: info.message });
+            req.flash('error', info.message || 'Email o password non validi');
+            return res.redirect('/');
         }
-        
         req.logIn(user, (err) => {
             if (err) {
-                return res.status(500).json({ success: false, message: 'Errore durante il login' });
+                req.flash('error', 'Si è verificato un errore durante il login');
+                return res.redirect('/');
             }
-            
-            return res.json({ success: true, user: { id: user.id, nome: user.nome, tipo: user.tipo } });
+            return res.redirect('/cliente/dashboard');
         });
     })(req, res, next);
 });
 
 // Login meccanico
-router.post('/login/meccanico', isNotAuthenticated, (req, res, next) => {
-    passport.authenticate('meccanico', (err, user, info) => {
+router.post('/login/meccanico', (req, res, next) => {
+passport.authenticate('meccanico', (err, user, info) => {
+    if (err) {
+        req.flash('error', 'Si è verificato un errore durante il login');
+        return res.redirect('/');
+    }
+    if (!user) {
+        req.flash('error', info.message || 'Email o password non validi');
+        return res.redirect('/');
+    }
+    req.logIn(user, (err) => {
         if (err) {
-            return res.status(500).json({ success: false, message: 'Errore durante il login' });
+            req.flash('error', 'Si è verificato un errore durante il login');
+            return res.redirect('/');
         }
-        
-        if (!user) {
-            return res.status(400).json({ success: false, message: info.message });
-        }
-        
-        req.logIn(user, (err) => {
-            if (err) {
-                return res.status(500).json({ success: false, message: 'Errore durante il login' });
-            }
-            
-            return res.json({ success: true, user: { id: user.id, nome: user.nome, tipo: user.tipo } });
-        });
-    })(req, res, next);
+        return res.redirect('/meccanico/dashboard');
+    });
+})(req, res, next);
 });
+
+
+// Login admin
+router.post('/login/admin', (req, res, next) => {
+passport.authenticate('admin', (err, user, info) => {
+    if (err) {
+        req.flash('error', 'Si è verificato un errore durante il login');
+        return res.redirect('/');
+    }
+    if (!user) {
+        req.flash('error', info.message || 'Email o password non validi');
+        return res.redirect('/');
+    }
+    req.logIn(user, (err) => {
+        if (err) {
+            req.flash('error', 'Si è verificato un errore durante il login');
+            return res.redirect('/');
+        }
+        return res.redirect('/admin/dashboard');
+    });
+})(req, res, next);
+});
+
 
 // Registrazione cliente
-router.post('/register/cliente', isNotAuthenticated, validateClienteRegistration, async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ success: false, errors: errors.array() });
-    }
-    
-    try {
-        // Controlla se l'email è già registrata
-        const existingCliente = await Cliente.findByEmail(req.body.email);
-        const existingMeccanico = await Meccanico.findByEmail(req.body.email);
-        
-        if (existingCliente || existingMeccanico) {
-            return res.status(400).json({ success: false, message: 'Email già registrata' });
-        }
-        
-        // Registra il nuovo cliente
-        const cliente = await Cliente.register({
-            nome: req.body.nome,
-            cognome: req.body.cognome,
-            email: req.body.email,
-            password: req.body.password,
-            telefono: req.body.telefono,
-            indirizzo: req.body.indirizzo,
-            citta: req.body.citta,
-            cap: req.body.cap
-        });
-        
-        // Effettua il login automatico
-        req.logIn(cliente, (err) => {
-            if (err) {
-                return res.status(500).json({ success: false, message: 'Errore durante il login automatico' });
+router.post('/register/cliente', [
+    // Validazioni
+    body('nome').trim().notEmpty().withMessage('Il nome è obbligatorio'),
+    body('email').isEmail().withMessage('Email non valida')
+        .custom(async (email) => {
+            const exists = await authController.checkEmailExists(email);
+            if (exists) {
+                throw new Error('Email già registrata');
             }
-            
-            return res.json({ success: true, user: { id: cliente.id, nome: cliente.nome, tipo: cliente.tipo } });
-        });
-    } catch (error) {
-        console.error('Errore durante la registrazione cliente:', error);
-        res.status(500).json({ success: false, message: 'Errore durante la registrazione' });
-    }
-});
+            return true;
+        }),
+    body('password').isLength({ min: 6 }).withMessage('La password deve essere di almeno 6 caratteri'),
+    body('password_confirm').custom((value, { req }) => {
+        if (value !== req.body.password) {
+            throw new Error('Le password non coincidono');
+        }
+        return true;
+    })
+], authController.registerCliente);
 
 // Registrazione meccanico
-router.post('/register/meccanico', isNotAuthenticated, validateMeccanicoRegistration, async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ success: false, errors: errors.array() });
-    }
-    
-    try {
-        // Controlla se l'email è già registrata
-        const existingCliente = await Cliente.findByEmail(req.body.email);
-        const existingMeccanico = await Meccanico.findByEmail(req.body.email);
-        
-        if (existingCliente || existingMeccanico) {
-            return res.status(400).json({ success: false, message: 'Email già registrata' });
-        }
-        
-        // Registra il nuovo meccanico
-        const meccanico = await Meccanico.register({
-            nome: req.body.nome,
-            cognome: req.body.cognome,
-            email: req.body.email,
-            password: req.body.password,
-            specializzazione: req.body.specializzazione,
-            telefono: req.body.telefono,
-            nome_officina: req.body.nome_officina,
-            indirizzo: req.body.indirizzo,
-            citta: req.body.citta,
-            cap: req.body.cap,
-            descrizione: req.body.descrizione
-        });
-        
-        // Effettua il login automatico
-        req.logIn(meccanico, (err) => {
-            if (err) {
-                return res.status(500).json({ success: false, message: 'Errore durante il login automatico' });
+router.post('/register/meccanico', [
+    // Validazioni
+    body('nome').trim().notEmpty().withMessage('Il nome è obbligatorio'),
+    body('email').isEmail().withMessage('Email non valida')
+        .custom(async (email) => {
+            const exists = await authController.checkEmailExists(email);
+            if (exists) {
+                throw new Error('Email già registrata');
             }
-            
-            return res.json({ success: true, user: { id: meccanico.id, nome: meccanico.nome, tipo: meccanico.tipo } });
-        });
-    } catch (error) {
-        console.error('Errore durante la registrazione meccanico:', error);
-        res.status(500).json({ success: false, message: 'Errore durante la registrazione' });
-    }
-});
+            return true;
+        }),
+    body('password').isLength({ min: 6 }).withMessage('La password deve essere di almeno 6 caratteri'),
+    body('password_confirm').custom((value, { req }) => {
+        if (value !== req.body.password) {
+            throw new Error('Le password non coincidono');
+        }
+        return true;
+    }),
+    body('officina').notEmpty().withMessage('Il nome dell\'officina è obbligatorio'),
+    body('specializzazione').notEmpty().withMessage('La specializzazione è obbligatoria'),
+    body('telefono').notEmpty().withMessage('Il telefono è obbligatorio'),
+    body('citta').notEmpty().withMessage('La città è obbligatoria')
+], authController.registerMeccanico);
 
 // Logout
-router.post('/logout', (req, res) => {
+router.get('/logout', (req, res, next) => {
     req.logout((err) => {
-        if (err) {
-            return res.status(500).json({ success: false, message: 'Errore durante il logout' });
-        }
-        res.json({ success: true });
+        if (err) { return next(err); }
+        req.flash('success', 'Logout effettuato con successo');
+        res.redirect('/');
     });
 });
 
-// Verifica se l'utente è autenticato
+// Endpoint per verificare lo stato di autenticazione dell'utente
 router.get('/check', (req, res) => {
     if (req.isAuthenticated()) {
-        return res.json({ 
-            isAuthenticated: true, 
-            user: { 
-                id: req.user.id, 
-                nome: req.user.nome, 
-                cognome: req.user.cognome, 
-                tipo: req.user.tipo,
-                avatar: req.user.avatar
-            } 
+        // Ritorna le informazioni dell'utente senza la password
+        const user = { ...req.user };
+        delete user.password;
+        res.json({
+            isAuthenticated: true,
+            user: user
         });
     } else {
-        return res.json({ isAuthenticated: false });
+        res.json({
+            isAuthenticated: false
+        });
     }
 });
+
+// Recupero password - Form
+router.get('/reset-password', isNotAuthenticated, (req, res) => {
+    res.render('auth/reset-password', {
+        title: 'Recupera password - MechFinder',
+        active: ''
+    });
+});
+
+// Recupero password - Richiesta
+router.post('/reset-password', [
+    body('email').isEmail().withMessage('Email non valida')
+], authController.requestPasswordReset);
+
+// Recupero password - Form nuova password
+router.get('/reset-password/:token', isNotAuthenticated, authController.getResetPasswordForm);
+
+// Recupero password - Conferma nuova password
+router.post('/reset-password/:token', [
+    body('password').isLength({ min: 6 }).withMessage('La password deve essere di almeno 6 caratteri'),
+    body('password_confirm').custom((value, { req }) => {
+        if (value !== req.body.password) {
+            throw new Error('Le password non coincidono');
+        }
+        return true;
+    })
+], authController.resetPassword);
 
 module.exports = router;

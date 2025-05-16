@@ -1,0 +1,151 @@
+<header class="header_nav">
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="/">
+                <img src="/media/img/logo.png" alt="MechFinder Logo" class="logo-img">
+                <span>MechFinder</span>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#navbarOffcanvas">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link <%= active === 'home' ? 'active' : '' %>" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link <%= active === 'servizi' ? 'active' : '' %>" href="/servizi">Servizi</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link <%= active === 'meccanici' ? 'active' : '' %>" href="/meccanici">Meccanici</a>
+                    </li>
+                    <% if (isAuthenticated) { %>
+                        <li class="nav-item">
+                            <a class="nav-link <%= active === 'riparazioni' ? 'active' : '' %>" href="/riparazioni">Riparazioni</a>
+                        </li>
+                    <% } %>
+                    <li class="nav-item">
+                        <a class="nav-link <%= active === 'chi-siamo' ? 'active' : '' %>" href="/chi-siamo">Chi Siamo</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link <%= active === 'contatti' ? 'active' : '' %>" href="/contatti">Contatti</a>
+                    </li>
+                </ul>
+                
+                <div class="ms-lg-3">
+                    <% if (isAuthenticated) { %>
+                        <div class="dropdown">
+                            <button class="btn btn-outline-primary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user-circle me-1"></i> <%= user.nome %>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <% if (typeof isCliente !== 'undefined' && isCliente) { %>
+                                    <li><a class="dropdown-item" href="/cliente/dashboard"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a></li>
+                                    <li><a class="dropdown-item" href="/cliente/profilo"><i class="fas fa-user me-2"></i> Profilo</a></li>
+                                    <li><a class="dropdown-item" href="/cliente/riparazioni"><i class="fas fa-tools me-2"></i> Le mie riparazioni</a></li>
+                                <% } else if (typeof isMeccanico !== 'undefined' && isMeccanico) { %>
+                                    <li><a class="dropdown-item" href="/meccanico/dashboard"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a></li>
+                                    <li><a class="dropdown-item" href="/meccanico/profilo"><i class="fas fa-user me-2"></i> Profilo</a></li>
+                                    <li><a class="dropdown-item" href="/meccanico/riparazioni"><i class="fas fa-tools me-2"></i> Riparazioni</a></li>
+                                <% } else if (typeof isAdmin !== 'undefined' && isAdmin) { %>
+                                    <li><a class="dropdown-item" href="/admin/dashboard"><i class="fas fa-tachometer-alt me-2"></i> Dashboard Admin</a></li>
+                                <% } %>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="/auth/logout"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+                            </ul>
+                        </div>
+                    <% } else { %>
+                        <button id="navLoginBtn" class="login-button" data-bs-toggle="modal" data-bs-target="#loginModal">
+                            <i class="fas fa-sign-in-alt me-1"></i> Accedi
+                        </button>
+                        <a id="navDashboardBtn" href="#" class="login-button d-none">
+                            <i class="fas fa-tachometer-alt me-1"></i> Dashboard
+                        </a>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Mobile Menu Offcanvas -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="navbarOffcanvas">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title">Menu</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link <%= active === 'home' ? 'active' : '' %>" href="/">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <%= active === 'servizi' ? 'active' : '' %>" href="/servizi">Servizi</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <%= active === 'meccanici' ? 'active' : '' %>" href="/meccanici">Meccanici</a>
+                </li>
+                <% if (isAuthenticated) { %>
+                    <li class="nav-item">
+                        <a class="nav-link <%= active === 'riparazioni' ? 'active' : '' %>" href="/riparazioni">Riparazioni</a>
+                    </li>
+                <% } %>
+                <li class="nav-item">
+                    <a class="nav-link <%= active === 'chi-siamo' ? 'active' : '' %>" href="/chi-siamo">Chi Siamo</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <%= active === 'contatti' ? 'active' : '' %>" href="/contatti">Contatti</a>
+                </li>
+            </ul>
+            
+            <hr>
+            
+            <div class="d-grid gap-2">
+                <% if (isAuthenticated) { %>
+                    <% if (typeof isCliente !== 'undefined' && isCliente) { %>
+                        <a href="/cliente/dashboard" class="btn btn-outline-primary mb-2">
+                            <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                        </a>
+                        <a href="/cliente/profilo" class="btn btn-outline-primary mb-2">
+                            <i class="fas fa-user me-2"></i> Profilo
+                        </a>
+                    <% } else if (typeof isMeccanico !== 'undefined' && isMeccanico) { %>
+                        <a href="/meccanico/dashboard" class="btn btn-outline-primary mb-2">
+                            <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                        </a>
+                        <a href="/meccanico/profilo" class="btn btn-outline-primary mb-2">
+                            <i class="fas fa-user me-2"></i> Profilo
+                        </a>
+                    <% } else if (typeof isAdmin !== 'undefined' && isAdmin) { %>
+                        <a href="/admin/dashboard" class="btn btn-outline-primary mb-2">
+                            <i class="fas fa-tachometer-alt me-2"></i> Dashboard Admin
+                        </a>
+                    <% } %>
+                    <a href="/auth/logout" class="btn btn-danger">
+                        <i class="fas fa-sign-out-alt me-2"></i> Logout
+                    </a>
+                <% } else { %>
+                    <button class="btn btn-primary login-button" data-bs-toggle="modal" data-bs-target="#loginModal">
+                        <i class="fas fa-sign-in-alt me-2"></i> Accedi
+                    </button>
+                <% } %>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Flash Messages -->
+    <% if (typeof success !== 'undefined' && success && success.length > 0) { %>
+        <div class="flash-message flash-success alert alert-success alert-dismissible fade show" role="alert">
+            <%= success %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <% } %>
+    
+    <% if (typeof error !== 'undefined' && error && error.length > 0) { %>
+        <div class="flash-message flash-error alert alert-danger alert-dismissible fade show" role="alert">
+            <%= error %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <% } %>
+</header>

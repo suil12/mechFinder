@@ -1,857 +1,909 @@
 "use strict";
 
 const db = require('../database/db');
-const bcrypt = require('bcrypt');
-
-/**
- * Classe base per tutti gli utenti
- */
-class Utente {
-    constructor(id, nome, cognome, email, telefono = null) {
-        this.id = id;
-        this.nome = nome;
-        this.cognome = cognome;
-        this.email = email;
-        this.telefono = telefono;
-        this.nome_completo = `${nome} ${cognome}`;
-    }
-    
-    static async hashPassword(password) {
-        const saltRounds = 10;
-        return await bcrypt.hash(password, saltRounds);
-    }
-}
-
-/**
- * Classe Cliente che estende Utente
- */
-class Cliente extends Utente {
-    constructor(id, nome, cognome, email, telefono = null, indirizzo = null, citta = null, cap = null, avatar = 'default_avatar.png') {
-        super(id, nome, cognome, email, telefono);
-        this.indirizzo = indirizzo;
-        this.citta = citta;
-        this.cap = cap;
-        this.avatar = avatar;
+// Classe Cliente
+class Cliente {
+    constructor(data) {
+        this.id = data.id;
+        this.nome = data.nome;
+        this.cognome = data.cognome;
+        this.email = data.email;
+        this.password = data.password;
+        this.telefono = data.telefono;
+        this.indirizzo = data.indirizzo;
+        this.citta = data.citta;
+        this.cap = data.cap;
+        this.avatar = data.avatar;
+        this.data_registrazione = data.data_registrazione;
+        this.reset_token = data.reset_token;
+        this.reset_token_expires = data.reset_token_expires;
+        this.email_notifications = data.email_notifications === 1;
+        this.sms_notifications = data.sms_notifications === 1;
+        this.reminder_notifications = data.reminder_notifications === 1;
+        this.promotions_notifications = data.promotions_notifications === 1;
         this.tipo = 'cliente';
     }
-    
-    /**
-     * Trova un cliente per ID
-     * @param {number} id - ID del cliente
-     * @returns {Promise<Cliente|null>} Cliente trovato o null
-     */
+
     static async findById(id) {
         try {
             const row = await db.get('SELECT * FROM clienti WHERE id = ?', [id]);
             if (!row) return null;
-            
-            return new Cliente(
-                row.id,
-                row.nome,
-                row.cognome,
-                row.email,
-                row.telefono,
-                row.indirizzo,
-                row.citta,
-                row.cap,
-                row.avatar
-            );
-        } catch (error) {
-            console.error('Errore in Cliente.findById:', error);
-            throw error;
+            return new Cliente(row);
+        } catch (err) {
+            console.error('Errore in Cliente.findById:', err);
+            throw err;
         }
     }
-    
-    /**
-     * Trova un cliente per email
-     * @param {string} email - Email del cliente
-     * @returns {Promise<Cliente|null>} Cliente trovato o null
-     */
+
     static async findByEmail(email) {
         try {
             const row = await db.get('SELECT * FROM clienti WHERE email = ?', [email]);
             if (!row) return null;
-            
-            return new Cliente(
-                row.id,
-                row.nome,
-                row.cognome,
-                row.email,
-                row.telefono,
-                row.indirizzo,
-                row.citta,
-                row.cap,
-                row.avatar
-            );
-        } catch (error) {
-            console.error('Errore in Cliente.findByEmail:', error);
-            throw error;
+            return new Cliente(row);
+        } catch (err) {
+            console.error('Errore in Cliente.findByEmail:', err);
+            throw err;
         }
     }
-    
-    /**
-     * Registra un nuovo cliente
-     * @param {Object} data - Dati del cliente
-     * @returns {Promise<Cliente>} Nuovo cliente creato
-     */
-    static async register(data) {
-        try {
-            const hashedPassword = await Utente.hashPassword(data.password);
-            
-            const result = await db.run(
-                'INSERT INTO clienti (nome, cognome, email, password, telefono, indirizzo, citta, cap) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-                [data.nome, data.cognome, data.email, hashedPassword, data.telefono, data.indirizzo, data.citta, data.cap]
-            );
-            
-            return await Cliente.findById(result.id);
-        } catch (error) {
-            console.error('Errore in Cliente.register:', error);
-            throw error;
-        }
-    }
-    
-    /**
-     * Aggiorna i dati di un cliente
-     * @param {Object} data - Nuovi dati del cliente
-     * @returns {Promise<Cliente>} Cliente aggiornato
-     */
-    async update(data) {
-        try {
-            const updateFields = [];
-            const updateValues = [];
-            
-            // Costruisci dinamicamente la query di aggiornamento
-            for (const [key, value] of Object.entries(data)) {
-                if (key !== 'id' && key !== 'password' && value !== undefined) {
-                    updateFields.push(`${key} = ?`);
-                    updateValues.push(value);
-                }
-            }
-            
-            // Aggiungi password se presente
-            if (data.password) {
-                const hashedPassword = await Utente.hashPassword(data.password);
-                updateFields.push('password = ?');
-                updateValues.push(hashedPassword);
-            }
-            
-            // Aggiungi l'ID alla fine dei valori
-            updateValues.push(this.id);
-            
-            await db.run(
-                `UPDATE clienti SET ${updateFields.join(', ')} WHERE id = ?`,
-                updateValues
-            );
-            
-            // Aggiorna l'oggetto corrente
-            const updatedCliente = await Cliente.findById(this.id);
-            Object.assign(this, updatedCliente);
-            
-            return this;
-        } catch (error) {
-            console.error('Errore in Cliente.update:', error);
-            throw error;
-        }
-    }
-    
-    /**
-     * Ottiene i veicoli di un cliente
-     * @returns {Promise<Array>} Lista dei veicoli
-     */
-    async getVeicoli() {
-        try {
-            return await db.query(
-                'SELECT * FROM veicoli WHERE id_cliente = ? ORDER BY id DESC',
-                [this.id]
-            );
-        } catch (error) {
-            console.error('Errore in Cliente.getVeicoli:', error);
-            throw error;
-        }
-    }
-    
-    /**
-     * Ottiene le riparazioni di un cliente
-     * @param {string} stato - Filtro per stato delle riparazioni
-     * @returns {Promise<Array>} Lista delle riparazioni
-     */
-    async getRiparazioni(stato = null) {
-        try {
-            let query = `
-                SELECT r.*, m.nome as nome_meccanico, m.cognome as cognome_meccanico, 
-                       m.nome_officina, m.specializzazione, v.marca, v.modello, v.targa
-                FROM riparazioni r
-                JOIN meccanici m ON r.id_meccanico = m.id
-                LEFT JOIN veicoli v ON r.id_veicolo = v.id
-                WHERE r.id_cliente = ?
-            `;
-            
-            const params = [this.id];
-            
-            if (stato) {
-                query += ' AND r.stato = ?';
-                params.push(stato);
-            }
-            
-            query += ' ORDER BY r.data_richiesta DESC';
-            
-            return await db.query(query, params);
-        } catch (error) {
-            console.error('Errore in Cliente.getRiparazioni:', error);
-            throw error;
-        }
-    }
-    
-    /**
-     * Crea una nuova richiesta di riparazione
-     * @param {Object} data - Dati della riparazione
-     * @returns {Promise<Object>} Riparazione creata
-     */
-    async creaRiparazione(data) {
-        try {
-            const result = await db.run(
-                `INSERT INTO riparazioni 
-                (id_cliente, id_meccanico, id_veicolo, descrizione, tipo_problema, priorita) 
-                VALUES (?, ?, ?, ?, ?, ?)`,
-                [this.id, data.id_meccanico, data.id_veicolo, data.descrizione, data.tipo_problema, data.priorita || 'normale']
-            );
-            
-            return await db.get('SELECT * FROM riparazioni WHERE id = ?', [result.id]);
-        } catch (error) {
-            console.error('Errore in Cliente.creaRiparazione:', error);
-            throw error;
-        }
-    }
-    
-    /**
-     * Aggiunge un nuovo veicolo
-     * @param {Object} data - Dati del veicolo
-     * @returns {Promise<Object>} Veicolo creato
-     */
-    async aggiungiVeicolo(data) {
-        try {
-            const result = await db.run(
-                'INSERT INTO veicoli (id_cliente, marca, modello, anno, targa, tipo) VALUES (?, ?, ?, ?, ?, ?)',
-                [this.id, data.marca, data.modello, data.anno, data.targa, data.tipo]
-            );
-            
-            return await db.get('SELECT * FROM veicoli WHERE id = ?', [result.id]);
-        } catch (error) {
-            console.error('Errore in Cliente.aggiungiVeicolo:', error);
-            throw error;
-        }
-    }
-    
-    /**
-     * Lascia una recensione per un meccanico
-     * @param {Object} data - Dati della recensione
-     * @returns {Promise<Object>} Recensione creata
-     */
-    async lasciaRecensione(data) {
-        try {
-            const result = await db.run(
-                `INSERT INTO recensioni 
-                (id_cliente, id_meccanico, id_riparazione, valutazione, commento) 
-                VALUES (?, ?, ?, ?, ?)`,
-                [this.id, data.id_meccanico, data.id_riparazione, data.valutazione, data.commento]
-            );
-            
-            // Aggiorna la valutazione media del meccanico
-            await db.run(`
-                UPDATE meccanici 
-                SET valutazione = (
-                    SELECT AVG(valutazione) 
-                    FROM recensioni 
-                    WHERE id_meccanico = ?
-                ),
-                numero_recensioni = (
-                    SELECT COUNT(*) 
-                    FROM recensioni 
-                    WHERE id_meccanico = ?
-                )
-                WHERE id = ?
-            `, [data.id_meccanico, data.id_meccanico, data.id_meccanico]);
-            
-            return await db.get('SELECT * FROM recensioni WHERE id = ?', [result.id]);
-        } catch (error) {
-            console.error('Errore in Cliente.lasciaRecensione:', error);
-            throw error;
-        }
-    }
-    
-    /**
-     * Ottiene tutte le recensioni del cliente
-     * @returns {Promise<Array>} Lista delle recensioni
-     */
-    async getRecensioni() {
-        try {
-            return await db.query(`
-                SELECT r.*, m.nome as nome_meccanico, m.cognome as cognome_meccanico, 
-                       m.nome_officina, m.specializzazione
-                FROM recensioni r
-                JOIN meccanici m ON r.id_meccanico = m.id
-                WHERE r.id_cliente = ?
-                ORDER BY r.data_recensione DESC
-            `, [this.id]);
-        } catch (error) {
-            console.error('Errore in Cliente.getRecensioni:', error);
-            throw error;
-        }
-    }
-}
 
-/**
- * Classe Meccanico che estende Utente
- */
-class Meccanico extends Utente {
-    constructor(id, nome, cognome, email, specializzazione, telefono = null, 
-                nome_officina = null, indirizzo = null, citta = null, cap = null, 
-                latitudine = null, longitudine = null, descrizione = null, 
-                valutazione = 0, numero_recensioni = 0, verificato = false, avatar = 'default_mechanic.png') {
-        super(id, nome, cognome, email, telefono);
-        this.specializzazione = specializzazione;
-        this.nome_officina = nome_officina;
-        this.indirizzo = indirizzo;
-        this.citta = citta;
-        this.cap = cap;
-        this.latitudine = latitudine;
-        this.longitudine = longitudine;
-        this.descrizione = descrizione;
-        this.valutazione = valutazione;
-        this.numero_recensioni = numero_recensioni;
-        this.verificato = verificato;
-        this.avatar = avatar;
+    static async findByResetToken(token) {
+        try {
+            const row = await db.get('SELECT * FROM clienti WHERE reset_token = ?', [token]);
+            if (!row) return null;
+            return new Cliente(row);
+        } catch (err) {
+            console.error('Errore in Cliente.findByResetToken:', err);
+            throw err;
+        }
+    }
+
+    static async create(data) {
+        try {
+            const result = await db.run(
+                `INSERT INTO clienti (
+                    nome, cognome, email, password, telefono, indirizzo, citta, cap, 
+                    data_registrazione, email_notifications, sms_notifications, 
+                    reminder_notifications, promotions_notifications, tipo
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                [
+                    data.nome,
+                    data.cognome || '',
+                    data.email,
+                    data.password,
+                    data.telefono || null,
+                    data.indirizzo || null,
+                    data.citta || null,
+                    data.cap || null,
+                    data.data_registrazione || new Date().toISOString(),
+                    data.email_notifications !== undefined ? data.email_notifications : 1,
+                    data.sms_notifications !== undefined ? data.sms_notifications : 0,
+                    data.reminder_notifications !== undefined ? data.reminder_notifications : 1,
+                    data.promotions_notifications !== undefined ? data.promotions_notifications : 0,
+                    'cliente'
+                ]
+            );
+            
+            const row = await db.get('SELECT * FROM clienti WHERE id = ?', [result.id]);
+            return new Cliente(row);
+        } catch (err) {
+            console.error('Errore in Cliente.create:', err);
+            throw err;
+        }
+    }
+
+    async update() {
+        try {
+            await db.run(
+                `UPDATE clienti SET 
+                    nome = ?, cognome = ?, email = ?, telefono = ?, indirizzo = ?,
+                    citta = ?, cap = ?, avatar = ?, email_notifications = ?, 
+                    sms_notifications = ?, reminder_notifications = ?, promotions_notifications = ?
+                WHERE id = ?`,
+                [
+                    this.nome,
+                    this.cognome,
+                    this.email,
+                    this.telefono,
+                    this.indirizzo,
+                    this.citta,
+                    this.cap,
+                    this.avatar,
+                    this.email_notifications ? 1 : 0,
+                    this.sms_notifications ? 1 : 0,
+                    this.reminder_notifications ? 1 : 0,
+                    this.promotions_notifications ? 1 : 0,
+                    this.id
+                ]
+            );
+            return true;
+        } catch (err) {
+            console.error('Errore in Cliente.update:', err);
+            throw err;
+        }
+    }
+
+    static async updatePassword(id, password) {
+        try {
+            await db.run(
+                'UPDATE clienti SET password = ?, reset_token = NULL, reset_token_expires = NULL WHERE id = ?',
+                [password, id]
+            );
+            return true;
+        } catch (err) {
+            console.error('Errore in Cliente.updatePassword:', err);
+            throw err;
+        }
+    }
+
+    static async updateResetToken(id, token, expires) {
+        try {
+            await db.run(
+                'UPDATE clienti SET reset_token = ?, reset_token_expires = ? WHERE id = ?',
+                [token, expires, id]
+            );
+            return true;
+        } catch (err) {
+            console.error('Errore in Cliente.updateResetToken:', err);
+            throw err;
+        }
+    }
+    
+    // Altri metodi utili...
+}
+// Classe Meccanico
+class Meccanico {
+    constructor(data) {
+        this.id = data.id;
+        this.nome = data.nome;
+        this.cognome = data.cognome;
+        this.nome_officina = data.nome_officina;
+        this.specializzazione = data.specializzazione;
+        this.email = data.email;
+        this.password = data.password;
+        this.telefono = data.telefono;
+        this.indirizzo = data.indirizzo;
+        this.citta = data.citta;
+        this.cap = data.cap;
+        this.latitudine = data.latitudine;
+        this.longitudine = data.longitudine;
+        this.descrizione = data.descrizione;
+        this.valutazione = data.valutazione || 0;
+        this.numero_recensioni = data.numero_recensioni || 0;
+        this.data_registrazione = data.data_registrazione;
+        this.avatar = data.avatar;
+        this.verificato = data.verificato === 1;
+        this.reset_token = data.reset_token;
+        this.reset_token_expires = data.reset_token_expires;
         this.tipo = 'meccanico';
     }
-    
-    /**
-     * Trova un meccanico per ID
-     * @param {number} id - ID del meccanico
-     * @returns {Promise<Meccanico|null>} Meccanico trovato o null
-     */
+
     static async findById(id) {
         try {
             const row = await db.get('SELECT * FROM meccanici WHERE id = ?', [id]);
             if (!row) return null;
-            
-            return new Meccanico(
-                row.id,
-                row.nome,
-                row.cognome,
-                row.email,
-                row.specializzazione,
-                row.telefono,
-                row.nome_officina,
-                row.indirizzo,
-                row.citta,
-                row.cap,
-                row.latitudine,
-                row.longitudine,
-                row.descrizione,
-                row.valutazione,
-                row.numero_recensioni,
-                Boolean(row.verificato),
-                row.avatar
-            );
-        } catch (error) {
-            console.error('Errore in Meccanico.findById:', error);
-            throw error;
+            return new Meccanico(row);
+        } catch (err) {
+            console.error('Errore in Meccanico.findById:', err);
+            throw err;
         }
     }
-    
-    /**
-     * Trova un meccanico per email
-     * @param {string} email - Email del meccanico
-     * @returns {Promise<Meccanico|null>} Meccanico trovato o null
-     */
+
     static async findByEmail(email) {
         try {
             const row = await db.get('SELECT * FROM meccanici WHERE email = ?', [email]);
             if (!row) return null;
-            
-            return new Meccanico(
-                row.id,
-                row.nome,
-                row.cognome,
-                row.email,
-                row.specializzazione,
-                row.telefono,
-                row.nome_officina,
-                row.indirizzo,
-                row.citta,
-                row.cap,
-                row.latitudine,
-                row.longitudine,
-                row.descrizione,
-                row.valutazione,
-                row.numero_recensioni,
-                Boolean(row.verificato),
-                row.avatar
-            );
-        } catch (error) {
-            console.error('Errore in Meccanico.findByEmail:', error);
-            throw error;
+            return new Meccanico(row);
+        } catch (err) {
+            console.error('Errore in Meccanico.findByEmail:', err);
+            throw err;
         }
     }
-    
-    /**
-     * Registra un nuovo meccanico
-     * @param {Object} data - Dati del meccanico
-     * @returns {Promise<Meccanico>} Nuovo meccanico creato
-     */
-    static async register(data) {
+
+    static async findByResetToken(token) {
         try {
-            const hashedPassword = await Utente.hashPassword(data.password);
-            
+            const row = await db.get('SELECT * FROM meccanici WHERE reset_token = ?', [token]);
+            if (!row) return null;
+            return new Meccanico(row);
+        } catch (err) {
+            console.error('Errore in Meccanico.findByResetToken:', err);
+            throw err;
+        }
+    }
+
+    static async getAll(filters = {}, sortBy = 'nome', order = 'ASC', limit = 100, offset = 0) {
+        try {
+            let query = 'SELECT * FROM meccanici WHERE 1=1';
+            const params = [];
+
+            // Applica i filtri
+            if (filters.nome) {
+                query += ' AND (nome LIKE ? OR cognome LIKE ?)';
+                params.push(`%${filters.nome}%`, `%${filters.nome}%`);
+            }
+
+            if (filters.specializzazione) {
+                query += ' AND specializzazione = ?';
+                params.push(filters.specializzazione);
+            }
+
+            if (filters.citta) {
+                query += ' AND citta LIKE ?';
+                params.push(`%${filters.citta}%`);
+            }
+
+            if (filters.verificato !== undefined) {
+                query += ' AND verificato = ?';
+                params.push(filters.verificato ? 1 : 0);
+            }
+
+            // Applica ordinamento
+            query += ` ORDER BY ${sortBy} ${order}`;
+
+            // Applica paginazione
+            query += ' LIMIT ? OFFSET ?';
+            params.push(limit, offset);
+
+            const rows = await db.query(query, params);
+            return rows.map(row => new Meccanico(row));
+        } catch (err) {
+            console.error('Errore in Meccanico.getAll:', err);
+            throw err;
+        }
+    }
+
+    static async count(filters = {}) {
+        try {
+            let query = 'SELECT COUNT(*) as count FROM meccanici WHERE 1=1';
+            const params = [];
+
+            // Applica i filtri
+            if (filters.nome) {
+                query += ' AND (nome LIKE ? OR cognome LIKE ?)';
+                params.push(`%${filters.nome}%`, `%${filters.nome}%`);
+            }
+
+            if (filters.specializzazione) {
+                query += ' AND specializzazione = ?';
+                params.push(filters.specializzazione);
+            }
+
+            if (filters.citta) {
+                query += ' AND citta LIKE ?';
+                params.push(`%${filters.citta}%`);
+            }
+
+            if (filters.verificato !== undefined) {
+                query += ' AND verificato = ?';
+                params.push(filters.verificato ? 1 : 0);
+            }
+
+            const result = await db.get(query, params);
+            return result.count;
+        } catch (err) {
+            console.error('Errore in Meccanico.count:', err);
+            throw err;
+        }
+    }
+
+    static async create(data) {
+        try {
             const result = await db.run(
                 `INSERT INTO meccanici (
-                    nome, cognome, email, password, specializzazione, telefono, 
-                    nome_officina, indirizzo, citta, cap, descrizione
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                    nome, cognome, nome_officina, specializzazione, email, password,
+                    telefono, indirizzo, citta, cap, latitudine, longitudine,
+                    descrizione, data_registrazione, verificato, tipo
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
                 [
-                    data.nome, data.cognome, data.email, hashedPassword, data.specializzazione, 
-                    data.telefono, data.nome_officina, data.indirizzo, data.citta, data.cap, data.descrizione
+                    data.nome,
+                    data.cognome || '',
+                    data.nome_officina || '',
+                    data.specializzazione,
+                    data.email,
+                    data.password,
+                    data.telefono || null,
+                    data.indirizzo || null,
+                    data.citta || null,
+                    data.cap || null,
+                    data.latitudine || null,
+                    data.longitudine || null,
+                    data.descrizione || null,
+                    data.data_registrazione || new Date().toISOString(),
+                    data.verificato ? 1 : 0,
+                    'meccanico'
                 ]
             );
             
-            return await Meccanico.findById(result.id);
-        } catch (error) {
-            console.error('Errore in Meccanico.register:', error);
-            throw error;
+            const row = await db.get('SELECT * FROM meccanici WHERE id = ?', [result.id]);
+            return new Meccanico(row);
+        } catch (err) {
+            console.error('Errore in Meccanico.create:', err);
+            throw err;
         }
     }
-    
-    /**
-     * Aggiorna i dati di un meccanico
-     * @param {Object} data - Nuovi dati del meccanico
-     * @returns {Promise<Meccanico>} Meccanico aggiornato
-     */
-    async update(data) {
-        try {
-            const updateFields = [];
-            const updateValues = [];
-            
-            // Costruisci dinamicamente la query di aggiornamento
-            for (const [key, value] of Object.entries(data)) {
-                if (key !== 'id' && key !== 'password' && value !== undefined) {
-                    updateFields.push(`${key} = ?`);
-                    updateValues.push(value);
-                }
-            }
-            
-            // Aggiungi password se presente
-            if (data.password) {
-                const hashedPassword = await Utente.hashPassword(data.password);
-                updateFields.push('password = ?');
-                updateValues.push(hashedPassword);
-            }
-            
-            // Aggiungi l'ID alla fine dei valori
-            updateValues.push(this.id);
-            
-            await db.run(
-                `UPDATE meccanici SET ${updateFields.join(', ')} WHERE id = ?`,
-                updateValues
-            );
-            
-            // Aggiorna l'oggetto corrente
-            const updatedMeccanico = await Meccanico.findById(this.id);
-            Object.assign(this, updatedMeccanico);
-            
-            return this;
-        } catch (error) {
-            console.error('Errore in Meccanico.update:', error);
-            throw error;
-        }
-    }
-    
-    /**
-     * Aggiorna le coordinate geografiche del meccanico
-     * @param {number} lat - Latitudine
-     * @param {number} lng - Longitudine
-     * @returns {Promise<Meccanico>} Meccanico aggiornato
-     */
-    async aggiornaCoordinate(lat, lng) {
+
+    async update() {
         try {
             await db.run(
-                'UPDATE meccanici SET latitudine = ?, longitudine = ? WHERE id = ?',
-                [lat, lng, this.id]
-            );
-            
-            this.latitudine = lat;
-            this.longitudine = lng;
-            
-            return this;
-        } catch (error) {
-            console.error('Errore in Meccanico.aggiornaCoordinate:', error);
-            throw error;
-        }
-    }
-    
-    /**
-     * Ottiene le riparazioni di un meccanico
-     * @param {string} stato - Filtro per stato delle riparazioni
-     * @returns {Promise<Array>} Lista delle riparazioni
-     */
-    async getRiparazioni(stato = null) {
-        try {
-            let query = `
-                SELECT r.*, c.nome as nome_cliente, c.cognome as cognome_cliente, 
-                       c.telefono as telefono_cliente, v.marca, v.modello, v.targa
-                FROM riparazioni r
-                JOIN clienti c ON r.id_cliente = c.id
-                LEFT JOIN veicoli v ON r.id_veicolo = v.id
-                WHERE r.id_meccanico = ?
-            `;
-            
-            const params = [this.id];
-            
-            if (stato) {
-                query += ' AND r.stato = ?';
-                params.push(stato);
-            }
-            
-            query += ' ORDER BY r.data_richiesta DESC';
-            
-            return await db.query(query, params);
-        } catch (error) {
-            console.error('Errore in Meccanico.getRiparazioni:', error);
-            throw error;
-        }
-    }
-    
-    /**
-     * Crea un nuovo preventivo per una riparazione
-     * @param {Object} data - Dati del preventivo
-     * @returns {Promise<Object>} Preventivo creato
-     */
-    async creaPreventivo(data) {
-        try {
-            // Verifica che la riparazione esista e appartenga a questo meccanico
-            const riparazione = await db.get(
-                'SELECT * FROM riparazioni WHERE id = ? AND id_meccanico = ?',
-                [data.id_riparazione, this.id]
-            );
-            
-            if (!riparazione) {
-                throw new Error('Riparazione non trovata o non autorizzata');
-            }
-            
-            // Calcola la data di scadenza (default: 7 giorni)
-            const dataScadenza = new Date();
-            dataScadenza.setDate(dataScadenza.getDate() + (data.giorni_validita || 7));
-            
-            const result = await db.run(
-                `INSERT INTO preventivi 
-                (id_riparazione, importo, descrizione, data_scadenza) 
-                VALUES (?, ?, ?, ?)`,
-                [data.id_riparazione, data.importo, data.descrizione, dataScadenza.toISOString()]
-            );
-            
-            // Aggiorna lo stato della riparazione
-            await db.run(
-                'UPDATE riparazioni SET stato = ? WHERE id = ?',
-                ['preventivo', data.id_riparazione]
-            );
-            
-            return await db.get('SELECT * FROM preventivi WHERE id = ?', [result.id]);
-        } catch (error) {
-            console.error('Errore in Meccanico.creaPreventivo:', error);
-            throw error;
-        }
-    }
-    
-    /**
-     * Emette una ricevuta per una riparazione completata
-     * @param {Object} data - Dati della ricevuta
-     * @returns {Promise<Object>} Ricevuta creata
-     */
-    async emettiRicevuta(data) {
-        try {
-            // Verifica che la riparazione esista e appartenga a questo meccanico
-            const riparazione = await db.get(
-                'SELECT * FROM riparazioni WHERE id = ? AND id_meccanico = ?',
-                [data.id_riparazione, this.id]
-            );
-            
-            if (!riparazione) {
-                throw new Error('Riparazione non trovata o non autorizzata');
-            }
-            
-            // Controlla che la riparazione sia completata
-            if (riparazione.stato !== 'completata') {
-                throw new Error('La riparazione deve essere completata prima di emettere la ricevuta');
-            }
-            
-            const result = await db.run(
-                `INSERT INTO ricevute 
-                (id_riparazione, importo, descrizione, numero_fattura, metodo_pagamento) 
-                VALUES (?, ?, ?, ?, ?)`,
+                `UPDATE meccanici SET 
+                    nome = ?, cognome = ?, nome_officina = ?, specializzazione = ?,
+                    email = ?, telefono = ?, indirizzo = ?, citta = ?, cap = ?,
+                    latitudine = ?, longitudine = ?, descrizione = ?, avatar = ?,
+                    verificato = ?
+                WHERE id = ?`,
                 [
-                    data.id_riparazione, 
-                    data.importo, 
-                    data.descrizione, 
-                    data.numero_fattura, 
-                    data.metodo_pagamento
+                    this.nome,
+                    this.cognome,
+                    this.nome_officina,
+                    this.specializzazione,
+                    this.email,
+                    this.telefono,
+                    this.indirizzo,
+                    this.citta,
+                    this.cap,
+                    this.latitudine,
+                    this.longitudine,
+                    this.descrizione,
+                    this.avatar,
+                    this.verificato ? 1 : 0,
+                    this.id
                 ]
             );
-            
-            return await db.get('SELECT * FROM ricevute WHERE id = ?', [result.id]);
-        } catch (error) {
-            console.error('Errore in Meccanico.emettiRicevuta:', error);
-            throw error;
+            return true;
+        } catch (err) {
+            console.error('Errore in Meccanico.update:', err);
+            throw err;
         }
     }
-    
-    /**
-     * Aggiorna lo stato di una riparazione
-     * @param {number} idRiparazione - ID della riparazione
-     * @param {string} nuovoStato - Nuovo stato
-     * @param {string} note - Note opzionali
-     * @returns {Promise<Object>} Riparazione aggiornata
-     */
-    async aggiornaStatoRiparazione(idRiparazione, nuovoStato, note = null) {
+
+    static async updatePassword(id, password) {
         try {
-            // Verifica che la riparazione esista e appartenga a questo meccanico
-            const riparazione = await db.get(
-                'SELECT * FROM riparazioni WHERE id = ? AND id_meccanico = ?',
-                [idRiparazione, this.id]
+            await db.run(
+                'UPDATE meccanici SET password = ?, reset_token = NULL, reset_token_expires = NULL WHERE id = ?',
+                [password, id]
+            );
+            return true;
+        } catch (err) {
+            console.error('Errore in Meccanico.updatePassword:', err);
+            throw err;
+        }
+    }
+
+    static async updateResetToken(id, token, expires) {
+        try {
+            await db.run(
+                'UPDATE meccanici SET reset_token = ?, reset_token_expires = ? WHERE id = ?',
+                [token, expires, id]
+            );
+            return true;
+        } catch (err) {
+            console.error('Errore in Meccanico.updateResetToken:', err);
+            throw err;
+        }
+    }
+
+    static async updateVerificato(id, verificato) {
+        try {
+            await db.run(
+                'UPDATE meccanici SET verificato = ? WHERE id = ?',
+                [verificato ? 1 : 0, id]
+            );
+            return true;
+        } catch (err) {
+            console.error('Errore in Meccanico.updateVerificato:', err);
+            throw err;
+        }
+    }
+
+    static async delete(id) {
+        try {
+            await db.run('DELETE FROM meccanici WHERE id = ?', [id]);
+            return true;
+        } catch (err) {
+            console.error('Errore in Meccanico.delete:', err);
+            throw err;
+        }
+    }
+
+    static async aggiornaValutazioneMedia(id) {
+        try {
+            const result = await db.get(
+                'SELECT AVG(valutazione) as media, COUNT(*) as totale FROM recensioni WHERE id_meccanico = ?',
+                [id]
             );
             
-            if (!riparazione) {
-                throw new Error('Riparazione non trovata o non autorizzata');
-            }
+            const media = result.media || 0;
+            const totale = result.totale || 0;
             
-            let query = 'UPDATE riparazioni SET stato = ?';
-            const params = [nuovoStato];
-            
-            // Aggiungi campi aggiuntivi in base al nuovo stato
-            if (nuovoStato === 'accettata') {
-                query += ', data_accettazione = CURRENT_TIMESTAMP';
-            } else if (nuovoStato === 'completata') {
-                query += ', data_completamento = CURRENT_TIMESTAMP';
-            }
-            
-            // Aggiungi note se presenti
-            if (note) {
-                query += ', note = ?';
-                params.push(note);
-            }
-            
-            query += ' WHERE id = ?';
-            params.push(idRiparazione);
-            
-            await db.run(query, params);
-            
-            return await db.get('SELECT * FROM riparazioni WHERE id = ?', [idRiparazione]);
-        } catch (error) {
-            console.error('Errore in Meccanico.aggiornaStatoRiparazione:', error);
-            throw error;
-        }
-    }
-    
-    /**
-     * Ottiene le recensioni di un meccanico
-     * @returns {Promise<Array>} Lista delle recensioni
-     */
-    async getRecensioni() {
-        try {
-            return await db.query(`
-                SELECT r.*, c.nome as nome_cliente, c.cognome as cognome_cliente,
-                       c.avatar as avatar_cliente
-                FROM recensioni r
-                JOIN clienti c ON r.id_cliente = c.id
-                WHERE r.id_meccanico = ?
-                ORDER BY r.data_recensione DESC
-            `, [this.id]);
-        } catch (error) {
-            console.error('Errore in Meccanico.getRecensioni:', error);
-            throw error;
-        }
-    }
-    
-    /**
-     * Ottiene i servizi offerti da un meccanico
-     * @returns {Promise<Array>} Lista dei servizi
-     */
-    async getServizi() {
-        try {
-            return await db.query(`
-                SELECT s.*, sm.prezzo
-                FROM servizi s
-                JOIN servizi_meccanici sm ON s.id = sm.id_servizio
-                WHERE sm.id_meccanico = ?
-                ORDER BY s.nome
-            `, [this.id]);
-        } catch (error) {
-            console.error('Errore in Meccanico.getServizi:', error);
-            throw error;
-        }
-    }
-    
-    /**
-     * Aggiunge un servizio all'offerta del meccanico
-     * @param {Object} data - Dati del servizio
-     * @returns {Promise<Object>} Servizio aggiunto
-     */
-    async aggiungiServizio(data) {
-        try {
-            // Verifica se il servizio è già offerto
-            const esistente = await db.get(
-                'SELECT * FROM servizi_meccanici WHERE id_meccanico = ? AND id_servizio = ?',
-                [this.id, data.id_servizio]
+            await db.run(
+                'UPDATE meccanici SET valutazione = ?, numero_recensioni = ? WHERE id = ?',
+                [media, totale, id]
             );
             
-            if (esistente) {
-                // Aggiorna il prezzo se il servizio esiste già
-                await db.run(
-                    'UPDATE servizi_meccanici SET prezzo = ? WHERE id = ?',
-                    [data.prezzo, esistente.id]
-                );
-                return await db.get('SELECT * FROM servizi_meccanici WHERE id = ?', [esistente.id]);
-            } else {
-                // Altrimenti aggiungi il nuovo servizio
-                const result = await db.run(
-                    'INSERT INTO servizi_meccanici (id_meccanico, id_servizio, prezzo) VALUES (?, ?, ?)',
-                    [this.id, data.id_servizio, data.prezzo]
-                );
-                return await db.get('SELECT * FROM servizi_meccanici WHERE id = ?', [result.id]);
-            }
-        } catch (error) {
-            console.error('Errore in Meccanico.aggiungiServizio:', error);
-            throw error;
+            return { media, totale };
+        } catch (err) {
+            console.error('Errore in Meccanico.aggiornaValutazioneMedia:', err);
+            throw err;
         }
     }
-    
-    /**
-     * Rimuove un servizio dall'offerta del meccanico
-     * @param {number} idServizio - ID del servizio
-     * @returns {Promise<boolean>} true se rimosso con successo
-     */
-    async rimuoviServizio(idServizio) {
+
+    static async getOrari(id_meccanico) {
+        try {
+            const rows = await db.query(
+                'SELECT * FROM orari_meccanici WHERE id_meccanico = ? ORDER BY giorno',
+                [id_meccanico]
+            );
+            return rows;
+        } catch (err) {
+            console.error('Errore in Meccanico.getOrari:', err);
+            throw err;
+        }
+    }
+
+    static async updateOrari(id_meccanico, orari) {
+        try {
+            // Prima elimina gli orari esistenti
+            await db.run('DELETE FROM orari_meccanici WHERE id_meccanico = ?', [id_meccanico]);
+            
+            // Poi inserisci i nuovi orari
+            const stmt = db.db.prepare(
+                `INSERT INTO orari_meccanici (
+                    id_meccanico, giorno, apertura, chiusura, pausa_inizio, pausa_fine, chiuso
+                ) VALUES (?, ?, ?, ?, ?, ?, ?)`
+            );
+            
+            for (const orario of orari) {
+                stmt.run(
+                    id_meccanico,
+                    orario.giorno,
+                    orario.apertura || null,
+                    orario.chiusura || null,
+                    orario.pausa_inizio || null,
+                    orario.pausa_fine || null,
+                    orario.chiuso ? 1 : 0
+                );
+            }
+            
+            stmt.finalize();
+            return true;
+        } catch (err) {
+            console.error('Errore in Meccanico.updateOrari:', err);
+            throw err;
+        }
+    }
+
+    static async getServizi(id_meccanico) {
+        try {
+            const rows = await db.query(
+                `SELECT s.id, s.nome, s.descrizione, s.icona, sm.prezzo
+                 FROM servizi s
+                 JOIN servizi_meccanici sm ON s.id = sm.id_servizio
+                 WHERE sm.id_meccanico = ?`,
+                [id_meccanico]
+            );
+            return rows;
+        } catch (err) {
+            console.error('Errore in Meccanico.getServizi:', err);
+            throw err;
+        }
+    }
+
+    static async aggiungiServizio(id_meccanico, id_servizio, prezzo) {
+        try {
+            await db.run(
+                'INSERT INTO servizi_meccanici (id_meccanico, id_servizio, prezzo) VALUES (?, ?, ?)',
+                [id_meccanico, id_servizio, prezzo]
+            );
+            return true;
+        } catch (err) {
+            console.error('Errore in Meccanico.aggiungiServizio:', err);
+            throw err;
+        }
+    }
+
+    static async rimuoviServizio(id_meccanico, id_servizio) {
         try {
             await db.run(
                 'DELETE FROM servizi_meccanici WHERE id_meccanico = ? AND id_servizio = ?',
-                [this.id, idServizio]
+                [id_meccanico, id_servizio]
             );
             return true;
-        } catch (error) {
-            console.error('Errore in Meccanico.rimuoviServizio:', error);
-            throw error;
+        } catch (err) {
+            console.error('Errore in Meccanico.rimuoviServizio:', err);
+            throw err;
         }
     }
-    
-    /**
-     * Cerca meccanici in base a vari criteri
-     * @param {Object} filtri - Criteri di ricerca
-     * @returns {Promise<Array<Meccanico>>} Lista dei meccanici trovati
-     */
-    static async cerca(filtri = {}) {
+
+    static async updateServizioPrezzo(id_meccanico, id_servizio, prezzo) {
         try {
-            let query = `
-                SELECT m.* 
-                FROM meccanici m
-                LEFT JOIN servizi_meccanici sm ON m.id = sm.id_meccanico
-                LEFT JOIN servizi s ON sm.id_servizio = s.id
-                WHERE 1=1
-            `;
+            await db.run(
+                'UPDATE servizi_meccanici SET prezzo = ? WHERE id_meccanico = ? AND id_servizio = ?',
+                [prezzo, id_meccanico, id_servizio]
+            );
+            return true;
+        } catch (err) {
+            console.error('Errore in Meccanico.updateServizioPrezzo:', err);
+            throw err;
+        }
+    }
+
+    static async getRecensioni(id_meccanico, limit = 10, offset = 0) {
+        try {
+            const rows = await db.query(
+                `SELECT r.*, c.nome as nome_cliente, c.cognome as cognome_cliente, c.avatar as avatar_cliente
+                 FROM recensioni r
+                 JOIN clienti c ON r.id_cliente = c.id
+                 WHERE r.id_meccanico = ?
+                 ORDER BY r.data_recensione DESC
+                 LIMIT ? OFFSET ?`,
+                [id_meccanico, limit, offset]
+            );
+            return rows;
+        } catch (err) {
+            console.error('Errore in Meccanico.getRecensioni:', err);
+            throw err;
+        }
+    }
+
+    static async countRecensioni(id_meccanico) {
+        try {
+            const result = await db.get(
+                'SELECT COUNT(*) as count FROM recensioni WHERE id_meccanico = ?',
+                [id_meccanico]
+            );
+            return result.count;
+        } catch (err) {
+            console.error('Errore in Meccanico.countRecensioni:', err);
+            throw err;
+        }
+    }
+
+    static async getNomeCompleto(id) {
+        try {
+            const meccanico = await this.findById(id);
+            if (!meccanico) return null;
+            return `${meccanico.nome} ${meccanico.cognome}`;
+        } catch (err) {
+            console.error('Errore in Meccanico.getNomeCompleto:', err);
+            throw err;
+        }
+    }
+
+    getNomeCompleto() {
+        return `${this.nome} ${this.cognome}`;
+    }
+}
+class Admin {
+    constructor(data) {
+        this.id = data.id;
+        this.nome = data.nome;
+        this.email = data.email;
+        this.password = data.password;
+        this.avatar = data.avatar;
+        this.data_registrazione = data.data_registrazione;
+        this.reset_token = data.reset_token;
+        this.reset_token_expires = data.reset_token_expires;
+        this.tipo = 'admin';
+    }
+
+    static async findById(id) {
+        try {
+            const row = await db.get('SELECT * FROM admin WHERE id = ?', [id]);
+            if (!row) return null;
+            return new Admin(row);
+        } catch (err) {
+            console.error('Errore in Admin.findById:', err);
+            throw err;
+        }
+    }
+
+    static async findByEmail(email) {
+        try {
+            const row = await db.get('SELECT * FROM admin WHERE email = ?', [email]);
+            if (!row) return null;
+            return new Admin(row);
+        } catch (err) {
+            console.error('Errore in Admin.findByEmail:', err);
+            throw err;
+        }
+    }
+
+    static async findByResetToken(token) {
+        try {
+            const row = await db.get('SELECT * FROM admin WHERE reset_token = ?', [token]);
+            if (!row) return null;
+            return new Admin(row);
+        } catch (err) {
+            console.error('Errore in Admin.findByResetToken:', err);
+            throw err;
+        }
+    }
+
+    static async getAll() {
+        try {
+            const rows = await db.query('SELECT * FROM admin ORDER BY nome');
+            return rows.map(row => new Admin(row));
+        } catch (err) {
+            console.error('Errore in Admin.getAll:', err);
+            throw err;
+        }
+    }
+
+    static async create(data) {
+        try {
+            const result = await db.run(
+                `INSERT INTO admin (
+                    nome, email, password, data_registrazione, tipo
+                ) VALUES (?, ?, ?, ?, ?)`,
+                [
+                    data.nome,
+                    data.email,
+                    data.password,
+                    data.data_registrazione || new Date().toISOString(),
+                    'admin'
+                ]
+            );
             
-            const params = [];
-            
-            // Filtro per nome o nome officina
-            if (filtri.q) {
-                query += ` AND (
-                    m.nome LIKE ? OR 
-                    m.cognome LIKE ? OR 
-                    m.nome_officina LIKE ? OR
-                    m.specializzazione LIKE ?
-                )`;
-                const searchTerm = `%${filtri.q}%`;
-                params.push(searchTerm, searchTerm, searchTerm, searchTerm);
+            const row = await db.get('SELECT * FROM admin WHERE id = ?', [result.id]);
+            return new Admin(row);
+        } catch (err) {
+            console.error('Errore in Admin.create:', err);
+            throw err;
+        }
+    }
+
+    async update() {
+        try {
+            await db.run(
+                `UPDATE admin SET 
+                    nome = ?, email = ?, avatar = ?
+                WHERE id = ?`,
+                [
+                    this.nome,
+                    this.email,
+                    this.avatar,
+                    this.id
+                ]
+            );
+            return true;
+        } catch (err) {
+            console.error('Errore in Admin.update:', err);
+            throw err;
+        }
+    }
+
+    static async updatePassword(id, password) {
+        try {
+            await db.run(
+                'UPDATE admin SET password = ?, reset_token = NULL, reset_token_expires = NULL WHERE id = ?',
+                [password, id]
+            );
+            return true;
+        } catch (err) {
+            console.error('Errore in Admin.updatePassword:', err);
+            throw err;
+        }
+    }
+
+    static async updateResetToken(id, token, expires) {
+        try {
+            await db.run(
+                'UPDATE admin SET reset_token = ?, reset_token_expires = ? WHERE id = ?',
+                [token, expires, id]
+            );
+            return true;
+        } catch (err) {
+            console.error('Errore in Admin.updateResetToken:', err);
+            throw err;
+        }
+    }
+
+    static async delete(id) {
+        try {
+            // Non permettere l'eliminazione dell'admin con ID 1 (admin di default)
+            if (id === 1) {
+                throw new Error('Non è possibile eliminare l\'admin di default');
             }
             
-            // Filtro per specializzazione
-            if (filtri.specializzazione) {
-                query += ' AND m.specializzazione = ?';
-                params.push(filtri.specializzazione);
-            }
+            await db.run('DELETE FROM admin WHERE id = ?', [id]);
+            return true;
+        } catch (err) {
+            console.error('Errore in Admin.delete:', err);
+            throw err;
+        }
+    }
+
+    // Metodi specifici dell'admin
+
+    static async getStatistiche() {
+        try {
+            // Conteggio clienti
+            const totaleClienti = await db.get('SELECT COUNT(*) as count FROM clienti');
             
-            // Filtro per servizio
-            if (filtri.servizio) {
-                query += ' AND s.nome = ?';
-                params.push(filtri.servizio);
-            }
+            // Conteggio clienti ultimi 30 giorni
+            const clientiRecenti = await db.get(
+                'SELECT COUNT(*) as count FROM clienti WHERE data_registrazione >= date("now", "-30 day")'
+            );
             
-            // Filtro per città
-            if (filtri.citta) {
-                query += ' AND m.citta = ?';
-                params.push(filtri.citta);
-            }
+            // Calcola crescita percentuale clienti
+            const crescitaClienti = totaleClienti.count > 0 
+                ? Math.round((clientiRecenti.count / totaleClienti.count) * 100) 
+                : 0;
             
-            // Filtro per valutazione minima
-            if (filtri.valutazione_min) {
-                query += ' AND m.valutazione >= ?';
-                params.push(filtri.valutazione_min);
-            }
+            // Conteggio meccanici
+            const totaleMeccanici = await db.get('SELECT COUNT(*) as count FROM meccanici');
             
-            // Filtro per meccanici verificati
-            if (filtri.verificato) {
-                query += ' AND m.verificato = 1';
-            }
+            // Conteggio meccanici ultimi 30 giorni
+            const meccaniciRecenti = await db.get(
+                'SELECT COUNT(*) as count FROM meccanici WHERE data_registrazione >= date("now", "-30 day")'
+            );
             
-            // Group by per evitare duplicati se si usa il join con servizi
-            query += ' GROUP BY m.id';
+            // Calcola crescita percentuale meccanici
+            const crescitaMeccanici = totaleMeccanici.count > 0 
+                ? Math.round((meccaniciRecenti.count / totaleMeccanici.count) * 100) 
+                : 0;
             
-            // Ordinamento
-            if (filtri.ordina === 'valutazione') {
-                query += ' ORDER BY m.valutazione DESC, m.numero_recensioni DESC';
-            } else if (filtri.ordina === 'recensioni') {
-                query += ' ORDER BY m.numero_recensioni DESC, m.valutazione DESC';
-            } else if (filtri.ordina === 'nome') {
-                query += ' ORDER BY m.nome ASC';
-            } else {
-                query += ' ORDER BY m.id DESC'; // Default: più recenti
-            }
+            // Conteggio riparazioni
+            const totaleRiparazioni = await db.get('SELECT COUNT(*) as count FROM riparazioni');
             
-            // Paginazione
-            if (filtri.limit) {
-                query += ' LIMIT ?';
-                params.push(parseInt(filtri.limit));
+            // Conteggio riparazioni ultimi 30 giorni
+            const riparazioniRecenti = await db.get(
+                'SELECT COUNT(*) as count FROM riparazioni WHERE data_richiesta >= date("now", "-30 day")'
+            );
+            
+            // Calcola crescita percentuale riparazioni
+            const crescitaRiparazioni = totaleRiparazioni.count > 0 
+                ? Math.round((riparazioniRecenti.count / totaleRiparazioni.count) * 100) 
+                : 0;
+            
+            // Conteggio recensioni
+            const totaleRecensioni = await db.get('SELECT COUNT(*) as count FROM recensioni');
+            
+            // Conteggio recensioni ultimi 30 giorni
+            const recensioniRecenti = await db.get(
+                'SELECT COUNT(*) as count FROM recensioni WHERE data_recensione >= date("now", "-30 day")'
+            );
+            
+            // Calcola crescita percentuale recensioni
+            const crescitaRecensioni = totaleRecensioni.count > 0 
+                ? Math.round((recensioniRecenti.count / totaleRecensioni.count) * 100) 
+                : 0;
+            
+            return {
+                totale_clienti: totaleClienti.count,
+                clienti_recenti: clientiRecenti.count,
+                crescita_clienti: crescitaClienti,
                 
-                if (filtri.offset) {
-                    query += ' OFFSET ?';
-                    params.push(parseInt(filtri.offset));
-                }
+                totale_meccanici: totaleMeccanici.count,
+                meccanici_recenti: meccaniciRecenti.count,
+                crescita_meccanici: crescitaMeccanici,
+                
+                totale_riparazioni: totaleRiparazioni.count,
+                riparazioni_recenti: riparazioniRecenti.count,
+                crescita_riparazioni: crescitaRiparazioni,
+                
+                totale_recensioni: totaleRecensioni.count,
+                recensioni_recenti: recensioniRecenti.count,
+                crescita_recensioni: crescitaRecensioni
+            };
+        } catch (err) {
+            console.error('Errore in Admin.getStatistiche:', err);
+            throw err;
+        }
+    }
+
+    static async getRiparazioniPerStato() {
+        try {
+            const stati = ['richiesta', 'preventivo', 'accettata', 'in_corso', 'completata', 'rifiutata'];
+            const result = {};
+            
+            for (const stato of stati) {
+                const row = await db.get(
+                    'SELECT COUNT(*) as count FROM riparazioni WHERE stato = ?',
+                    [stato]
+                );
+                result[stato] = row.count;
             }
             
-            const rows = await db.query(query, params);
+            return result;
+        } catch (err) {
+            console.error('Errore in Admin.getRiparazioniPerStato:', err);
+            throw err;
+        }
+    }
+
+    static async getAttivitaMensile() {
+        try {
+            // Ottiene il numero di nuovi clienti, meccanici e riparazioni per ogni mese degli ultimi 12 mesi
+            const mesi = [];
+            const oggi = new Date();
             
-            // Converte i risultati in oggetti Meccanico
-            return rows.map(row => new Meccanico(
-                row.id,
-                row.nome,
-                row.cognome,
-                row.email,
-                row.specializzazione,
-                row.telefono,
-                row.nome_officina,
-                row.indirizzo,
-                row.citta,
-                row.cap,
-                row.latitudine,
-                row.longitudine,
-                row.descrizione,
-                row.valutazione,
-                row.numero_recensioni,
-                Boolean(row.verificato),
-                row.avatar
-            ));
-        } catch (error) {
-            console.error('Errore in Meccanico.cerca:', error);
-            throw error;
+            for (let i = 11; i >= 0; i--) {
+                const meseCorrente = new Date(oggi.getFullYear(), oggi.getMonth() - i, 1);
+                const meseFine = new Date(oggi.getFullYear(), oggi.getMonth() - i + 1, 0);
+                
+                const inizio = meseCorrente.toISOString().split('T')[0];
+                const fine = meseFine.toISOString().split('T')[0];
+                
+                const clienti = await db.get(
+                    'SELECT COUNT(*) as count FROM clienti WHERE data_registrazione BETWEEN ? AND ?',
+                    [inizio, fine]
+                );
+                
+                const meccanici = await db.get(
+                    'SELECT COUNT(*) as count FROM meccanici WHERE data_registrazione BETWEEN ? AND ?',
+                    [inizio, fine]
+                );
+                
+                const riparazioni = await db.get(
+                    'SELECT COUNT(*) as count FROM riparazioni WHERE data_richiesta BETWEEN ? AND ?',
+                    [inizio, fine]
+                );
+                
+                const opzioni = { month: 'short' };
+                const nomeMese = meseCorrente.toLocaleDateString('it-IT', opzioni);
+                
+                mesi.push({
+                    mese: nomeMese,
+                    clienti: clienti.count,
+                    meccanici: meccanici.count,
+                    riparazioni: riparazioni.count
+                });
+            }
+            
+            return mesi;
+        } catch (err) {
+            console.error('Errore in Admin.getAttivitaMensile:', err);
+            throw err;
+        }
+    }
+
+    static async getMeccaniciRecenti(limit = 5) {
+        try {
+            const rows = await db.query(
+                'SELECT * FROM meccanici ORDER BY data_registrazione DESC LIMIT ?',
+                [limit]
+            );
+            return rows.map(row => new Meccanico(row));
+        } catch (err) {
+            console.error('Errore in Admin.getMeccaniciRecenti:', err);
+            throw err;
+        }
+    }
+
+    static async getRiparazioniRecenti(limit = 5) {
+        try {
+            const rows = await db.query(
+                `SELECT r.*, 
+                    c.nome as nome_cliente, c.cognome as cognome_cliente, c.avatar as avatar_cliente,
+                    m.nome as nome_meccanico, m.cognome as cognome_meccanico, m.avatar as avatar_meccanico,
+                    v.marca, v.modello
+                 FROM riparazioni r
+                 JOIN clienti c ON r.id_cliente = c.id
+                 JOIN meccanici m ON r.id_meccanico = m.id
+                 LEFT JOIN veicoli v ON r.id_veicolo = v.id
+                 ORDER BY r.data_richiesta DESC
+                 LIMIT ?`,
+                [limit]
+            );
+            return rows;
+        } catch (err) {
+            console.error('Errore in Admin.getRiparazioniRecenti:', err);
+            throw err;
+        }
+    }
+
+    static async verificaMeccanico(id_meccanico, verificato = true) {
+        try {
+            await db.run(
+                'UPDATE meccanici SET verificato = ? WHERE id = ?',
+                [verificato ? 1 : 0, id_meccanico]
+            );
+            return true;
+        } catch (err) {
+            console.error('Errore in Admin.verificaMeccanico:', err);
+            throw err;
         }
     }
 }
 
-// Esporta le classi per l'uso in altri moduli
-module.exports = { Utente, Cliente, Meccanico };
+module.exports = { Cliente, Meccanico, Admin };

@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="/media/img/favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <%- include('../common/header') %>
+    
+    <main>
+        <div class="container mt-5 pt-4">
+            <div class="row">
+                <div class="col-12">
+                    <h1 class="mb-4">Riparazioni</h1>
+                    
+                    <!-- Filtri -->
+                    <div class="card mb-4">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="m-0">Filtri</h5>
+                            <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#filtersCollapse">
+                                <i class="fas fa-filter"></i> Mostra/Nascondi Filtri
+                            </button>
+                        </div>
+                        <div class="collapse" id="filtersCollapse">
+                            <div class="card-body">
+                                <form action="/riparazioni" method="GET">
+                                    <div class="row g-3">
+                                        <div class="col-md-3">
+                                            <label for="stato" class="form-label">Stato</label>
+                                            <select class="form-select" id="stato" name="stato">
+                                                <option value="">Tutti</option>
+                                                <option value="richiesta" <%= filters && filters.stato === 'richiesta' ? 'selected' : '' %>>In attesa</option>
+                                                <option value="preventivo" <%= filters && filters.stato === 'preventivo' ? 'selected' : '' %>>Preventivo</option>
+                                                <option value="accettata" <%= filters && filters.stato === 'accettata' ? 'selected' : '' %>>Accettata</option>
+                                                <option value="in_corso" <%= filters && filters.stato === 'in_corso' ? 'selected' : '' %>>In lavorazione</option>
+                                                <option value="completata" <%= filters && filters.stato === 'completata' ? 'selected' : '' %>>Completata</option>
+                                                <option value="rifiutata" <%= filters && filters.stato === 'rifiutata' ? 'selected' : '' %>>Rifiutata</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <% if (isCliente) { %>
+                                            <div class="col-md-3">
+                                                <label for="id_meccanico" class="form-label">Meccanico</label>
+                                                <select class="form-select" id="id_meccanico" name="id_meccanico">
+                                                    <option value="">Tutti</option>
+                                                    <% if (meccanici && meccanici.length > 0) { %>
+                                                        <% meccanici.forEach(meccanico => { %>
+                                                            <option value="<%= meccanico.id %>" <%= filters && filters.id_meccanico == meccanico.id ? 'selected' : '' %>>
+                                                                <%= meccanico.nome_officina || `${meccanico.nome} ${meccanico.cognome}` %>
+                                                            </option>
+                                                        <% }) %>
+                                                    <% } %>
+                                                </select>
+                                            </div>
+                                        <% } else if (isMeccanico) { %>
+                                            <div class="col-md-3">
+                                                <label for="id_cliente" class="form-label">Cliente</label>
+                                                <select class="form-select" id="id_cliente" name="id_cliente">
+                                                    <option value="">Tutti</option>
+                                                    <% if (clienti && clienti.length > 0) { %>
+                                                        <% clienti.forEach(cliente => { %>
+                                                            <option value="<%= cliente.id %>" <%= filters && filters.id_cliente == cliente.id ? 'selected' : '' %>>
+                                                                <%= cliente.nome %> <%= cliente.cognome %>
+                                                            </option>
+                                                        <% }) %>
+                                                    <% } %>
+                                                </select>
+                                            </div>
+                                        <% } %>
+                                        
+                                        <div class="col-md-3">
+                                            <label for="data_da" class="form-label">Data da</label>
+                                            <input type="date" class="form-control" id="data_da" name="data_da" value="<%= filters && filters.data_da ? filters.data_da : '' %>">
+                                        </div>
+                                        
+                                        <div class="col-md-3">
+                                            <label for="data_a" class="form-label">Data a</label>
+                                            <input type="date" class="form-control" id="data_a" name="data_a" value="<%= filters && filters.data_a ? filters.data_a : '' %>">
+                                        </div>
+                                        
+                                        <div class="col-md-12">
+                                            <label for="q" class="form-label">Cerca</label>
+                                            <input type="text" class="form-control" id="q" name="q" placeholder="Cerca..." value="<%= filters && filters.q ? filters.q : '' %>">
+                                        </div>
+                                        
+                                        <div class="col-12 text-end">
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fas fa-search"></i> Filtra
+                                            </button>
+                                            <button type="reset" class="btn btn-secondary" id="resetFilters">
+                                                <i class="fas fa-undo"></i> Reset
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Elenco Riparazioni -->
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="m-0">Elenco Riparazioni</h5>
+                            <% if (isCliente) { %>
+                                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#nuovaRiparazioneModal">
+                                    <i class="fas fa-plus"></i> Nuova Richiesta
+                                </button>
+                            <% } %>
+                        </div>
+                        <div class="card-body">
+                            <% if (riparazioni && riparazioni.length > 0) { %>
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <% if (isAdmin || isMeccanico) { %>
+                                                    <th>Cliente</th>
+                                                <% } %>
+                                                <% if (isAdmin || isCliente) { %>
+                                                    <th>Meccanico</th>
+                                                <% } %>
+                                                <th>Veicolo</th>
+                                                <th>Stato</th>
+                                                <th>Data Richiesta</th>
+                                                <th>Tipo Problema</th>
+                                                <th>Azioni</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% riparazioni.forEach(riparazione => { %>
+                                                <tr>
+                                                    <td>#<%= riparazione.id %></td>
+                                                    
+                                                    <% if (isAdmin || isMeccanico) { %>
+                                                        <td>
+                                                            <div class="d-flex align-items-center">
+                                                                <img src="<%= riparazione.avatar_cliente || '/media/img/default_avatar.png' %>" class="rounded-circle me-2" width="32" height="32" alt="Cliente">
+                                                                <div>
+                                                                    <%= riparazione.nome_cliente %> <%= riparazione.cognome_cliente %>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    <% } %>
+                                                    
+                                                    <% if (isAdmin || isCliente) { %>
+                                                        <td>
+                                                            <div class="d-flex align-items-center">
+                                                                <img src="<%= riparazione.avatar_meccanico || '/media/img/default_mechanic.png' %>" class="rounded-circle me-2" width="32" height="32" alt="Meccanico">
+                                                                <div>
+                                                                    <%= riparazione.nome_officina || `${riparazione.nome_meccanico} ${riparazione.cognome_meccanico}` %>
+                                                                    <br>
+                                                                    <small class="text-muted"><%= riparazione.specializzazione %></small>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    <% } %>
+                                                    
+                                                    <td>
+                                                        <% if (riparazione.marca && riparazione.modello) { %>
+                                                            <%= riparazione.marca %> <%= riparazione.modello %>
+                                                            <% if (riparazione.targa) { %>
+                                                                <br>
+                                                                <small class="text-muted"><%= riparazione.targa %></small>
+                                                            <% } %>
+                                                        <% } else { %>
+                                                            <span class="text-muted">Non specificato</span>
+                                                        <% } %>
+                                                    </td>
+                                                    
+                                                    <td>
+                                                        <% 
+                                                        let statusClass = '';
+                                                        let statusText = '';
+                                                        switch(riparazione.stato) {
+                                                            case 'richiesta': 
+                                                                statusClass = 'bg-info';
+                                                                statusText = 'In attesa';
+                                                                break;
+                                                            case 'preventivo': 
+                                                                statusClass = 'bg-warning';
+                                                                statusText = 'Preventivo';
+                                                                break;
+                                                            case 'accettata': 
+                                                                statusClass = 'bg-primary';
+                                                                statusText = 'Accettata';
+                                                                break;
+                                                            case 'in_corso': 
+                                                                statusClass = 'bg-primary';
+                                                                statusText = 'In lavorazione';
+                                                                break;
+                                                            case 'completata': 
+                                                                statusClass = 'bg-success';
+                                                                statusText = 'Completata';
+                                                                break;
+                                                            case 'rifiutata': 
+                                                                statusClass = 'bg-danger';
+                                                                statusText = 'Rifiutata';
+                                                                break;
+                                                            default: 
+                                                                statusClass = 'bg-secondary';
+                                                                statusText = riparazione.stato;
+                                                        }
+                                                        %>
+                                                        <span class="badge <%= statusClass %>">
+                                                            <%= statusText %>
+                                                        </span>
+                                                    </td>
+                                                    
+                                                    <td>
+                                                        <%= new Date(riparazione.data_richiesta).toLocaleDateString('it-IT') %>
+                                                    </td>
+                                                    
+                                                    <td>
+                                                        <%= riparazione.tipo_problema || 'Generale' %>
+                                                    </td>
+                                                    
+                                                    <td>
+                                                        <div class="btn-group btn-group-sm">
+                                                            <a href="/riparazioni/<%= riparazione.id %>" class="btn btn-outline-primary">
+                                                                <i class="fas fa-eye"></i> Dettagli
+                                                            </a>
+                                                            
+                                                            <% if (isCliente && riparazione.id_cliente === user.id) { %>
+                                                                <a href="/cliente/riparazioni/<%= riparazione.id %>" class="btn btn-outline-secondary">
+                                                                    <i class="fas fa-tools"></i> Gestisci
+                                                                </a>
+                                                            <% } else if (isMeccanico && riparazione.id_meccanico === user.id) { %>
+                                                                <a href="/meccanico/riparazioni/<%= riparazione.id %>" class="btn btn-outline-secondary">
+                                                                    <i class="fas fa-tools"></i> Gestisci
+                                                                </a>
+                                                            <% } %>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            <% }); %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                
+                                <!-- Paginazione -->
+                                <% if (pagination && pagination.totalPages > 1) { %>
+                                    <nav aria-label="Navigazione pagine">
+                                        <ul class="pagination justify-content-center">
+                                            <li class="page-item <%= pagination.currentPage === 1 ? 'disabled' : '' %>">
+                                                <a class="page-link" href="?page=<%= pagination.currentPage - 1 %><%= queryString ? '&' + queryString : '' %>" aria-label="Precedente">
+                                                    <span aria-hidden="true">&laquo;</span>
+                                                </a>
+                                            </li>
+                                            
+                                            <% for (let i = 1; i <= pagination.totalPages; i++) { %>
+                                                <li class="page-item <%= pagination.currentPage === i ? 'active' : '' %>">
+                                                    <a class="page-link" href="?page=<%= i %><%= queryString ? '&' + queryString : '' %>"><%= i %></a>
+                                                </li>
+                                            <% } %>
+                                            
+                                            <li class="page-item <%= pagination.currentPage === pagination.totalPages ? 'disabled' : '' %>">
+                                                <a class="page-link" href="?page=<%= pagination.currentPage + 1 %><%= queryString ? '&' + queryString : '' %>" aria-label="Successivo">
+                                                    <span aria-hidden="true">&raquo;</span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </nav>
+                                <% } %>
+                            <% } else { %>
+                                <div class="text-center py-5">
+                                    <i class="fas fa-tools fa-3x text-muted mb-3"></i>
+                                    <h4>Nessuna riparazione trovata</h4>
+                                    <p class="text-muted">Non ci sono riparazioni disponibili o corrispondenti ai filtri applicati.</p>
+                                    
+                                    <% if (isCliente) { %>
+                                        <button class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#nuovaRiparazioneModal">
+                                            <i class="fas fa-plus"></i> Crea la tua prima richiesta
+                                        </button>
+                                    <% } %>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="footer mt-5 bg-light py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>MechFinder</h5>
+                    <p>Trova facilmente il meccanico più adatto alle tue esigenze.</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Link Utili</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/meccanici">Trova Meccanici</a></li>
+                        <li><a href="/servizi">Servizi</a></li>
+                        <li><a href="/chi-siamo">Chi Siamo</a></li>
+                        <li><a href="/contatti">Contatti</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Contatti</h5>
+                    <address>
+                        <i class="fas fa-map-marker-alt"></i> Via Roma, 123, Milano<br>
+                        <i class="fas fa-phone"></i> +39 02 1234567<br>
+                        <i class="fas fa-envelope"></i> info@mechfinder.it
+                    </address>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p class="mb-0">&copy; <span id="currentYear">2023</span> MechFinder. Tutti i diritti riservati.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal Nuova Riparazione (solo per clienti) -->
+    <% if (isCliente) { %>
+        <div class="modal fade" id="nuovaRiparazioneModal" tabindex="-1" aria-labelledby="nuovaRiparazioneModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="nuovaRiparazioneModalLabel">Nuova Richiesta di Riparazione</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="/riparazioni" method="POST">
+                            <div class="mb-3">
+                                <label for="id_meccanico" class="form-label">Seleziona Meccanico <span class="text-danger">*</span></label>
+                                <select class="form-select" id="id_meccanico" name="id_meccanico" required>
+                                    <option value="" selected disabled>Seleziona un meccanico</option>
+                                    <% if (meccanici && meccanici.length > 0) { %>
+                                        <% meccanici.forEach(meccanico => { %>
+                                            <option value="<%= meccanico.id %>">
+                                                <%= meccanico.nome_officina || `${meccanico.nome} ${meccanico.cognome}` %> 
+                                                (<%= meccanico.specializzazione %>)
+                                            </option>
+                                        <% }) %>
+                                    <% } %>
+                                </select>
+                                <div class="form-text">
+                                    Non trovi il meccanico che cerchi? <a href="/meccanici" target="_blank">Cerca tra tutti i meccanici</a>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="id_veicolo" class="form-label">Seleziona Veicolo</label>
+                                <select class="form-select" id="id_veicolo" name="id_veicolo">
+                                    <option value="">Nessun veicolo (specificare nei dettagli)</option>
+                                    <% if (veicoli && veicoli.length > 0) { %>
+                                        <% veicoli.forEach(veicolo => { %>
+                                            <option value="<%= veicolo.id %>">
+                                                <%= veicolo.marca %> <%= veicolo.modello %> 
+                                                <% if (veicolo.targa) { %>(<%= veicolo.targa %>)<% } %>
+                                            </option>
+                                        <% }) %>
+                                    <% } %>
+                                </select>
+                                <div class="form-text">
+                                    Non hai ancora aggiunto un veicolo? <a href="/cliente/veicoli">Aggiungi un veicolo</a>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="tipo_problema" class="form-label">Tipo di Problema <span class="text-danger">*</span></label>
+                                <select class="form-select" id="tipo_problema" name="tipo_problema" required>
+                                    <option value="Generale">Problema generale</option>
+                                    <option value="Motore">Problemi al motore</option>
+                                    <option value="Elettronica">Problemi elettronici</option>
+                                    <option value="Freni">Problemi ai freni</option>
+                                    <option value="Pneumatici">Problemi ai pneumatici</option>
+                                    <option value="Carrozzeria">Problemi di carrozzeria</option>
+                                    <option value="Cambio">Problemi al cambio</option>
+                                    <option value="Manutenzione">Manutenzione programmata</option>
+                                    <option value="Tagliando">Tagliando</option>
+                                    <option value="Revisione">Revisione</option>
+                                    <option value="Altro">Altro (specificare)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="priorita" class="form-label">Priorità</label>
+                                <select class="form-select" id="priorita" name="priorita">
+                                    <option value="normale" selected>Normale</option>
+                                    <option value="alta">Alta (urgente)</option>
+                                    <option value="bassa">Bassa (non urgente)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="descrizione" class="form-label">Descrizione del Problema <span class="text-danger">*</span></label>
+                                <textarea class="form-control" id="descrizione" name="descrizione" rows="5" required
+                                    placeholder="Descrivi dettagliatamente il problema riscontrato..."></textarea>
+                            </div>
+                            
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-paper-plane"></i> Invia Richiesta
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <% } %>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="/js/main.js"></script>
+    
+    <script>
+        // Reset dei filtri
+        document.getElementById('resetFilters')?.addEventListener('click', function() {
+            window.location.href = window.location.pathname;
+        });
+        
+        // Mostra il collapse dei filtri se ci sono filtri attivi
+        document.addEventListener('DOMContentLoaded', function() {
+            <% if (filters && Object.keys(filters).some(key => filters[key] !== '')) { %>
+                new bootstrap.Collapse(document.getElementById('filtersCollapse')).show();
+            <% } %>
+        });
+    </script>
+</body>
+</html>

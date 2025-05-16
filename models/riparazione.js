@@ -54,54 +54,122 @@ class Riparazione {
     }
     
     /**
-     * Ottiene una riparazione con dettagli completi
-     * @param {number} id - ID della riparazione
-     * @returns {Promise<Object|null>} Dettagli completi della riparazione o null
+     * Trova tutte le riparazioni di un cliente
+     * @param {number} idCliente - ID del cliente
+     * @returns {Promise<Array<Riparazione>>} Lista delle riparazioni
      */
-    static async getDettaglio(id) {
+    static async findByClienteId(idCliente) {
         try {
-            const row = await db.get(`
-                SELECT 
-                    r.*,
-                    c.nome as nome_cliente, c.cognome as cognome_cliente, c.email as email_cliente,
-                    c.telefono as telefono_cliente, c.avatar as avatar_cliente,
-                    m.nome as nome_meccanico, m.cognome as cognome_meccanico, 
-                    m.nome_officina, m.email as email_meccanico,
-                    m.telefono as telefono_meccanico, m.avatar as avatar_meccanico,
-                    m.specializzazione, m.valutazione,
-                    v.marca, v.modello, v.anno, v.targa, v.tipo as tipo_veicolo
-                FROM riparazioni r
-                JOIN clienti c ON r.id_cliente = c.id
-                JOIN meccanici m ON r.id_meccanico = m.id
-                LEFT JOIN veicoli v ON r.id_veicolo = v.id
-                WHERE r.id = ?
-            `, [id]);
+            const rows = await db.query('SELECT * FROM riparazioni WHERE id_cliente = ?', [idCliente]);
             
-            if (!row) return null;
-            
-            // Ottieni il preventivo collegato, se esiste
-            const preventivo = await db.get(
-                'SELECT * FROM preventivi WHERE id_riparazione = ? ORDER BY data_creazione DESC LIMIT 1',
-                [id]
-            );
-            
-            // Ottieni la ricevuta collegata, se esiste
-            const ricevuta = await db.get(
-                'SELECT * FROM ricevute WHERE id_riparazione = ? ORDER BY data_emissione DESC LIMIT 1',
-                [id]
-            );
-            
-            return {
-                ...row,
-                preventivo,
-                ricevuta
-            };
+            return rows.map(row => new Riparazione(
+                row.id,
+                row.id_cliente,
+                row.id_meccanico,
+                row.descrizione,
+                row.stato,
+                row.data_richiesta,
+                row.id_veicolo,
+                row.tipo_problema,
+                row.priorita,
+                row.data_accettazione,
+                row.data_completamento,
+                row.note
+            ));
         } catch (error) {
-            console.error('Errore in Riparazione.getDettaglio:', error);
+            console.error('Errore in Riparazione.findByClienteId:', error);
             throw error;
         }
     }
     
+    /**
+     * Trova tutte le riparazioni di un meccanico
+     * @param {number} idMeccanico - ID del meccanico
+     * @returns {Promise<Array<Riparazione>>} Lista delle riparazioni
+     */
+    static async findByMeccanicoId(idMeccanico) {
+        try {
+            const rows = await db.query('SELECT * FROM riparazioni WHERE id_meccanico = ?', [idMeccanico]);
+            
+            return rows.map(row => new Riparazione(
+                row.id,
+                row.id_cliente,
+                row.id_meccanico,
+                row.descrizione,
+                row.stato,
+                row.data_richiesta,
+                row.id_veicolo,
+                row.tipo_problema,
+                row.priorita,
+                row.data_accettazione,
+                row.data_completamento,
+                row.note
+            ));
+        } catch (error) {
+            console.error('Errore in Riparazione.findByMeccanicoId:', error);
+            throw error;
+        }
+    }
+    
+    /**
+     * Ottiene una riparazione con dettagli completi
+     * @param {number} id - ID della riparazione
+     * @returns {Promise<Object|null>} Dettagli completi della riparazione o null
+     */
+   /**
+ * Modifica a getDettaglio per prevenire errori se la tabella ricevute non esiste
+ */
+static async getDettaglio(id) {
+    try {
+        // Ottieni la riparazione con i dettagli di cliente e meccanico
+        const riparazione = await db.get(
+            `SELECT r.*, 
+            c.nome as nome_cliente, c.cognome as cognome_cliente, 
+            c.email as email_cliente, c.telefono as telefono_cliente, c.avatar as avatar_cliente,
+            m.nome as nome_meccanico, m.cognome as cognome_meccanico, 
+            m.nome_officina, m.email as email_meccanico,
+            m.telefono as telefono_meccanico, m.avatar as avatar_meccanico,
+            m.specializzazione, m.valutazione,
+            v.marca, v.modello, v.anno, v.targa, v.tipo as tipo_veicolo
+            FROM riparazioni r
+            JOIN clienti c ON r.id_cliente = c.id
+            JOIN meccanici m ON r.id_meccanico = m.id
+            LEFT JOIN veicoli v ON r.id_veicolo = v.id
+            WHERE r.id = ?`,
+            [id]
+        );
+        
+        if (!riparazione) return null;
+        
+        // Ottieni il preventivo collegato, se esiste
+        const preventivo = await db.get(
+            'SELECT * FROM preventivi WHERE id_riparazione = ? ORDER BY data_creazione DESC LIMIT 1',
+            [id]
+        );
+        
+        // Prova a ottenere la ricevuta collegata, se esiste, ma gestisci l'errore se la tabella non esiste
+        let ricevuta = null;
+        try {
+            ricevuta = await db.get(
+                'SELECT * FROM ricevute WHERE id_riparazione = ? ORDER BY data_emissione DESC LIMIT 1',
+                [id]
+            );
+        } catch (err) {
+            // Se c'è un errore SQL (come "no such table"), semplicemente impostiamo ricevuta a null
+            console.log('Attenzione: impossibile trovare la tabella ricevute. Ignorato.');
+            // Non rilanciamo l'errore
+        }
+        
+        return {
+            ...riparazione,
+            preventivo,
+            ricevuta
+        };
+    } catch (err) {
+        console.error('Errore in Riparazione.getDettaglio:', err);
+        throw err;
+    }
+}
     /**
      * Crea una nuova riparazione
      * @param {Object} data - Dati della riparazione
@@ -111,15 +179,17 @@ class Riparazione {
         try {
             const result = await db.run(
                 `INSERT INTO riparazioni 
-                (id_cliente, id_meccanico, id_veicolo, descrizione, tipo_problema, priorita) 
-                VALUES (?, ?, ?, ?, ?, ?)`,
+                (id_cliente, id_meccanico, id_veicolo, descrizione, tipo_problema, priorita, stato, data_richiesta) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
                 [
                     data.id_cliente, 
                     data.id_meccanico, 
                     data.id_veicolo, 
                     data.descrizione, 
                     data.tipo_problema,
-                    data.priorita || 'normale'
+                    data.priorita || 'normale',
+                    data.stato || 'richiesta',
+                    data.data_richiesta || new Date().toISOString()
                 ]
             );
             

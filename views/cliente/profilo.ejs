@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Profilo Cliente - MechFinder">
+  <meta name="keywords" content="profilo, cliente, meccanici, veicoli, riparazioni">
+  <meta name="author" content="MechFinder">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/profile.css">
+  <title>Profilo Cliente - MechFinder</title>
+</head>
+<body>
+  <%- include('./common/header') %>
+  
+  <main>
+    <div class="container">
+      <div class="profile-header">
+        <div class="profile-avatar">
+          <img src="<%= currentUser.avatar || '/media/img/default-avatar.png' %>" alt="Avatar">
+          <div class="avatar-edit">
+            <label for="avatarUpload" class="btn btn-sm btn-light">
+              <i class="fas fa-camera"></i>
+            </label>
+            <input type="file" id="avatarUpload" class="d-none">
+          </div>
+        </div>
+        <div class="profile-info">
+          <h1><%= currentUser.nome %></h1>
+          <p class="text-muted"><i class="fas fa-user me-2"></i>Cliente dal <%= new Date(currentUser.data_registrazione).toLocaleDateString('it-IT', {year: 'numeric', month: 'long'}) %></p>
+        </div>
+      </div>
+      
+      <!-- Profile Tabs Navigation -->
+      <ul class="nav nav-tabs profile-tabs" id="profileTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info-tab-pane" type="button" role="tab" aria-controls="info-tab-pane" aria-selected="true">
+            <i class="fas fa-user me-2"></i>Informazioni personali
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="vehicles-tab" data-bs-toggle="tab" data-bs-target="#vehicles-tab-pane" type="button" role="tab" aria-controls="vehicles-tab-pane" aria-selected="false">
+            <i class="fas fa-car me-2"></i>I miei veicoli
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="repairs-tab" data-bs-toggle="tab" data-bs-target="#repairs-tab-pane" type="button" role="tab" aria-controls="repairs-tab-pane" aria-selected="false">
+            <i class="fas fa-tools me-2"></i>Riparazioni
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews-tab-pane" type="button" role="tab" aria-controls="reviews-tab-pane" aria-selected="false">
+            <i class="fas fa-star me-2"></i>Recensioni
+          </button>
+        </li>
+      </ul>
+      
+      <!-- Tab Content -->
+      <div class="tab-content mt-4" id="profileTabsContent">
+        <!-- Informazioni Personali Tab -->
+        <div class="tab-pane fade show active" id="info-tab-pane" role="tabpanel" aria-labelledby="info-tab" tabindex="0">
+          <div class="row">
+            <div class="col-lg-8">
+              <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                  <h5 class="mb-0">I tuoi dati</h5>
+                  <button class="btn btn-sm btn-primary" id="editProfileBtn">
+                    <i class="fas fa-edit me-1"></i>Modifica
+                  </button>
+                </div>
+                <div class="card-body">
+                  <!-- Visualizzazione normale dati -->
+                  <div id="profileDataView">
+                    <div class="row mb-4">
+                      <div class="col-md-6">
+                        <div class="profile-field">
+                          <label>Nome e Cognome</label>
+                          <p><%= currentUser.nome %></p>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="profile-field">
+                          <label>Email</label>
+                          <p><%= currentUser.email %></p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="row mb-4">
+                      <div class="col-md-6">
+                        <div class="profile-field">
+                          <label>Telefono</label>
+                          <p><%= currentUser.telefono || 'Non specificato' %></p>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="profile-field">
+                          <label>Città</label>
+                          <p><%= currentUser.citta || 'Non specificata' %></p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="row mb-4">
+                      <div class="col-md-6">
+                        <div class="profile-field">
+                          <label>Data di registrazione</label>
+                          <p><%= new Date(currentUser.data_registrazione).toLocaleDateString('it-IT') %></p>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="profile-field">
+                          <label>Stato</label>
+                          <p><span class="badge bg-success">Attivo</span></p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Form di modifica dati (inizialmente nascosto) -->
+                  <form id="profileEditForm" class="d-none" action="/cliente/profilo/update" method="POST">
+                    <div class="row mb-3">
+                      <div class="col-md-6">
+                        <label for="nome" class="form-label">Nome e Cognome</label>
+                        <input type="text" class="form-control" id="nome" name="nome" value="<%= currentUser.nome %>" required>
+                      </div>
+                      <div class="col-md-6">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" value="<%= currentUser.email %>" required>
+                      </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                      <div class="col-md-6">
+                        <label for="telefono" class="form-label">Telefono</label>
+                        <input type="tel" class="form-control" id="telefono" name="telefono" value="<%= currentUser.telefono || '' %>">
+                      </div>
+                      <div class="col-md-6">
+                        <label for="citta" class="form-label">Città</label>
+                        <input type="text" class="form-control" id="citta" name="citta" value="<%= currentUser.citta || '' %>">
+                      </div>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <div class="row mb-3">
+                      <div class="col-md-6">
+                        <label for="password" class="form-label">Nuova Password</label>
+                        <input type="password" class="form-control" id="password" name="password" placeholder="Lascia vuoto per non modificare">
+                      </div>
+                      <div class="col-md-6">
+                        <label for="password_confirm" class="form-label">Conferma Password</label>
+                        <input type="password" class="form-control" id="password_confirm" name="password_confirm" placeholder="Lascia vuoto per non modificare">
+                      </div>
+                    </div>
+                    
+                    <div class="d-flex gap-2 mt-4">
+                      <button type="submit" class="btn btn-primary">Salva modifiche</button>
+                      <button type="button" class="btn btn-outline-secondary" id="cancelEditBtn">Annulla</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              
+              <div class="card mt-4">
+                <div class="card-header">
+                  <h5 class="mb-0">Preferenze di notifica</h5>
+                </div>
+                <div class="card-body">
+                  <form id="notificationsForm" action="/cliente/profilo/notifications" method="POST">
+                    <div class="form-check form-switch mb-3">
+                      <input class="form-check-input" type="checkbox" id="emailNotifications" name="email_notifications" <%= currentUser.email_notifications ? 'checked' : '' %>>
+                      <label class="form-check-label" for="emailNotifications">Notifiche email</label>
+                    </div>
+                    
+                    <div class="form-check form-switch mb-3">
+                      <input class="form-check-input" type="checkbox" id="smsNotifications" name="sms_notifications" <%= currentUser.sms_notifications ? 'checked' : '' %>>
+                      <label class="form-check-label" for="smsNotifications">Notifiche SMS</label>
+                    </div>
+                    
+                    <div class="form-check form-switch mb-3">
+                      <input class="form-check-input" type="checkbox" id="reminderNotifications" name="reminder_notifications" <%= currentUser.reminder_notifications ? 'checked' : '' %>>
+                      <label class="form-check-label" for="reminderNotifications">Promemoria manutenzione</label>
+                    </div>
+                    
+                    <div class="form-check form-switch mb-3">
+                      <input class="form-check-input" type="checkbox" id="promotionsNotifications" name="promotions_notifications" <%= currentUser.promotions_notifications ? 'checked' : '' %>>
+                      <label class="form-check-label" for="promotionsNotifications">Promozioni e offerte</label>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary mt-2">Salva preferenze</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-lg-4">
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="mb-0">Riepilogo attività</h5>
+                </div>
+                <div class="card-body">
+                  <div class="activity-summary">
+                    <div class="activity-item">
+                      <div class="activity-icon">
+                        <i class="fas fa-car"></i>
+                      </div>
+                      <div class="activity-details">
+                        <h5><%= veicoli.length %></h5>
+                        <p>Veicoli registrati</p>
+                      </div>
+                    </div>
+                    
+                    <div class="activity-item">
+                      <div class="activity-icon">
+                        <i class="fas fa-tools"></i>
+                      </div>
+                      <div class="activity-details">
+                        <h5><%= riparazioni.length %></h5>
+                        <p>Riparazioni totali</p>
+                      </div>
+                    </div>
+                    
+                    <div class="activity-item">
+                      <div class="activity-icon active">
+                        <i class="fas fa-sync-alt"></i>
+                      </div>
+                      <div class="activity-details">
+                        <h5><%= riparazioniAttive.length %></h5>
+                        <p>Riparazioni attive</p>
+                      </div>
+                    </div>
+                    
+                    <div class="activity-item">
+                      <div class="activity-icon">
+                        <i class="fas fa-star"></i>
+                      </div>
+                      <div class="activity-details">
+                        <h5><%= recensioni.length %></h5>
+                        <p>Recensioni lasciate</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="card mt-4">
+                <div class="card-header">
+                  <h5 class="mb-0">Privacy e sicurezza</h5>
+                </div>
+                <div class="card-body">
+                  <div class="list-group">
+                    <a href="/cliente/privacy" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                      Impostazioni privacy
+                      <i class="fas fa-chevron-right"></i>
+                    </a>
+                    <a href="/cliente/dati" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                      Gestione dati personali
+                      <i class="fas fa-chevron-right"></i>
+                    </a>
+                    <a href="/cliente/security" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                      Sicurezza account
+                      <i class="fas fa-chevron-right"></i>
+                    </a>
+                    <button class="list-group-item list-group-item-action text-danger" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+                      Elimina account
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Veicoli Tab -->
+        <div class="tab-pane fade" id="vehicles-tab-pane" role="tabpanel" aria-labelledby="vehicles-tab" tabindex="0">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3>I miei veicoli</h3>
+            <a href="/cliente/veicoli/aggiungi" class="btn btn-primary">
+              <i class="fas fa-plus me-2"></i>Aggiungi veicolo
+            </a>
+          </div>
+          
+          <% if (veicoli && veicoli.length > 0) { %>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
+              <% veicoli.forEach(veicolo => { %>
+                <div class="col">
+                  <div class="vehicle-card">
+                    <div class="vehicle-card-header">
+                      <div class="vehicle-icon">
+                        <% if (veicolo.tipo_veicolo === 'auto') { %>
+                          <i class="fas fa-car"></i>
+                        <% } else if (veicolo.tipo_veicolo === 'moto') { %>
+                          <i class="fas fa-motorcycle"></i>
+                        <% } else if (veicolo.tipo_veicolo === 'furgone') { %>
+                          <i class="fas fa-truck"></i>
+                        <% } else { %>
+                          <i class="fas fa-car-side"></i>
+                        <% } %>
+                      </div>
+                      <span class="vehicle-type"><%= veicolo.tipo_veicolo.charAt(0).toUpperCase() + veicolo.tipo_veicolo.slice(1) %></span>
+                    </div>
+                    
+                    <div class="vehicle-card-body">
+                      <h4><%= veicolo.marca %> <%= veicolo.modello %></h4>
+                      <div class="vehicle-specs">
+                        <div class="spec-item">
+                          <i class="fas fa-calendar-alt"></i> <%= veicolo.anno %>
+                        </div>
+                        <div class="spec-item">
+                          <i class="fas fa-tachometer-alt"></i> <%= veicolo.km.toLocaleString('it-IT') %> km
+                        </div>
+                        <div class="spec-item">
+                          <i class="fas fa-id-card"></i> <%= veicolo.targa %>
+                        </div>
+                      </div>
+                      
+                      <% 
+                      let statusClass = 'success';
+                      let statusText = 'Ottimo stato';
+                      
+                      if (veicolo.km > 80000 || 
+                          (veicolo.data_ultima_manutenzione && 
+                           ((new Date() - new Date(veicolo.data_ultima_manutenzione)) / (1000 * 60 * 60 * 24 * 30)) > 12)) {
+                        statusClass = 'danger';
+                        statusText = 'Manutenzione necessaria';
+                      } else if (veicolo.km > 50000 || 
+                                (veicolo.data_ultima_manutenzione && 
+                                 ((new Date() - new Date(veicolo.data_ultima_manutenzione)) / (1000 * 60 * 60 * 24 * 30)) > 8)) {
+                        statusClass = 'warning';
+                        statusText = 'Controllo consigliato';
+                      }
+                      %>
+                      
+                      <div class="vehicle-status text-<%= statusClass %>">
+                        <i class="fas fa-circle me-1"></i> <%= statusText %>
+                      </div>
+                      
+                      <% if (veicolo.data_ultima_manutenzione) { %>
+                        <div class="vehicle-maintenance">
+                          <small>Ultima manutenzione: <%= new Date(veicolo.data_ultima_manutenzione).toLocaleDateString('it-IT') %></small>
+                        </div>
+                      <% } %>
+                    </div>
+                    
+                    <div class="vehicle-card-footer">
+                      <a href="/cliente/veicoli/<%= veicolo.id %>" class="btn btn-sm btn-primary">
+                        <i class="fas fa-search me-1"></i> Dettagli
+                      </a>
+                      <a href="/cliente/veicoli/<%= veicolo.id %>/riparazioni" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-tools me-1"></i> Riparazioni
+                      </a>
+                      <a href="/cliente/veicoli/<%= veicolo.id %>/modifica" class="btn btn-sm btn-outline-secondary">
+                        <i class="fas fa-edit me-1"></i> Modifica
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              <% }); %>
+            </div>
+          <% } else { %>
+            <div class="empty-state">
+              <img src="/media/img/no-vehicles.svg" alt="Nessun veicolo" class="empty-state-img">
+              <h4>Nessun veicolo registrato</h4>
+              <p>Aggiungi i tuoi veicoli per tenere traccia della manutenzione e richiedere riparazioni.</p>
+              <a href="/cliente/veicoli/aggiungi" class="btn btn-primary mt-3">
+                <i class="fas fa-plus me-2"></i>Aggiungi il tuo primo veicolo
+              </a>
+            </div>
+          <% } %>
+        </div>
+        
+        <!-- Riparazioni Tab -->
+        <div class="tab-pane fade" id="repairs-tab-pane" role="tabpanel" aria-labelledby="repairs-tab" tabindex="0">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3>Le mie riparazioni</h3>
+            <a href="/meccanici" class="btn btn-primary">
+              <i class="fas fa-plus me-2"></i>Nuova riparazione
+            </a>
+          </div>
+          
+          <!-- Filtri riparazioni -->
+          <div class="card mb-4">
+            <div class="card-body">
+              <form id="repairsFilterForm" class="row g-3">
+                <div class="col-md-4">
+                  <label for="filterStato" class="form-label">Stato</label>
+                  <select class="form-select" id="filterStato" name="stato">
+                    <option value="">Tutti</option>
+                    <option value="in_attesa">In attesa</option>
+                    <option value="in_lavorazione">In lavorazione</option>
+                    <option value="completata">Completata</option>
+                    <option value="annullata">Annullata</option>
+                  </select>
+                </div>
+                
+                <div class="col-md-4">
+                  <label for="filterVeicolo" class="form-label">Veicolo</label>
+                  <select class="form-select" id="filterVeicolo" name="veicolo_id">
+                    <option value="">Tutti</option>
+                    <% veicoli.forEach(veicolo => { %>
+                      <option value="<%= veicolo.id %>"><%= veicolo.marca %> <%= veicolo.modello %> - <%= veicolo.targa %></option>
+                    <% }); %>
+                  </select>
+                </div>
+                
+                <div class="col-md-4">
+                  <label for="filterData" class="form-label">Periodo</label>
+                  <select class="form-select" id="filterData" name="periodo">
+                    <option value="">Qualsiasi data</option>
+                    <option value="week">Ultima settimana</option>
+                    <option value="month">Ultimo mese</option>
+                    <option value="year">Ultimo anno</option>
+                  </select>
+                </div>
+                
+                <div class="col-12">
+                  <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-filter me-2"></i>Filtra
+                  </button>
+                  <button type="reset" class="btn btn-outline-secondary ms-2">
+                    <i class="fas fa-undo me-2"></i>Reimposta
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+          
+          <% if (riparazioni && riparazioni.length > 0) { %>
+            <div class="table-responsive">
+              <table class="table table-hover repairs-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Data richiesta</th>
+                    <th>Veicolo</th>
+                    <th>Meccanico</th>
+                    <th>Problema</th>
+                    <th>Stato</th>
+                    <th>Costo</th>
+                    <th>Azioni</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% riparazioni.forEach(riparazione => { %>
+                    <tr>
+                      <td>#<%= riparazione.id %></td>
+                      <td><%= new Date(riparazione.data_richiesta).toLocaleDateString('it-IT') %></td>
+                      <td><%= riparazione.marca %> <%= riparazione.modello %></td>
+                      <td><%= riparazione.nome_meccanico %></td>
+                      <td>
+                        <span class="text-truncate d-inline-block" style="max-width: 150px;">
+                          <%= riparazione.descrizione_problema %>
+                        </span>
+                      </td>
+                      <td>
+                        <% if (riparazione.stato === 'in_attesa') { %>
+                          <span class="badge bg-warning">In attesa</span>
+                        <% } else if (riparazione.stato === 'in_lavorazione') { %>
+                          <span class="badge bg-info">In lavorazione</span>
+                        <% } else if (riparazione.stato === 'completata') { %>
+                          <span class="badge bg-success">Completata</span>
+                        <% } else if (riparazione.stato === 'annullata') { %>
+                          <span class="badge bg-danger">Annullata</span>
+                        <% } %>
+                      </td>
+                      <td>
+                        <% if (riparazione.costo) { %>
+                          € <%= riparazione.costo.toFixed(2) %>
+                        <% } else { %>
+                          -
+                        <% } %>
+                      </td>
+                      <td>
+                        <div class="btn-group">
+                          <a href="/riparazioni/<%= riparazione.id %>" class="btn btn-sm btn-primary">
+                            <i class="fas fa-eye"></i>
+                          </a>
+                          <% if (riparazione.stato === 'completata' && !riparazione.valutazione) { %>
+                            <button class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#reviewModal<%= riparazione.id %>">
+                              <i class="fas fa-star"></i>
+                            </button>
+                          <% } %>
+                          <% if (riparazione.stato === 'in_attesa') { %>
+                            <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#cancelModal<%= riparazione.id %>">
+                              <i class="fas fa-times"></i>
+                            </button>
+                          <% } %>
+                        </div>
+                      </td>
+                    </tr>
+                    
+                    <!-- Modal per Recensione -->
+                    <% if (riparazione.stato === 'completata' && !riparazione.valutazione) { %>
+                      <div class="modal fade" id="reviewModal<%= riparazione.id %>" tabindex="-1" aria-labelledby="reviewModalLabel<%= riparazione.id %>" aria-hidden="true">
+                        <div class="modal-dialog">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title" id="reviewModalLabel<%= riparazione.id %>">Lascia una recensione</h5>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <form action="/riparazioni/<%= riparazione.id %>/recensione" method="POST">
+                              <div class="modal-body">
+                                <p>Riparazione #<%= riparazione.id %> - <%= riparazione.marca %> <%= riparazione.modello %></p>
+                                <p>Meccanico: <%= riparazione.nome_meccanico %></p>
+                                
+                                <div class="mb-3">
+                                  <label class="form-label">Valutazione</label>
+                                  <div class="rating-stars">
+                                    <% for (let i = 5; i >= 1; i--) { %>
+                                      <input type="radio" id="star<%= i %>-<%= riparazione.id %>" name="valutazione" value="<%= i %>" <%= i === 5 ? 'checked' : '' %>>
+                                      <label for="star<%= i %>-<%= riparazione.id %>"><i class="fas fa-star"></i></label>
+                                    <% } %>
+                                  </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                  <label for="recensione<%= riparazione.id %>" class="form-label">Recensione</label>
+                                  <textarea class="form-control" id="recensione<%= riparazione.id %>" name="recensione" rows="4" required></textarea>
+                                </div>
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                                <button type="submit" class="btn btn-primary">Invia recensione</button>
+                              </div>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                    <% } %>
+                    
+                    <!-- Modal per Annullamento -->
+                    <% if (riparazione.stato === 'in_attesa') { %>
+                      <div class="modal fade" id="cancelModal<%= riparazione.id %>" tabindex="-1" aria-labelledby="cancelModalLabel<%= riparazione.id %>" aria-hidden="true">
+                        <div class="modal-dialog">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title" id="cancelModalLabel<%= riparazione.id %>">Conferma annullamento</h5>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <form action="/riparazioni/<%= riparazione.id %>/annulla" method="POST">
+                              <div class="modal-body">
+                                <p>Sei sicuro di voler annullare la richiesta di riparazione #<%= riparazione.id %>?</p>
+                                <div class="mb-3">
+                                  <label for="motivo<%= riparazione.id %>" class="form-label">Motivo dell'annullamento (opzionale)</label>
+                                  <textarea class="form-control" id="motivo<%= riparazione.id %>" name="motivo_annullamento" rows="3"></textarea>
+                                </div>
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No, mantieni</button>
+                                <button type="submit" class="btn btn-danger">Sì, annulla</button>
+                              </div>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                    <% } %>
+                  <% }); %>
+                </tbody>
+              </table>
+            </div>
+          <% } else { %>
+            <div class="empty-state">
+              <img src="/media/img/no-repairs.svg" alt="Nessuna riparazione" class="empty-state-img">
+              <h4>Nessuna riparazione trovata</h4>
+              <p>Non hai ancora richiesto nessuna riparazione. Trova un meccanico per iniziare.</p>
+              <a href="/meccanici" class="btn btn-primary mt-3">
+                <i class="fas fa-search me-2"></i>Trova un meccanico
+              </a>
+            </div>
+          <% } %>
+        </div>
+        
+        <!-- Recensioni Tab -->
+        <div class="tab-pane fade" id="reviews-tab-pane" role="tabpanel" aria-labelledby="reviews-tab" tabindex="0">
+          <h3 class="mb-4">Le mie recensioni</h3>
+          
+          <% if (recensioni && recensioni.length > 0) { %>
+            <div class="row g-4">
+              <% recensioni.forEach(recensione => { %>
+                <div class="col-md-6">
+                  <div class="review-card">
+                    <div class="review-header">
+                      <div class="review-mechanic">
+                        <img src="<%= recensione.immagine_meccanico || '/media/img/default_mechanic.png' %>" alt="<%= recensione.nome_meccanico %>">
+                        <div>
+                          <h5><%= recensione.nome_meccanico %></h5>
+                          <p class="text-muted"><%= recensione.specializzazione %></p>
+                        </div>
+                      </div>
+                      <div class="review-date">
+                        <%= new Date(recensione.data_recensione).toLocaleDateString('it-IT') %>
+                      </div>
+                    </div>
+                    
+                    <div class="review-body">
+                      <div class="review-stars">
+                        <% for (let i = 1; i <= 5; i++) { %>
+                          <i class="fas fa-star <%= i <= recensione.valutazione ? 'filled' : '' %>"></i>
+                        <% } %>
+                      </div>
+                      
+                      <div class="review-repair">
+                        <span>Riparazione:</span> <%= recensione.marca %> <%= recensione.modello %> - <%= recensione.descrizione_problema.substring(0, 50) %>...
+                      </div>
+                      
+                      <div class="review-text">
+                        <p><%= recensione.recensione %></p>
+                      </div>
+                    </div>
+                    
+                    <div class="review-footer">
+                      <div class="review-cost">
+                        <span>Costo:</span> € <%= recensione.costo.toFixed(2) %>
+                      </div>
+                      <div class="review-actions">
+                        <a href="/riparazioni/<%= recensione.riparazione_id %>" class="btn btn-sm btn-primary">
+                          <i class="fas fa-eye me-1"></i> Dettagli
+                        </a>
+                        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editReviewModal<%= recensione.id %>">
+                          <i class="fas fa-edit me-1"></i> Modifica
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Modal per modifica recensione -->
+                <div class="modal fade" id="editReviewModal<%= recensione.id %>" tabindex="-1" aria-labelledby="editReviewModalLabel<%= recensione.id %>" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="editReviewModalLabel<%= recensione.id %>">Modifica recensione</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <form action="/riparazioni/<%= recensione.riparazione_id %>/recensione/modifica" method="POST">
+                        <div class="modal-body">
+                          <p>Meccanico: <%= recensione.nome_meccanico %></p>
+                          <p>Riparazione: <%= recensione.marca %> <%= recensione.modello %></p>
+                          
+                          <div class="mb-3">
+                            <label class="form-label">Valutazione</label>
+                            <div class="rating-stars">
+                              <% for (let i = 5; i >= 1; i--) { %>
+                                <input type="radio" id="editStar<%= i %>-<%= recensione.id %>" name="valutazione" value="<%= i %>" <%= i === recensione.valutazione ? 'checked' : '' %>>
+                                <label for="editStar<%= i %>-<%= recensione.id %>"><i class="fas fa-star"></i></label>
+                              <% } %>
+                            </div>
+                          </div>
+                          
+                          <div class="mb-3">
+                            <label for="editRecensione<%= recensione.id %>" class="form-label">Recensione</label>
+                            <textarea class="form-control" id="editRecensione<%= recensione.id %>" name="recensione" rows="4" required><%= recensione.recensione %></textarea>
+                          </div>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                          <button type="submit" class="btn btn-primary">Salva modifiche</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              <% }); %>
+            </div>
+          <% } else { %>
+            <div class="empty-state">
+              <img src="/media/img/no-reviews.svg" alt="Nessuna recensione" class="empty-state-img">
+              <h4>Nessuna recensione</h4>
+              <p>Non hai ancora lasciato recensioni per le tue riparazioni completate.</p>
+              <a href="/cliente/riparazioni" class="btn btn-primary mt-3">
+                <i class="fas fa-tools me-2"></i>Visualizza le tue riparazioni
+              </a>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Modal elimina account -->
+    <div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="deleteAccountModalLabel">Conferma eliminazione account</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="alert alert-danger">
+              <i class="fas fa-exclamation-triangle me-2"></i>
+              <strong>Attenzione!</strong> Questa azione è irreversibile.
+            </div>
+            <p>Sei sicuro di voler eliminare il tuo account? Questa operazione:</p>
+            <ul>
+              <li>Cancellerà tutti i tuoi dati personali</li>
+              <li>Rimuoverà i tuoi veicoli registrati</li>
+              <li>Manterrà solo lo storico delle riparazioni in forma anonima</li>
+            </ul>
+            <p>Per confermare, inserisci la tua password:</p>
+            <form id="deleteAccountForm" action="/cliente/account/delete" method="POST">
+              <div class="mb-3">
+                <label for="confirmPassword" class="form-label">Password</label>
+                <input type="password" class="form-control" id="confirmPassword" name="password" required>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+            <button type="submit" form="deleteAccountForm" class="btn btn-danger">Elimina il mio account</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  
+  <%- include('./common/footer') %>
+  <%- include('./common/modals') %>
+<%- include('./common/scripts') %>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/profile.js"></script>
+</body>
+</html>

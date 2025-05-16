@@ -1,4 +1,3 @@
-
 :root {
     --primary-color: #ffffff;
     --secondary-color: #1a1a1a;
@@ -12,6 +11,12 @@
     --radius-lg: 1rem;
     --radius-full: 9999px;
     --transition: all 0.3s ease;
+    /* Definizioni mancanti per le ombre */
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
 }
 
 
@@ -26,6 +31,10 @@ body {
     line-height: 1.6;
     color: var(--secondary-color);
     background-color: var(--gray-light);
+}
+
+main{
+    padding-top: 120px;
 }
 
 a {
@@ -56,11 +65,40 @@ ul {
     padding: 0.5rem 1.5rem;
 }
 
-.navbar-brand {
-    font-weight: 700;
-    font-size: 1.5rem;
-    color: var(--secondary-color);
+/* Stile per centralizzare il menu di navigazione */
+.navbar-nav {
+    display: flex;
+    justify-content: center;
+    flex: 1;
+    margin: 0 auto;
 }
+
+/* Assicura che la navbar sia posizionata correttamente */
+.navbar {
+    width: 100%;
+}
+
+.navbar-brand {
+    margin-right: 2rem;
+}
+
+/* Imposta una larghezza massima per il menu così che non si estenda troppo */
+#navbarNav {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Assicura che il pulsante Accedi sia sempre allineato a destra */
+.ms-lg-3 {
+    margin-left: auto !important;
+}
+
+/* Distanza uniforme tra gli elementi di navigazione */
+.nav-item {
+    margin: 0 0.5rem;
+}
+
+/* Stile per il link attivo */
 
 .logo-img {
     height: 50px;
@@ -69,16 +107,7 @@ ul {
 }
 
 .navbar-nav .nav-link {
-    color: var(--accent-blue);
-    font-weight: 500;
-    position: relative;
-    padding: 0.5rem 1rem;
-    margin: 0 0.25rem;
-}
-
-.navbar-nav .nav-link:hover,
-.navbar-nav .nav-link.active {
-    color: var(--accent-orange);
+    position: relative; /* Aggiunto per il posizionamento corretto dello pseudo-elemento */
 }
 
 .navbar-nav .nav-link::before {
@@ -120,7 +149,51 @@ ul {
     transform: translateY(-2px);
     box-shadow: var(--shadow-md);
 }
+/* Stili per la pagina Contatti */
 
+.map-container {
+    width: 100%;
+    overflow: hidden;
+}
+
+.accordion-button:not(.collapsed) {
+    background-color: rgba(37, 99, 235, 0.05);
+    color: var(--accent-blue);
+}
+
+.accordion-button:focus {
+    box-shadow: 0 0 0 0.25rem rgba(37, 99, 235, 0.25);
+}
+
+.accordion-item {
+    border-color: var(--gray-medium);
+}
+
+/* Icone con cerchio nella pagina contatti */
+.contact-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    background-color: rgba(37, 99, 235, 0.1);
+    color: var(--accent-blue);
+    border-radius: 50%;
+    margin-bottom: 1rem;
+}
+
+.contact-card {
+    padding: 2rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-md);
+    height: 100%;
+    transition: var(--transition);
+}
+
+.contact-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
 /* Offcanvas menu per mobile */
 .offcanvas {
     max-width: 300px;
@@ -141,13 +214,13 @@ ul {
 }
 
 .section1 {
-    padding-top: 120px;
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 90vh;
+    min-height: 70vh;
     background: var(--gray-light);
 }
+
 
 .banner {
     background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('../media/img/bg.jpg') center center/cover;
@@ -670,12 +743,12 @@ ul {
 }
 
 @media (max-width: 992px) {
-    .navbar {
+    .header_nav {
         margin: 0;
         border-radius: 0;
     }
     
-    .section1 {
+    main {
         padding-top: 100px;
     }
     

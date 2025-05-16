@@ -5,9 +5,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Controlla se l'utente è autenticato
     checkAuthStatus();
     
-    // Inizializza gli event listeners
-    initLoginRegisterEvents();
-    
     // Inizializza la ricerca
     initSearch();
     
@@ -26,6 +23,29 @@ document.addEventListener('DOMContentLoaded', () => {
     if (yearElement) {
         yearElement.textContent = new Date().getFullYear();
     }
+    
+    // Event listener per il link di registrazione
+    const registerLink = document.getElementById('registerLink');
+    if (registerLink) {
+        registerLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            
+            // Chiudi il modal di login
+            const loginModal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
+            if (loginModal) {
+                loginModal.hide();
+            }
+            
+            // Apri il modal di registrazione
+            setTimeout(() => {
+                const registerModal = new bootstrap.Modal(document.getElementById('registerModal'));
+                registerModal.show();
+            }, 500);
+        });
+    }
+    
+    // Gestione delle validazioni client-side dei form di registrazione
+    setupFormValidations();
 });
 
 // Funzione per controllare lo stato dell'autenticazione
@@ -98,233 +118,89 @@ function updateUIForGuestUser() {
     }
 }
 
-// Funzione per il logout
-async function logout() {
-    try {
-        const response = await fetch('/auth/logout', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-            // Ricarica la pagina per aggiornare l'interfaccia
-            window.location.href = '/';
-        } else {
-            alert('Errore durante il logout. Riprova.');
-        }
-    } catch (error) {
-        console.error('Errore durante il logout:', error);
-        alert('Errore durante il logout. Riprova.');
-    }
-}
-
-// Inizializza gli eventi per login e registrazione
-function initLoginRegisterEvents() {
-    // Event listener per il form di login per cliente
-    const loginForm = document.getElementById('loginForm');
-    if (loginForm) {
-        loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            
-            try {
-                const response = await fetch('/auth/login/cliente', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ email, password })
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    // Chiudi il modal
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
-                    if (modal) {
-                        modal.hide();
-                    }
-                    
-                    // Reindirizza alla dashboard
-                    window.location.href = '/cliente/dashboard';
-                } else {
-                    // Mostra errore
-                    alert(data.message || 'Errore durante il login');
-                }
-            } catch (error) {
-                console.error('Errore durante il login:', error);
-                alert('Errore durante il login. Riprova.');
-            }
-        });
-    }
-    
-    // Event listener per il form di login per meccanico
-    const loginMeccanicoForm = document.getElementById('loginMeccanicoForm');
-    if (loginMeccanicoForm) {
-        loginMeccanicoForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const email = document.getElementById('emailMeccanico').value;
-            const password = document.getElementById('passwordMeccanico').value;
-            
-            try {
-                const response = await fetch('/auth/login/meccanico', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ email, password })
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    // Chiudi il modal
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
-                    if (modal) {
-                        modal.hide();
-                    }
-                    
-                    // Reindirizza alla dashboard
-                    window.location.href = '/meccanico/dashboard';
-                } else {
-                    // Mostra errore
-                    alert(data.message || 'Errore durante il login');
-                }
-            } catch (error) {
-                console.error('Errore durante il login:', error);
-                alert('Errore durante il login. Riprova.');
-            }
-        });
-    }
-    
-    // Event listener per il link di registrazione
-    const registerLink = document.getElementById('registerLink');
-    if (registerLink) {
-        registerLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            
-            // Chiudi il modal di login
-            const loginModal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
-            if (loginModal) {
-                loginModal.hide();
-            }
-            
-            // Apri il modal di registrazione
-            const registerModal = new bootstrap.Modal(document.getElementById('registerModal'));
-            registerModal.show();
-        });
-    }
-    
-    // Event listener per il form di registrazione
+// Configurazione delle validazioni client-side dei form
+function setupFormValidations() {
+    // Validazione client-side per il form di registrazione cliente
     const registerForm = document.getElementById('registerForm');
     if (registerForm) {
-        registerForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
+        registerForm.addEventListener('submit', function(e) {
+            const password = document.getElementById('regPassword').value;
+            const confirmPassword = document.getElementById('regConfirmPassword').value;
             
-            // Ottieni i dati del form
-            const formData = {
-                nome: document.getElementById('regName').value.split(' ')[0],
-                cognome: document.getElementById('regName').value.split(' ').slice(1).join(' '),
-                email: document.getElementById('regEmail').value,
-                password: document.getElementById('regPassword').value,
-                conferma_password: document.getElementById('regConfirmPassword').value,
-                telefono: document.getElementById('regTelefono')?.value || null,
-                citta: document.getElementById('regCitta')?.value || null
-            };
+            if (password !== confirmPassword) {
+                e.preventDefault();
+                alert('Le password non coincidono');
+                return false;
+            }
             
-            try {
-                const response = await fetch('/auth/register/cliente', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(formData)
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    // Chiudi il modal
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('registerModal'));
-                    if (modal) {
-                        modal.hide();
-                    }
-                    
-                    // Reindirizza alla dashboard
-                    window.location.href = '/cliente/dashboard';
-                } else {
-                    // Mostra errore
-                    const errorMessage = data.errors 
-                        ? data.errors.map(err => err.msg).join('\n') 
-                        : (data.message || 'Errore durante la registrazione');
-                    
-                    alert(errorMessage);
-                }
-            } catch (error) {
-                console.error('Errore durante la registrazione:', error);
-                alert('Errore durante la registrazione. Riprova.');
+            if (password.length < 6) {
+                e.preventDefault();
+                alert('La password deve essere di almeno 6 caratteri');
+                return false;
+            }
+            
+            const termini = document.getElementById('regTermini').checked;
+            if (!termini) {
+                e.preventDefault();
+                alert('Devi accettare i termini e condizioni');
+                return false;
             }
         });
     }
     
-    // Event listener per il form di registrazione meccanico
+    // Validazione client-side per il form di registrazione meccanico
     const registerMeccanicoForm = document.getElementById('registerMeccanicoForm');
     if (registerMeccanicoForm) {
-        registerMeccanicoForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
+        registerMeccanicoForm.addEventListener('submit', function(e) {
+            const password = document.getElementById('regMecPassword').value;
+            const confirmPassword = document.getElementById('regMecConfirmPassword').value;
             
-            // Ottieni i dati del form
-            const formData = {
-                nome: document.getElementById('regMecName').value.split(' ')[0],
-                cognome: document.getElementById('regMecName').value.split(' ').slice(1).join(' '),
-                email: document.getElementById('regMecEmail').value,
-                password: document.getElementById('regMecPassword').value,
-                conferma_password: document.getElementById('regMecConfirmPassword').value,
-                specializzazione: document.getElementById('regMecSpecializzazione').value,
-                nome_officina: document.getElementById('regMecOfficina').value || null,
-                telefono: document.getElementById('regMecTelefono').value,
-                citta: document.getElementById('regMecCitta').value,
-                descrizione: document.getElementById('regMecDescrizione')?.value || null
-            };
+            if (password !== confirmPassword) {
+                e.preventDefault();
+                alert('Le password non coincidono');
+                return false;
+            }
             
-            try {
-                const response = await fetch('/auth/register/meccanico', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(formData)
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    // Chiudi il modal
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('registerMeccanicoModal'));
-                    if (modal) {
-                        modal.hide();
-                    }
-                    
-                    // Reindirizza alla dashboard
-                    window.location.href = '/meccanico/dashboard';
-                } else {
-                    // Mostra errore
-                    const errorMessage = data.errors 
-                        ? data.errors.map(err => err.msg).join('\n') 
-                        : (data.message || 'Errore durante la registrazione');
-                    
-                    alert(errorMessage);
-                }
-            } catch (error) {
-                console.error('Errore durante la registrazione:', error);
-                alert('Errore durante la registrazione. Riprova.');
+            if (password.length < 6) {
+                e.preventDefault();
+                alert('La password deve essere di almeno 6 caratteri');
+                return false;
+            }
+            
+            const termini = document.getElementById('regMecTermini').checked;
+            if (!termini) {
+                e.preventDefault();
+                alert('Devi accettare i termini e condizioni');
+                return false;
+            }
+            
+            // Validazione campi specifici per meccanico
+            const officina = document.getElementById('regMecOfficina').value.trim();
+            if (!officina) {
+                e.preventDefault();
+                alert('Il nome dell\'officina è obbligatorio');
+                return false;
+            }
+            
+            const specializzazione = document.getElementById('regMecSpecializzazione').value;
+            if (!specializzazione) {
+                e.preventDefault();
+                alert('La specializzazione è obbligatoria');
+                return false;
+            }
+            
+            const telefono = document.getElementById('regMecTelefono').value.trim();
+            if (!telefono) {
+                e.preventDefault();
+                alert('Il telefono è obbligatorio');
+                return false;
+            }
+            
+            const citta = document.getElementById('regMecCitta').value.trim();
+            if (!citta) {
+                e.preventDefault();
+                alert('La città è obbligatoria');
+                return false;
             }
         });
     }
@@ -340,7 +216,7 @@ function initSearch() {
             const searchTerm = searchInput.value.trim();
             if (searchTerm) {
                 // Reindirizza alla pagina di ricerca con il termine di ricerca
-                window.location.href = `/meccanici.html?q=${encodeURIComponent(searchTerm)}`;
+                window.location.href = `/search?q=${encodeURIComponent(searchTerm)}`;
             }
         });
         
@@ -362,78 +238,27 @@ async function loadFeaturedMechanics() {
     try {
         // Ottieni i migliori meccanici
         const response = await fetch('/api/meccanici?limit=5&ordina=valutazione');
-        const meccanici = await response.json();
+        const data = await response.json();
         
-        if (meccanici.length === 0) {
+        // Verifica se i dati sono presenti e nella struttura corretta
+        if (!data.data || !data.data.meccanici || data.data.meccanici.length === 0) {
             sliderContainer.innerHTML = '<p class="text-center">Nessun meccanico disponibile al momento.</p>';
             return;
         }
         
-        // Usa meccanici di esempio per ora
-        const meccaniciEsempio = [
-            {
-                id: 1,
-                nome: "Mario",
-                cognome: "Rossi",
-                nome_officina: "Officina Rossi",
-                specializzazione: "Meccanica Generale",
-                valutazione: 4.8,
-                numero_recensioni: 24,
-                avatar: "media/img/default_mechanic.png"
-            },
-            {
-                id: 2,
-                nome: "Giuseppe",
-                cognome: "Verdi",
-                nome_officina: "Autofficina Verdi",
-                specializzazione: "Elettronica",
-                valutazione: 4.5,
-                numero_recensioni: 18,
-                avatar: "media/img/default_mechanic.png"
-            },
-            {
-                id: 3,
-                nome: "Luigi",
-                cognome: "Bianchi",
-                nome_officina: "Gomme & Tagliandi",
-                specializzazione: "Cambio Gomme",
-                valutazione: 4.2,
-                numero_recensioni: 15,
-                avatar: "media/img/default_mechanic.png"
-            },
-            {
-                id: 4,
-                nome: "Antonio",
-                cognome: "Ferrari",
-                nome_officina: "Carrozzeria Ferrari",
-                specializzazione: "Carrozzeria",
-                valutazione: 4.9,
-                numero_recensioni: 32,
-                avatar: "media/img/default_mechanic.png"
-            },
-            {
-                id: 5,
-                nome: "Francesco",
-                cognome: "Esposito",
-                nome_officina: "Revisioni Express",
-                specializzazione: "Revisioni",
-                valutazione: 4.4,
-                numero_recensioni: 21,
-                avatar: "media/img/default_mechanic.png"
-            }
-        ];
+        const meccanici = data.data.meccanici;
         
         // Crea le card dei meccanici
-        const html = meccaniciEsempio.map(mec => `
+        const html = meccanici.map(mec => `
             <div class="mechanic-card" data-id="${mec.id}">
-                <img src="${mec.avatar}" alt="${mec.nome} ${mec.cognome}">
+                <img src="${mec.avatar || '/media/img/default_mechanic.png'}" alt="${mec.nome} ${mec.cognome}">
                 <h3>${mec.nome_officina || `${mec.nome} ${mec.cognome}`}</h3>
                 <p>${mec.specializzazione}</p>
                 <div class="rating">
-                    ${'★'.repeat(Math.floor(mec.valutazione))}${'☆'.repeat(5 - Math.floor(mec.valutazione))}
-                    <span class="rating-text">${mec.valutazione.toFixed(1)}</span>
+                    ${'★'.repeat(Math.floor(mec.valutazione || 0))}${'☆'.repeat(5 - Math.floor(mec.valutazione || 0))}
+                    <span class="rating-text">${(mec.valutazione || 0).toFixed(1)}</span>
                 </div>
-                <a href="meccanico-profilo.html?id=${mec.id}" class="btn-contact">Visualizza profilo</a>
+                <a href="/meccanici/${mec.id}" class="btn-contact">Visualizza profilo</a>
             </div>
         `).join('');
         
@@ -450,38 +275,96 @@ async function loadFeaturedReviews() {
     
     if (!reviewsContainer) return;
     
-    // Per questo esempio, generiamo recensioni fittizie
-    // In un'implementazione reale, dovresti caricarle dal server
-    const recensioniEsempio = [
-        {
-            id: 1,
-            nome_cliente: 'Marco R.',
-            testo: 'Servizio eccellente! Il meccanico ha risolto il problema alla mia auto in tempi record.',
-            valutazione: 5
-        },
-        {
-            id: 2,
-            nome_cliente: 'Laura B.',
-            testo: 'Molto professionale e prezzi onesti. Consigliato!',
-            valutazione: 4
-        },
-        {
-            id: 3,
-            nome_cliente: 'Giovanni M.',
-            testo: 'Ho trovato facilmente un meccanico specializzato per la mia auto. Ottimo servizio.',
-            valutazione: 5
+    try {
+        // Ottieni le recensioni dal server
+        const response = await fetch('/api/recensioni/featured');
+        const data = await response.json();
+        
+        if (!data.success || !data.data || data.data.length === 0) {
+            // Se non ci sono dati, usa recensioni di esempio
+            const recensioniEsempio = [
+                {
+                    id: 1,
+                    nome_cliente: 'Marco R.',
+                    testo: 'Servizio eccellente! Il meccanico ha risolto il problema alla mia auto in tempi record.',
+                    valutazione: 5
+                },
+                {
+                    id: 2,
+                    nome_cliente: 'Laura B.',
+                    testo: 'Molto professionale e prezzi onesti. Consigliato!',
+                    valutazione: 4
+                },
+                {
+                    id: 3,
+                    nome_cliente: 'Giovanni M.',
+                    testo: 'Ho trovato facilmente un meccanico specializzato per la mia auto. Ottimo servizio.',
+                    valutazione: 5
+                }
+            ];
+            
+            const html = recensioniEsempio.map(recensione => `
+                <div class="review-card">
+                    <div class="review-rating">
+                        ${'★'.repeat(recensione.valutazione)}${'☆'.repeat(5 - recensione.valutazione)}
+                    </div>
+                    <p class="review-text">"${recensione.testo}"</p>
+                    <small class="review-author">- ${recensione.nome_cliente}</small>
+                </div>
+            `).join('');
+            
+            reviewsContainer.innerHTML = html;
+            return;
         }
-    ];
-    
-    const html = recensioniEsempio.map(recensione => `
-        <div class="review-card">
-            <div class="review-rating">
-                ${'★'.repeat(recensione.valutazione)}${'☆'.repeat(5 - recensione.valutazione)}
+        
+        // Usa le recensioni dal server
+        const recensioni = data.data;
+        const html = recensioni.map(recensione => `
+            <div class="review-card">
+                <div class="review-rating">
+                    ${'★'.repeat(Math.floor(recensione.valutazione || 0))}${'☆'.repeat(5 - Math.floor(recensione.valutazione || 0))}
+                </div>
+                <p class="review-text">"${recensione.commento || recensione.testo}"</p>
+                <small class="review-author">- ${recensione.nome_cliente}</small>
             </div>
-            <p class="review-text">"${recensione.testo}"</p>
-            <small class="review-author">- ${recensione.nome_cliente}</small>
-        </div>
-    `).join('');
-    
-    reviewsContainer.innerHTML = html;
+        `).join('');
+        
+        reviewsContainer.innerHTML = html;
+    } catch (error) {
+        console.error('Errore durante il caricamento delle recensioni:', error);
+        
+        // In caso di errore, mostra recensioni di esempio
+        const recensioniEsempio = [
+            {
+                id: 1,
+                nome_cliente: 'Marco R.',
+                testo: 'Servizio eccellente! Il meccanico ha risolto il problema alla mia auto in tempi record.',
+                valutazione: 5
+            },
+            {
+                id: 2,
+                nome_cliente: 'Laura B.',
+                testo: 'Molto professionale e prezzi onesti. Consigliato!',
+                valutazione: 4
+            },
+            {
+                id: 3,
+                nome_cliente: 'Giovanni M.',
+                testo: 'Ho trovato facilmente un meccanico specializzato per la mia auto. Ottimo servizio.',
+                valutazione: 5
+            }
+        ];
+        
+        const html = recensioniEsempio.map(recensione => `
+            <div class="review-card">
+                <div class="review-rating">
+                    ${'★'.repeat(recensione.valutazione)}${'☆'.repeat(5 - recensione.valutazione)}
+                </div>
+                <p class="review-text">"${recensione.testo}"</p>
+                <small class="review-author">- ${recensione.nome_cliente}</small>
+            </div>
+        `).join('');
+        
+        reviewsContainer.innerHTML = html;
+    }
 }

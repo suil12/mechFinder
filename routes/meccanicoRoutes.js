@@ -2,174 +2,207 @@
 
 const express = require('express');
 const router = express.Router();
+const { body, validationResult } = require('express-validator');
+const bcrypt = require('bcrypt');
 const path = require('path');
-const fileUpload = require('express-fileupload');
-const { Meccanico } = require('../public/js/utente');
+const { Meccanico } = require('../models/utente');
 const { Riparazione } = require('../models/riparazione');
-const db = require('../database/db');
 
 // Middleware per verificare se l'utente è autenticato come meccanico
 const isMeccanico = (req, res, next) => {
     if (req.isAuthenticated() && req.user.tipo === 'meccanico') {
         return next();
     }
-    res.redirect('/auth/login');
+    req.flash('error', 'Devi accedere come meccanico per visualizzare questa pagina.');
+    res.redirect('/');
 };
 
+// Pagina dettaglio meccanico pubblica
+router.get('/profilo/:id', async (req, res) => {
+    try {
+        const meccanico = await Meccanico.findById(req.params.id);
+        
+        if (!meccanico) {
+            req.flash('error', 'Meccanico non trovato.');
+            return res.redirect('/meccanici');
+        }
+        
+        res.render('meccanico/profilo-pubblico', {
+            title: `${meccanico.nome} - Profilo Meccanico - MechFinder`,
+            active: 'meccanici',
+            meccanico: meccanico
+        });
+    } catch (err) {
+        console.error(err);
+        req.flash('error', 'Si è verificato un errore nel caricamento del profilo meccanico.');
+        res.redirect('/meccanici');
+    }
+});
+
 // Dashboard meccanico
-router.get('/dashboard', isMeccanico, (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/meccanico/dashboard.html'));
+router.get('/dashboard', isMeccanico, async (req, res) => {
+    try {
+        // Ottenere le riparazioni del meccanico
+        const riparazioni = await Riparazione.findByMeccanicoId(req.user.id);
+        
+        res.render('meccanico/dashboard', {
+            title: 'Dashboard Meccanico - MechFinder',
+            active: 'dashboard',
+            riparazioni: riparazioni
+        });
+    } catch (err) {
+        console.error(err);
+        req.flash('error', 'Si è verificato un errore nel caricamento della dashboard.');
+        res.redirect('/');
+    }
 });
 
-// Profilo meccanico
-router.get('/profilo', isMeccanico, (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/meccanico/profilo.html'));
+// Profilo meccanico (area personale)
+router.get('/profilo', isMeccanico, async (req, res) => {
+    try {
+        // Fetch the complete mechanic data from the database
+        const meccanico = await Meccanico.findById(req.user.id);
+        
+        res.render('meccanico/profilo', {
+            title: 'Il Mio Profilo - MechFinder',
+            active: 'profilo',
+            currentUser: meccanico // Add the mechanic data to the template
+        });
+    } catch (err) {
+        console.error('Errore nel caricamento del profilo meccanico:', err);
+        req.flash('error', 'Si è verificato un errore nel caricamento del profilo.');
+        res.redirect('/');
+    }
 });
 
-// Riparazioni meccanico
-router.get('/riparazioni', isMeccanico, (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/meccanico/riparazioni.html'));
+// Aggiornamento profilo meccanico
+router.post('/profilo', isMeccanico, [
+    body('nome').trim().notEmpty().withMessage('Il nome è obbligatorio'),
+    body('email').isEmail().withMessage('Email non valida')
+        .custom(async (email, { req }) => {
+            const meccanico = await Meccanico.findByEmail(email);
+            if (meccanico && meccanico.id !== req.user.id) {
+                throw new Error('Email già registrata');
+            }
+            return true;
+        }),
+    body('officina').trim().notEmpty().withMessage('Il nome dell\'officina è obbligatorio'),
+    body('specializzazione').trim().notEmpty().withMessage('La specializzazione è obbligatoria'),
+    body('telefono').trim().notEmpty().withMessage('Il telefono è obbligatorio'),
+    body('citta').trim().notEmpty().withMessage('La città è obbligatoria')
+], async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.render('meccanico/profilo', {
+            title: 'Il Mio Profilo - MechFinder',
+            active: 'profilo',
+            errors: errors.array()
+        });
+    }
+
+    try {
+        const meccanico = await Meccanico.findById(req.user.id);
+        meccanico.nome = req.body.nome;
+        meccanico.email = req.body.email;
+        meccanico.officina = req.body.officina;
+        meccanico.specializzazione = req.body.specializzazione;
+        meccanico.telefono = req.body.telefono;
+        meccanico.citta = req.body.citta;
+        meccanico.descrizione = req.body.descrizione || '';
+
+        // Gestione upload immagine profilo
+        if (req.files && req.files.profileImage) {
+            const profileImage = req.files.profileImage;
+            const fileName = `meccanico_${meccanico.id}_${Date.now()}${path.extname(profileImage.name)}`;
+            const uploadPath = path.join(__dirname, '../public/media/imgprova', fileName);
+            
+            await profileImage.mv(uploadPath);
+            meccanico.immagine = `/media/imgprova/${fileName}`;
+        }
+
+        // Aggiornamento password se fornita
+        if (req.body.password && req.body.password.length >= 6) {
+            meccanico.password = await bcrypt.hash(req.body.password, 10);
+        }
+
+        await meccanico.update();
+        req.flash('success', 'Profilo aggiornato con successo.');
+        res.redirect('/meccanico/profilo');
+    } catch (err) {
+        console.error(err);
+        req.flash('error', 'Si è verificato un errore durante l\'aggiornamento del profilo.');
+        res.redirect('/meccanico/profilo');
+    }
+});
+
+// Riparazioni gestite
+router.get('/riparazioni', isMeccanico, async (req, res) => {
+    try {
+        const riparazioni = await Riparazione.findByMeccanicoId(req.user.id);
+        
+        res.render('meccanico/riparazioni', {
+            title: 'Riparazioni Gestite - MechFinder',
+            active: 'riparazioni',
+            riparazioni: riparazioni
+        });
+    } catch (err) {
+        console.error(err);
+        req.flash('error', 'Si è verificato un errore nel caricamento delle riparazioni.');
+        res.redirect('/meccanico/dashboard');
+    }
 });
 
 // Dettaglio riparazione
 router.get('/riparazioni/:id', isMeccanico, async (req, res) => {
     try {
-        const riparazione = await Riparazione.getDettaglio(req.params.id);
+        const riparazione = await Riparazione.findById(req.params.id);
         
-        if (!riparazione || riparazione.id_meccanico !== req.user.id) {
+        if (!riparazione || riparazione.meccanico_id !== req.user.id) {
+            req.flash('error', 'Riparazione non trovata o non autorizzata.');
             return res.redirect('/meccanico/riparazioni');
         }
         
-        res.sendFile(path.join(__dirname, '../public/meccanico/dettaglio-riparazione.html'));
-    } catch (error) {
-        console.error('Errore nel caricamento della pagina di dettaglio:', error);
+        res.render('meccanico/dettaglio-riparazione', {
+            title: 'Dettaglio Riparazione - MechFinder',
+            active: 'riparazioni',
+            riparazione: riparazione
+        });
+    } catch (err) {
+        console.error(err);
+        req.flash('error', 'Si è verificato un errore nel caricamento del dettaglio riparazione.');
         res.redirect('/meccanico/riparazioni');
     }
 });
 
-// Servizi meccanico
-router.get('/servizi', isMeccanico, (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/meccanico/servizi.html'));
-});
-
-// Recensioni meccanico
-router.get('/recensioni', isMeccanico, (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/meccanico/recensioni.html'));
-});
-
-// Upload avatar meccanico
-router.post('/upload-avatar', isMeccanico, fileUpload(), async (req, res) => {
-    try {
-        if (!req.files || !req.files.avatar) {
-            return res.status(400).json({ success: false, message: 'Nessun file caricato' });
-        }
-        
-        const avatar = req.files.avatar;
-        
-        // Verifica l'estensione del file
-        const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif'];
-        const fileExt = path.extname(avatar.name).toLowerCase();
-        
-        if (!allowedExtensions.includes(fileExt)) {
-            return res.status(400).json({ 
-                success: false, 
-                message: 'Formato file non supportato. Utilizza JPG, PNG o GIF' 
-            });
-        }
-        
-        // Verifica la dimensione del file (max 5MB)
-        if (avatar.size > 5 * 1024 * 1024) {
-            return res.status(400).json({ 
-                success: false, 
-                message: 'Il file è troppo grande. Dimensione massima: 5MB' 
-            });
-        }
-        
-        // Genera un nome file univoco
-        const fileName = `meccanico_${req.user.id}_${Date.now()}${fileExt}`;
-        const uploadPath = path.join(__dirname, '../public/uploads/avatars', fileName);
-        
-        // Sposta il file
-        await avatar.mv(uploadPath);
-        
-        // Aggiorna l'avatar dell'utente nel database
-        await req.user.update({ avatar: `/uploads/avatars/${fileName}` });
-        
-        res.json({ 
-            success: true, 
-            message: 'Avatar caricato con successo',
-            avatar: `/uploads/avatars/${fileName}`
-        });
-    } catch (error) {
-        console.error('Errore durante il caricamento dell\'avatar:', error);
-        res.status(500).json({ success: false, message: 'Errore durante il caricamento dell\'avatar' });
+// Aggiornamento stato riparazione
+router.post('/riparazioni/:id/stato', isMeccanico, [
+    body('stato').isIn(['in_attesa', 'in_lavorazione', 'completata', 'annullata'])
+        .withMessage('Stato non valido')
+], async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        req.flash('error', 'Stato riparazione non valido.');
+        return res.redirect(`/meccanico/riparazioni/${req.params.id}`);
     }
-});
 
-// Aggiorna profilo meccanico
-router.post('/aggiorna-profilo', isMeccanico, async (req, res) => {
     try {
-        await req.user.update({
-            nome: req.body.nome,
-            cognome: req.body.cognome,
-            nome_officina: req.body.nome_officina,
-            specializzazione: req.body.specializzazione,
-            telefono: req.body.telefono,
-            indirizzo: req.body.indirizzo,
-            citta: req.body.citta,
-            cap: req.body.cap,
-            descrizione: req.body.descrizione
-        });
+        const riparazione = await Riparazione.findById(req.params.id);
         
-        // Se sono state fornite coordinate geografiche, aggiornale
-        if (req.body.latitudine && req.body.longitudine) {
-            await req.user.aggiornaCoordinate(req.body.latitudine, req.body.longitudine);
+        if (!riparazione || riparazione.meccanico_id !== req.user.id) {
+            req.flash('error', 'Riparazione non trovata o non autorizzata.');
+            return res.redirect('/meccanico/riparazioni');
         }
         
-        // Se è stata fornita una nuova password, aggiornala
-        if (req.body.password && req.body.password.length >= 6) {
-            await req.user.update({ password: req.body.password });
-        }
+        riparazione.stato = req.body.stato;
+        riparazione.note_meccanico = req.body.note_meccanico || riparazione.note_meccanico;
         
-        res.json({ success: true, message: 'Profilo aggiornato con successo' });
-    } catch (error) {
-        console.error('Errore durante l\'aggiornamento del profilo:', error);
-        res.status(500).json({ success: false, message: 'Errore durante l\'aggiornamento del profilo' });
-    }
-});
-
-// Aggiorna servizi
-router.post('/aggiorna-servizi', isMeccanico, async (req, res) => {
-    try {
-        const servizi = req.body.servizi;
-        
-        if (!Array.isArray(servizi)) {
-            return res.status(400).json({ success: false, message: 'Formato non valido per i servizi' });
-        }
-        
-        // Per ogni servizio nella lista
-        for (const servizio of servizi) {
-            if (!servizio.id_servizio || !servizio.prezzo) {
-                continue; // Salta i servizi invalidi
-            }
-            
-            await req.user.aggiungiServizio({
-                id_servizio: servizio.id_servizio,
-                prezzo: servizio.prezzo
-            });
-        }
-        
-        // Se è stato richiesto di rimuovere alcuni servizi
-        if (req.body.rimuovi_servizi && Array.isArray(req.body.rimuovi_servizi)) {
-            for (const idServizio of req.body.rimuovi_servizi) {
-                await req.user.rimuoviServizio(idServizio);
-            }
-        }
-        
-        res.json({ success: true, message: 'Servizi aggiornati con successo' });
-    } catch (error) {
-        console.error('Errore durante l\'aggiornamento dei servizi:', error);
-        res.status(500).json({ success: false, message: 'Errore durante l\'aggiornamento dei servizi' });
+        await riparazione.update();
+        req.flash('success', 'Stato riparazione aggiornato con successo.');
+        res.redirect(`/meccanico/riparazioni/${req.params.id}`);
+    } catch (err) {
+        console.error(err);
+        req.flash('error', 'Si è verificato un errore nell\'aggiornamento dello stato.');
+        res.redirect(`/meccanico/riparazioni/${req.params.id}`);
     }
 });
 

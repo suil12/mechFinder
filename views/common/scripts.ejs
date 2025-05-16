@@ -1,0 +1,32 @@
+<!-- Bootstrap JS Bundle (includes Popper.js) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- jQuery (optional, but used for some features) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Custom JS -->
+<script src="/js/main.js"></script>
+<% if (active === 'auth') { %>
+<script src="/js/auth.js"></script>
+<% } %>
+<% if (active === 'profile' || active === 'cliente-profile') { %>
+<script src="/js/profile.js"></script>
+<% } %>
+<% if (active === 'meccanico-profile') { %>
+<script src="/js/profile-mechanic.js"></script>
+<% } %>
+<% if (active === 'admin') { %>
+<script src="/js/admin.js"></script>
+<% } %>
+
+<script>
+    // Imposta l'anno corrente nel footer
+    document.getElementById('currentYear').textContent = new Date().getFullYear();
+    
+    // Se ci sono messaggi flash, impostali per scomparire dopo 5 secondi
+    setTimeout(() => {
+        const flashMessages = document.querySelectorAll('.flash-message');
+        flashMessages.forEach(message => {
+            message.classList.add('fade');
+            setTimeout(() => message.remove(), 500);
+        });
+    }, 5000);
+</script>
