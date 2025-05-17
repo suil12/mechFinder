@@ -20,28 +20,41 @@ router.get('/dashboard', isCliente, async (req, res) => {
     try {
         // Ottieni le riparazioni del cliente
         const riparazioni = await Riparazione.findByClienteId(req.user.id);
-        
+
+        // Ottieni riparazioni attive 
+        const riparazioniAttive = riparazioni.filter(r => 
+            r.stato !== 'completata' && r.stato !== 'rifiutata'
+        );
+       // Ottieni riparazioni attive  
+        const riparazioniCompletate = riparazioni.filter(r => 
+            r.stato === 'completata'
+        );
         // Ottieni i veicoli del cliente
         const veicoli = await db.query('SELECT * FROM veicoli WHERE id_cliente = ?', [req.user.id]);
         
         // Calcola statistiche
         const stats = {
             totalRiparazioni: riparazioni ? riparazioni.length : 0,
-            riparazioniAttive: riparazioni ? riparazioni.filter(r => r.stato !== 'completata' && r.stato !== 'rifiutata').length : 0,
-            riparazioniCompletate: riparazioni ? riparazioni.filter(r => r.stato === 'completata').length : 0,
-            totalVeicoli: veicoli ? veicoli.length : 0
+            riparazioniAttive: riparazioniAttive ? riparazioniAttive.length : 0,
+            riparazioniCompletate: riparazioniCompletate ? riparazioniCompletate.length : 0,
+            totalVeicoli: veicoli ? veicoli.length : 0,
+            spesaTotale: riparazioniCompletate && riparazioniCompletate.length > 0 
+                ? riparazioniCompletate.reduce((total, r) => total + (r.costo || 0), 0) 
+                : 0
         };
         
         // Ottieni le recensioni lasciate dal cliente
         const recensioni = await db.query('SELECT * FROM recensioni WHERE id_cliente = ?', [req.user.id]);
-        
+
         res.render('cliente/dashboard', {
             title: 'Dashboard Cliente - MechFinder',
             active: 'dashboard',
             riparazioni: riparazioni || [],
+            riparazioniAttive: riparazioniAttive || [], // Asegúrate de pasar esta variable
+            riparazioniCompletate: riparazioniCompletate || [],
             veicoli: veicoli || [],
             recensioni: recensioni || [],
-            stats: stats  // Passa le statistiche al template
+            stats: stats
         });
     } catch (err) {
         console.error('Errore nel caricamento della dashboard cliente:', err);

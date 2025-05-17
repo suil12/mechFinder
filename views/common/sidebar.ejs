@@ -1,0 +1,79 @@
+<div class="dashboard-sidebar">
+    <div class="sidebar-header">
+        <div class="sidebar-logo">
+            <img src="/media/img/logo.png" alt="MechFinder">
+            <span>MechFinder</span>
+        </div>
+        <button id="sidebarToggle" class="sidebar-toggle">
+            <i class="fas fa-bars"></i>
+        </button>
+    </div>
+    
+    <nav class="sidebar-nav">
+        <ul>
+            <li class="<%= active === 'dashboard' ? 'active' : '' %>">
+                <a href="/meccanico/dashboard">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="<%= active === 'profile' ? 'active' : '' %>">
+                <a href="/meccanico/profilo">
+                    <i class="fas fa-user"></i>
+                    <span>Profilo</span>
+                </a>
+            </li>
+            <li class="<%= active === 'riparazioni' ? 'active' : '' %>">
+                <a href="/meccanico/riparazioni">
+                    <i class="fas fa-tools"></i>
+                    <span>Riparazioni</span>
+                </a>
+            </li>
+            <li class="<%= active === 'recensioni' ? 'active' : '' %>">
+                <a href="/meccanico/recensioni">
+                    <i class="fas fa-star"></i>
+                    <span>Recensioni</span>
+                </a>
+            </li>
+            <li class="<%= active === 'calendar' ? 'active' : '' %>">
+                <a href="/meccanico/calendario">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Calendario</span>
+                </a>
+            </li>
+            <li class="<%= active === 'servizi' ? 'active' : '' %>">
+                <a href="/meccanico/servizi">
+                    <i class="fas fa-cogs"></i>
+                    <span>Servizi Offerti</span>
+                </a>
+            </li>
+            <li class="<%= active === 'statistiche' ? 'active' : '' %>">
+                <a href="/meccanico/statistiche">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Statistiche</span>
+                </a>
+            </li>
+            <li class="<%= active === 'messaggi' ? 'active' : '' %>">
+                <a href="/meccanico/messaggi">
+                    <i class="fas fa-envelope"></i>
+                    <span>Messaggi</span>
+                </a>
+            </li>
+            <li class="<%= active === 'settings' ? 'active' : '' %>">
+                <a href="/meccanico/impostazioni">
+                    <i class="fas fa-cog"></i>
+                    <span>Impostazioni</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    
+    <div class="sidebar-footer">
+        <a href="/auth/logout" class="logout-btn">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+        </a>
+        <p class="user-info"><%= user.nome %> <%= user.cognome %></p>
+        <p class="version">MechFinder v1.0</p>
+    </div>
+</div>

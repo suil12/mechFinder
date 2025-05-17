@@ -42,6 +42,7 @@ body {
     color: var(--secondary-color);
     background-color: var(--gray-light);
     min-height: 100vh;
+    overflow-x: hidden;
 }
 
 a {
@@ -62,6 +63,7 @@ ul {
 .dashboard-container {
     display: flex;
     min-height: 100vh;
+    position: relative;
 }
 
 /* Sidebar */
@@ -73,10 +75,12 @@ ul {
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 100;
+    z-index: 1000;
     transition: var(--transition);
     display: flex;
     flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .sidebar-header {
@@ -86,6 +90,10 @@ ul {
     justify-content: space-between;
     padding: 0 1.5rem;
     border-bottom: 1px solid var(--gray-medium);
+    position: sticky;
+    top: 0;
+    background-color: var(--primary-color);
+    z-index: 10;
 }
 
 .sidebar-logo {
@@ -95,6 +103,12 @@ ul {
     color: var(--secondary-color);
     font-weight: 700;
     font-size: 1.25rem;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+}
+
+.sidebar-logo:hover {
+    opacity: 0.8;
 }
 
 .sidebar-logo img {
@@ -152,7 +166,7 @@ ul {
 }
 
 /* Sidebar collassata */
-.sidebar-collapsed {
+.sidebar-collapsed .dashboard-sidebar {
     width: var(--sidebar-collapsed-width);
 }
 
@@ -175,10 +189,15 @@ ul {
     flex-grow: 1;
     margin-left: var(--sidebar-width);
     transition: var(--transition);
+    width: calc(100% - var(--sidebar-width));
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
-.sidebar-collapsed ~ .dashboard-main {
+.sidebar-collapsed .dashboard-main {
     margin-left: var(--sidebar-collapsed-width);
+    width: calc(100% - var(--sidebar-collapsed-width));
 }
 
 /* Header */
@@ -192,7 +211,8 @@ ul {
     padding: 0 1.5rem;
     position: sticky;
     top: 0;
-    z-index: 99;
+    z-index: 999;
+    width: 100%;
 }
 
 .header-search {
@@ -311,6 +331,7 @@ ul {
 /* Dashboard Content */
 .dashboard-content {
     padding: 1.5rem;
+    flex-grow: 1;
 }
 
 .content-header {
@@ -507,6 +528,7 @@ ul {
 @media (max-width: 992px) {
     .dashboard-sidebar {
         transform: translateX(-100%);
+        box-shadow: var(--shadow-lg);
     }
     
     .dashboard-sidebar.show {
@@ -515,10 +537,28 @@ ul {
     
     .dashboard-main {
         margin-left: 0;
+        width: 100%;
     }
     
-    .sidebar-collapsed ~ .dashboard-main {
+    .sidebar-collapsed .dashboard-main {
         margin-left: 0;
+        width: 100%;
+    }
+    
+    /* Overlay per chiudere la sidebar su mobile */
+    .sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+    }
+    
+    .dashboard-sidebar.show ~ .sidebar-overlay {
+        display: block;
     }
 }
 

@@ -7,6 +7,7 @@ const bcrypt = require('bcrypt');
 const path = require('path');
 const { Meccanico } = require('../models/utente');
 const { Riparazione } = require('../models/riparazione');
+const db = require('../database/db');
 
 // Middleware per verificare se l'utente è autenticato come meccanico
 const isMeccanico = (req, res, next) => {
@@ -40,22 +41,111 @@ router.get('/profilo/:id', async (req, res) => {
 });
 
 // Dashboard meccanico
+// In routes/meccanicoRoutes.js
 router.get('/dashboard', isMeccanico, async (req, res) => {
     try {
-        // Ottenere le riparazioni del meccanico
-        const riparazioni = await Riparazione.findByMeccanicoId(req.user.id);
-        
-        res.render('meccanico/dashboard', {
-            title: 'Dashboard Meccanico - MechFinder',
-            active: 'dashboard',
-            riparazioni: riparazioni
-        });
+      // Get mechanic data
+      const meccanico = await Meccanico.findById(req.user.id);
+      
+      // Get pending requests/repairs
+      const richiestePendenti = await db.query(
+        `SELECT r.*, c.nome as nome_cliente, c.cognome as cognome_cliente, 
+         c.avatar as avatar_cliente, v.marca, v.modello, v.targa
+         FROM riparazioni r
+         JOIN clienti c ON r.id_cliente = c.id
+         LEFT JOIN veicoli v ON r.id_veicolo = v.id
+         WHERE r.id_meccanico = ? AND r.stato IN ('richiesta', 'preventivo')
+         ORDER BY r.data_richiesta DESC`,
+        [req.user.id]
+      );
+      
+      // Get repairs in progress
+      const riparazioniInCorso = await db.query(
+        `SELECT r.*, c.nome as nome_cliente, c.cognome as cognome_cliente, 
+         c.avatar as avatar_cliente, v.marca, v.modello, v.targa
+         FROM riparazioni r
+         JOIN clienti c ON r.id_cliente = c.id
+         LEFT JOIN veicoli v ON r.id_veicolo = v.id
+         WHERE r.id_meccanico = ? AND r.stato IN ('in_corso', 'accettata')
+         ORDER BY r.data_richiesta DESC`,
+        [req.user.id]
+      );
+      
+      // Get completed repairs
+      const riparazioniCompletate = await db.query(
+        `SELECT r.*, c.nome as nome_cliente, c.cognome as cognome_cliente,
+         c.avatar as avatar_cliente, v.marca, v.modello, v.targa
+         FROM riparazioni r
+         JOIN clienti c ON r.id_cliente = c.id
+         LEFT JOIN veicoli v ON r.id_veicolo = v.id
+         WHERE r.id_meccanico = ? AND r.stato = 'completata'
+         ORDER BY r.data_completamento DESC
+         LIMIT 5`,
+        [req.user.id]
+      );
+      
+      // Get recent reviews
+      const recensioniRecenti = await db.query(
+        `SELECT r.*, c.nome as nome_cliente, c.cognome as cognome_cliente,
+         c.avatar as avatar_cliente
+         FROM recensioni r
+         JOIN clienti c ON r.id_cliente = c.id
+         WHERE r.id_meccanico = ?
+         ORDER BY r.data_recensione DESC
+         LIMIT 3`,
+        [req.user.id]
+      );
+      
+      // Calculate statistics
+      // Number of total repairs
+      const totalRiparazioni = await db.get(
+        'SELECT COUNT(*) as count FROM riparazioni WHERE id_meccanico = ?',
+        [req.user.id]
+      );
+      
+      // Number of repairs by status
+      const riparazioniPerStato = await db.query(
+        `SELECT stato, COUNT(*) as count 
+         FROM riparazioni 
+         WHERE id_meccanico = ? 
+         GROUP BY stato`,
+        [req.user.id]
+      );
+      
+      // Total income
+      const incassoTotale = await db.get(
+        'SELECT SUM(costo) as total FROM riparazioni WHERE id_meccanico = ? AND stato = ? AND costo > 0',
+        [req.user.id, 'completata']
+      );
+      
+      // Create stats object
+      const stats = {
+        totalRiparazioni: totalRiparazioni ? totalRiparazioni.count : 0,
+        riparazioniPerStato: riparazioniPerStato || [],
+        incassoTotale: incassoTotale ? incassoTotale.total || 0 : 0,
+        valutazione: meccanico.valutazione || 0,
+        numeroRecensioni: meccanico.numero_recensioni || 0
+      };
+      
+      // Render the dashboard with all necessary data
+      res.render('meccanico/dashboard', {
+        title: 'Dashboard Meccanico - MechFinder',
+        active: 'dashboard',
+        meccanico,
+        richiestePendenti,
+        riparazioniInCorso,
+        riparazioniCompletate,
+        recensioniRecenti,
+        valutazioneMedia: meccanico.valutazione || 0,
+        numeroRecensioni: meccanico.numero_recensioni || 0,
+        stats // Added stats object
+      });
     } catch (err) {
-        console.error(err);
-        req.flash('error', 'Si è verificato un errore nel caricamento della dashboard.');
-        res.redirect('/');
+      console.error('Error loading mechanic dashboard:', err);
+      req.flash('error', 'Si è verificato un errore nel caricamento della dashboard.');
+      res.redirect('/');
     }
-});
+  });
 
 // Profilo meccanico (area personale)
 router.get('/profilo', isMeccanico, async (req, res) => {

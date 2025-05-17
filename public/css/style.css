@@ -234,10 +234,11 @@ ul {
 
 .search-cont {
     position: relative;
+    justify-content: center;
     width: 100%;
-    max-width: 500px;
     margin-top: 1rem;
 }
+
 
 .search-input {
     width: 100%;

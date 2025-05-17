@@ -1,167 +1,557 @@
 <!DOCTYPE html>
 <html lang="it">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="description" content="Contatti - MechFinder, trova il meccanico più adatto a te">
-        <meta name="keywords" content="meccanici, contatti, assistenza, riparazioni auto, officina">
-        <meta name="author" content="MechFinder">
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-        <link rel="stylesheet" href="/css/style.css">
-        <title>Contatti - MechFinder</title>
-      </head>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Dashboard Cliente - MechFinder">
+    <meta name="keywords" content="clienti, dashboard, riparazioni, veicoli, auto">
+    <meta name="author" content="MechFinder">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <title><%= title %></title>
+</head>
 <body>
-<%- include('../common/header') %>
-<main>
-  <div class="container mb-5">
-    <div class="row">
-      <div class="col-12">
-        <div class="dashboard-welcome my-4">
-          <h1>Benvenuto nella tua Dashboard, <%= user.nome %></h1>
-          <p class="lead">Da qui puoi gestire le tue riparazioni, i tuoi veicoli e visualizzare le tue statistiche.</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Statistiche -->
-    <div class="row mb-4">
-      <div class="col-12">
-        <h3 class="section-title">Le tue statistiche</h3>
-      </div>
-      <div class="col-md-3 col-sm-6 mb-4">
-        <div class="card text-center h-100">
-          <div class="card-body">
-            <div class="display-4 fw-bold text-primary"><%= stats ? stats.totalRiparazioni : 0 %></div>
-            <h5 class="card-title">Riparazioni Totali</h5>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3 col-sm-6 mb-4">
-        <div class="card text-center h-100">
-          <div class="card-body">
-            <div class="display-4 fw-bold text-warning"><%= stats ? stats.riparazioniAttive : 0 %></div>
-            <h5 class="card-title">Riparazioni Attive</h5>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3 col-sm-6 mb-4">
-        <div class="card text-center h-100">
-          <div class="card-body">
-            <div class="display-4 fw-bold text-success"><%= stats ? stats.riparazioniCompletate : 0 %></div>
-            <h5 class="card-title">Riparazioni Completate</h5>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3 col-sm-6 mb-4">
-        <div class="card text-center h-100">
-          <div class="card-body">
-            <div class="display-4 fw-bold text-info"><%= stats ? stats.totalVeicoli : 0 %></div>
-            <h5 class="card-title">I Tuoi Veicoli</h5>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Riparazioni Recenti -->
-    <div class="row mb-4">
-      <div class="col-12">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h3 class="section-title m-0">Riparazioni Recenti</h3>
-          <a href="/cliente/riparazioni" class="btn btn-sm btn-outline-primary">Vedi tutte</a>
-        </div>
-        
-        <% if (riparazioni && riparazioni.length > 0) { %>
-          <div class="table-responsive">
-            <table class="table table-hover">
-              <thead class="table-light">
-                <tr>
-                  <th>ID</th>
-                  <th>Meccanico</th>
-                  <th>Descrizione</th>
-                  <th>Stato</th>
-                  <th>Data Richiesta</th>
-                  <th>Azioni</th>
-                </tr>
-              </thead>
-              <tbody>
-                <% riparazioni.slice(0, 5).forEach(riparazione => { %>
-                  <tr>
-                    <td><%= riparazione.id %></td>
-                    <td><%= riparazione.meccanico_id %></td>
-                    <td><%= riparazione.descrizione.substring(0, 50) %><%= riparazione.descrizione.length > 50 ? '...' : '' %></td>
-                    <td>
-                      <span class="badge <%= riparazione.stato === 'completata' ? 'bg-success' : (riparazione.stato === 'in_corso' ? 'bg-primary' : (riparazione.stato === 'rifiutata' ? 'bg-danger' : 'bg-warning')) %>">
-                        <%= riparazione.stato %>
-                      </span>
-                    </td>
-                    <td><%= new Date(riparazione.data_richiesta).toLocaleDateString() %></td>
-                    <td>
-                      <a href="/cliente/riparazioni/<%= riparazione.id %>" class="btn btn-sm btn-outline-primary">
-                        <i class="fas fa-eye"></i> Dettagli
-                      </a>
-                    </td>
-                  </tr>
-                <% }); %>
-              </tbody>
-            </table>
-          </div>
-        <% } else { %>
-          <div class="alert alert-info">
-            Non hai ancora nessuna riparazione. <a href="/meccanici">Cerca un meccanico</a> per richiederne una.
-          </div>
-        <% } %>
-      </div>
-    </div>
-
-    <!-- I Tuoi Veicoli -->
-    <div class="row mb-4">
-      <div class="col-12">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h3 class="section-title m-0">I Tuoi Veicoli</h3>
-          <a href="/cliente/veicoli" class="btn btn-sm btn-outline-primary">Gestisci veicoli</a>
-        </div>
-        
-        <div class="row">
-          <% if (veicoli && veicoli.length > 0) { %>
-            <% veicoli.slice(0, 4).forEach(veicolo => { %>
-              <div class="col-md-3 col-sm-6 mb-4">
-                <div class="vehicle-card">
-                  <div class="vehicle-card-header">
-                    <div class="vehicle-icon">
-                      <i class="fas <%= veicolo.tipo === 'auto' ? 'fa-car' : (veicolo.tipo === 'moto' ? 'fa-motorcycle' : 'fa-truck') %>"></i>
-                    </div>
-                    <span class="vehicle-type"><%= veicolo.tipo %></span>
-                  </div>
-                  <div class="vehicle-card-body">
-                    <h4><%= veicolo.marca %> <%= veicolo.modello %></h4>
-                    <div class="vehicle-specs">
-                      <div class="spec-item"><i class="fas fa-calendar-alt"></i> <%= veicolo.anno %></div>
-                      <% if (veicolo.targa) { %>
-                        <div class="spec-item"><i class="fas fa-id-card"></i> <%= veicolo.targa %></div>
-                      <% } %>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            <% }); %>
-          <% } else { %>
-            <div class="col-12">
-              <div class="alert alert-info">
-                Non hai ancora registrato nessun veicolo. <a href="/cliente/veicoli">Aggiungi un veicolo</a> per iniziare.
-              </div>
+    <div class="dashboard-container">
+        <div class="dashboard-sidebar">
+            <div class="sidebar-header">
+                <a href="/" class="sidebar-logo">
+                    <img src="/media/img/logo.png" alt="MechFinder">
+                    <span>MechFinder</span>
+                </a>
+                <button id="sidebarToggle" class="sidebar-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
             </div>
-          <% } %>
+            
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="<%= active === 'dashboard' ? 'active' : '' %>">
+                        <a href="/cliente/dashboard">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="<%= active === 'profile' ? 'active' : '' %>">
+                        <a href="/cliente/profilo">
+                            <i class="fas fa-user"></i>
+                            <span>Profilo</span>
+                        </a>
+                    </li>
+                    <li class="<%= active === 'riparazioni' ? 'active' : '' %>">
+                        <a href="/cliente/riparazioni">
+                            <i class="fas fa-tools"></i>
+                            <span>Riparazioni</span>
+                        </a>
+                    </li>
+                    <li class="<%= active === 'veicoli' ? 'active' : '' %>">
+                        <a href="/cliente/veicoli">
+                            <i class="fas fa-car"></i>
+                            <span>I miei veicoli</span>
+                        </a>
+                    </li>
+                    <li class="<%= active === 'meccanici' ? 'active' : '' %>">
+                        <a href="/meccanici">
+                            <i class="fas fa-user-cog"></i>
+                            <span>Trova meccanici</span>
+                        </a>
+                    </li>
+                    <li class="<%= active === 'recensioni' ? 'active' : '' %>">
+                        <a href="/cliente/recensioni">
+                            <i class="fas fa-star"></i>
+                            <span>Le mie recensioni</span>
+                        </a>
+                    </li>
+                    <li class="<%= active === 'messaggi' ? 'active' : '' %>">
+                        <a href="/cliente/messaggi">
+                            <i class="fas fa-envelope"></i>
+                            <span>Messaggi</span>
+                        </a>
+                    </li>
+                    <li class="<%= active === 'settings' ? 'active' : '' %>">
+                        <a href="/cliente/impostazioni">
+                            <i class="fas fa-cog"></i>
+                            <span>Impostazioni</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <a href="/auth/logout" class="btn btn-outline-danger w-100 mb-2">
+                    <i class="fas fa-sign-out-alt me-2"></i>
+                    <span>Logout</span>
+                </a>
+                <div class="user-info text-center">
+                    <small class="d-block text-muted mb-1"><%= user.nome %> <%= user.cognome %></small>
+                    <small class="d-block text-muted">MechFinder v1.0</small>
+                </div>
+            </div>
         </div>
-      </div>
+        
+        <div class="dashboard-main">
+            <!-- Header fisso -->
+            <div class="dashboard-header">
+                <div class="header-title">
+                    <h2>Dashboard Cliente</h2>
+                    <p class="text-muted mb-0">Benvenuto, <%= user.nome %></p>
+                </div>
+                
+                <div class="header-user">
+                    <div class="notifications me-3">
+                        <div class="dropdown">
+                            <button class="btn btn-light position-relative notification-btn" type="button" id="notificationsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-bell"></i>
+                                <% if (typeof riparazioniAttive !== 'undefined' && riparazioniAttive && riparazioniAttive.length > 0) { %>
+                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                        <%= riparazioniAttive.length %>
+                                        <span class="visually-hidden">notifiche non lette</span>
+                                    </span>
+                                <% } %>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end notification-dropdown" aria-labelledby="notificationsDropdown">
+                                <div class="notification-header p-2 border-bottom d-flex justify-content-between align-items-center">
+                                    <h6 class="m-0">Notifiche</h6>
+                                    <% if (typeof riparazioniAttive !== 'undefined' && riparazioniAttive && riparazioniAttive.length > 0) { %>
+                                        <span class="badge bg-primary"><%= riparazioniAttive.length %></span>
+                                    <% } else { %>
+                                        <span class="badge bg-secondary">0</span>
+                                    <% } %>
+                                </div>
+                                
+                                <% if (typeof riparazioniAttive !== 'undefined' && riparazioniAttive && riparazioniAttive.length > 0) { %>
+                                    <% riparazioniAttive.forEach(riparazione => { %>
+                                        <li>
+                                            <a class="dropdown-item notification-item" href="/cliente/riparazioni/<%= riparazione.id %>">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="flex-shrink-0 me-2">
+                                                        <% if (riparazione.stato === 'preventivo') { %>
+                                                            <i class="fas fa-file-invoice bg-warning text-white p-2 rounded-circle"></i>
+                                                        <% } else if (riparazione.stato === 'accettata') { %>
+                                                            <i class="fas fa-check bg-success text-white p-2 rounded-circle"></i>
+                                                        <% } else if (riparazione.stato === 'in_corso') { %>
+                                                            <i class="fas fa-wrench bg-primary text-white p-2 rounded-circle"></i>
+                                                        <% } %>
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <p class="mb-0">
+                                                            <% if (riparazione.stato === 'preventivo') { %>
+                                                                Nuovo preventivo disponibile
+                                                            <% } else if (riparazione.stato === 'accettata') { %>
+                                                                Riparazione accettata
+                                                            <% } else if (riparazione.stato === 'in_corso') { %>
+                                                                Riparazione in corso
+                                                            <% } %>
+                                                        </p>
+                                                        <small class="text-muted"><%= new Date(riparazione.data_richiesta).toLocaleDateString() %></small>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </li>
+                                    <% }) %>
+                                <% } else { %>
+                                    <li><p class="dropdown-item text-center text-muted py-2 mb-0">Nessuna nuova notifica</p></li>
+                                <% } %>
+                                
+                                <li><hr class="dropdown-divider my-0"></li>
+                                <li><a class="dropdown-item text-center py-2" href="/cliente/riparazioni">Vedi tutte le riparazioni</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="dropdown">
+                        <button class="btn btn-light d-flex align-items-center" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="<%= user.avatar || '/media/img/default_avatar.png' %>" alt="<%= user.nome %>" class="rounded-circle me-2" style="width: 32px; height: 32px; object-fit: cover;">
+                            <span><%= user.nome %> <%= user.cognome %></span>
+                            <i class="fas fa-chevron-down ms-2 small"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="/cliente/profilo"><i class="fas fa-user-circle me-2"></i>Profilo</a></li>
+                            <li><a class="dropdown-item" href="/cliente/impostazioni"><i class="fas fa-cog me-2"></i>Impostazioni</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/auth/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="dashboard-content">
+                <!-- Statistiche generali -->
+                <div class="row">
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-0 shadow h-100">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Riparazioni totali</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                            <% if (typeof stats !== 'undefined' && stats && stats.totalRiparazioni) { %>
+                                                <%= stats.totalRiparazioni %>
+                                            <% } else { %>
+                                                0
+                                            <% } %>
+                                        </div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-tools fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-0 shadow h-100">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Riparazioni attive</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800"><%= riparazioniAttive ? riparazioniAttive.length : 0 %></div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-clock fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-0 shadow h-100">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">I miei veicoli</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800"><%= veicoli ? veicoli.length : 0 %></div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-car fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-0 shadow h-100">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Spesa totale</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">€ <%= stats.spesaTotale ? stats.spesaTotale.toFixed(2) : '0.00' %></div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-euro-sign fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Riparazioni attive -->
+                    <div class="col-xl-7 col-lg-12 mb-4">
+                        <div class="card border-0 shadow h-100">
+                            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                <h6 class="m-0 font-weight-bold text-primary">Riparazioni attive</h6>
+                                <a href="/cliente/riparazioni" class="btn btn-sm btn-primary">Vedi tutte</a>
+                            </div>
+                            <div class="card-body">
+                                <% if (riparazioniAttive && riparazioniAttive.length > 0) { %>
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Meccanico</th>
+                                                    <th>Veicolo</th>
+                                                    <th>Stato</th>
+                                                    <th>Data</th>
+                                                    <th>Azioni</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <% riparazioniAttive.slice(0, 5).forEach(riparazione => { %>
+                                                    <tr>
+                                                        <td>
+                                                            <div class="d-flex align-items-center">
+                                                                <img class="rounded-circle me-2" width="30" height="30"
+                                                                     src="<%= riparazione.avatar_meccanico || '/media/img/default_mechanic.png' %>"
+                                                                     alt="<%= riparazione.nome_meccanico %>">
+                                                                <div>
+                                                                    <%= riparazione.nome_officina || (riparazione.nome_meccanico + ' ' + riparazione.cognome_meccanico) %>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <% if (riparazione.marca && riparazione.modello) { %>
+                                                                <%= riparazione.marca %> <%= riparazione.modello %>
+                                                                <% if (riparazione.targa) { %>
+                                                                    <small class="text-muted">(<%= riparazione.targa %>)</small>
+                                                                <% } %>
+                                                            <% } else { %>
+                                                                <span class="text-muted">Non specificato</span>
+                                                            <% } %>
+                                                        </td>
+                                                        <td>
+                                                            <% 
+                                                                let badgeClass = '';
+                                                                let statusText = '';
+                                                                
+                                                                switch(riparazione.stato) {
+                                                                    case 'richiesta':
+                                                                        badgeClass = 'bg-secondary';
+                                                                        statusText = 'In attesa';
+                                                                        break;
+                                                                    case 'preventivo':
+                                                                        badgeClass = 'bg-warning';
+                                                                        statusText = 'Preventivo';
+                                                                        break;
+                                                                    case 'accettata':
+                                                                        badgeClass = 'bg-info';
+                                                                        statusText = 'Accettata';
+                                                                        break;
+                                                                    case 'in_corso':
+                                                                        badgeClass = 'bg-primary';
+                                                                        statusText = 'In corso';
+                                                                        break;
+                                                                    default:
+                                                                        badgeClass = 'bg-secondary';
+                                                                        statusText = riparazione.stato;
+                                                                }
+                                                            %>
+                                                            <span class="badge <%= badgeClass %>"><%= statusText %></span>
+                                                        </td>
+                                                        <td>
+                                                            <%= new Date(riparazione.data_richiesta).toLocaleDateString() %>
+                                                        </td>
+                                                        <td>
+                                                            <a href="/cliente/riparazioni/<%= riparazione.id %>" class="btn btn-sm btn-primary">
+                                                                <i class="fas fa-eye"></i>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                <% }); %>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                <% } else { %>
+                                    <div class="text-center py-4">
+                                        <p class="text-muted mb-0">Nessuna riparazione attiva</p>
+                                        <a href="/meccanici" class="btn btn-primary mt-3">Trova un meccanico</a>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- I miei veicoli -->
+                    <div class="col-xl-5 col-lg-12 mb-4">
+                        <div class="card border-0 shadow h-100">
+                            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                <h6 class="m-0 font-weight-bold text-success">I miei veicoli</h6>
+                                <a href="/cliente/veicoli" class="btn btn-sm btn-success">Gestisci veicoli</a>
+                            </div>
+                            <div class="card-body">
+                                <% if (veicoli && veicoli.length > 0) { %>
+                                    <div class="row">
+                                        <% veicoli.slice(0, 4).forEach(veicolo => { %>
+                                            <div class="col-md-6 mb-3">
+                                                <div class="vehicle-card p-3 border rounded h-100 position-relative">
+                                                    <div class="d-flex align-items-center mb-2">
+                                                        <% 
+                                                            let vehicleIcon = '';
+                                                            switch(veicolo.tipo) {
+                                                                case 'auto':
+                                                                    vehicleIcon = 'fa-car';
+                                                                    break;
+                                                                case 'moto':
+                                                                    vehicleIcon = 'fa-motorcycle';
+                                                                    break;
+                                                                case 'furgone':
+                                                                    vehicleIcon = 'fa-truck';
+                                                                    break;
+                                                                default:
+                                                                    vehicleIcon = 'fa-car-side';
+                                                            }
+                                                        %>
+                                                        <div class="vehicle-icon me-2">
+                                                            <i class="fas <%= vehicleIcon %> fa-2x text-primary"></i>
+                                                        </div>
+                                                        <div>
+                                                            <h6 class="mb-0"><%= veicolo.marca %> <%= veicolo.modello %></h6>
+                                                            <small class="text-muted"><%= veicolo.anno %></small>
+                                                        </div>
+                                                    </div>
+                                                    <% if (veicolo.targa) { %>
+                                                        <p class="mb-2"><strong>Targa:</strong> <%= veicolo.targa %></p>
+                                                    <% } %>
+                                                    <small class="text-muted position-absolute bottom-0 end-0 p-2">
+                                                        <a href="/cliente/veicoli#veicolo-<%= veicolo.id %>">Dettagli</a>
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        <% }); %>
+                                    </div>
+                                    <% if (veicoli.length > 4) { %>
+                                        <div class="text-center mt-2">
+                                            <a href="/cliente/veicoli" class="text-primary">Visualizza tutti i veicoli</a>
+                                        </div>
+                                    <% } %>
+                                <% } else { %>
+                                    <div class="text-center py-4">
+                                        <p class="text-muted mb-0">Non hai ancora registrato nessun veicolo</p>
+                                        <a href="/cliente/veicoli" class="btn btn-primary mt-3">Aggiungi veicolo</a>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Ultime riparazioni completate -->
+                    <div class="col-xl-7 col-lg-12 mb-4">
+                        <div class="card border-0 shadow h-100">
+                            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                <h6 class="m-0 font-weight-bold text-info">Riparazioni completate</h6>
+                                <a href="/cliente/riparazioni?stato=completata" class="btn btn-sm btn-info">Vedi tutte</a>
+                            </div>
+                            <div class="card-body">
+                                <% if (typeof riparazioniCompletate !== 'undefined' && riparazioniCompletate && riparazioniCompletate.length > 0) { %>
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Meccanico</th>
+                                                    <th>Veicolo</th>
+                                                    <th>Data completamento</th>
+                                                    <th>Costo</th>
+                                                    <th>Valutazione</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <% riparazioniCompletate.slice(0, 5).forEach(riparazione => { %>
+                                                    <tr>
+                                                        <td>
+                                                            <div class="d-flex align-items-center">
+                                                                <img class="rounded-circle me-2" width="30" height="30"
+                                                                     src="<%= riparazione.avatar_meccanico || '/media/img/default_mechanic.png' %>"
+                                                                     alt="<%= riparazione.nome_meccanico %>">
+                                                                <div>
+                                                                    <%= riparazione.nome_officina || (riparazione.nome_meccanico + ' ' + riparazione.cognome_meccanico) %>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <% if (riparazione.marca && riparazione.modello) { %>
+                                                                <%= riparazione.marca %> <%= riparazione.modello %>
+                                                            <% } else { %>
+                                                                <span class="text-muted">Non specificato</span>
+                                                            <% } %>
+                                                        </td>
+                                                        <td>
+                                                            <%= riparazione.data_completamento ? new Date(riparazione.data_completamento).toLocaleDateString() : 'N/D' %>
+                                                        </td>
+                                                        <td>€ <%= riparazione.costo ? riparazione.costo.toFixed(2) : '0.00' %></td>
+                                                        <td>
+                                                            <% if (riparazione.valutazione) { %>
+                                                                <% for (let i = 0; i < 5; i++) { %>
+                                                                    <i class="<%= i < riparazione.valutazione ? 'fas' : 'far' %> fa-star text-warning"></i>
+                                                                <% } %>
+                                                            <% } else { %>
+                                                                <a href="/cliente/riparazioni/<%= riparazione.id %>" class="btn btn-sm btn-outline-warning">
+                                                                    <i class="fas fa-star me-1"></i> Valuta
+                                                                </a>
+                                                            <% } %>
+                                                        </td>
+                                                    </tr>
+                                                <% }); %>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                <% } else { %>
+                                    <div class="text-center py-4">
+                                        <p class="text-muted mb-0">Nessuna riparazione completata</p>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Meccanici consigliati -->
+                    <div class="col-xl-5 col-lg-12 mb-4">
+                        <div class="card border-0 shadow h-100">
+                            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                <h6 class="m-0 font-weight-bold text-warning">Meccanici consigliati</h6>
+                                <a href="/meccanici" class="btn btn-sm btn-warning">Vedi tutti</a>
+                            </div>
+                            <div class="card-body">
+                                <% if (typeof meccaniciConsigliati !== 'undefined' && meccaniciConsigliati && meccaniciConsigliati.length > 0) { %>
+                                    <% meccaniciConsigliati.forEach(meccanico => { %>
+                                        <div class="d-flex align-items-center mb-3 pb-3 border-bottom">
+                                            <img class="rounded-circle me-3" width="50" height="50"
+                                                 src="<%= meccanico.avatar || '/media/img/default_mechanic.png' %>"
+                                                 alt="<%= meccanico.nome %>">
+                                            <div class="flex-grow-1">
+                                                <h6 class="mb-0"><%= meccanico.nome_officina || (meccanico.nome + ' ' + meccanico.cognome) %></h6>
+                                                <p class="mb-0 small text-muted"><%= meccanico.specializzazione %></p>
+                                                <div class="rating">
+                                                    <% for (let i = 0; i < 5; i++) { %>
+                                                        <i class="<%= i < Math.floor(meccanico.valutazione) ? 'fas' : 'far' %> fa-star text-warning"></i>
+                                                    <% } %>
+                                                    <small class="text-muted ms-2"><%= meccanico.valutazione.toFixed(1) %> (<%= meccanico.numero_recensioni %>)</small>
+                                                </div>
+                                            </div>
+                                            <a href="/meccanici/<%= meccanico.id %>" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye me-1"></i> Profilo
+                                            </a>
+                                        </div>
+                                    <% }); %>
+                                <% } else { %>
+                                    <div class="text-center py-4">
+                                        <p class="text-muted mb-0">Nessun meccanico consigliato al momento</p>
+                                        <a href="/meccanici" class="btn btn-primary mt-3">Esplora meccanici</a>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
-</main>
 
-
-
-<%- include('../common/footer') %>
-<%- include('../common/modals') %>
-<%- include('../common/scripts') %>
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Gestione del toggle della sidebar
+                // Gestione del toggle della sidebar
+                document.addEventListener('DOMContentLoaded', function() {
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const dashboardContainer = document.querySelector('.dashboard-container');
+            
+            // Verifica se esiste un valore salvato nel localStorage
+            const sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+            
+            // Applica lo stato salvato (se presente)
+            if (sidebarCollapsed) {
+                dashboardContainer.classList.add('sidebar-collapsed');
+            }
+            
+            // Gestione del click sul toggle
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', function() {
+                    dashboardContainer.classList.toggle('sidebar-collapsed');
+                    
+                    // Salva lo stato nel localStorage
+                    const isCollapsed = dashboardContainer.classList.contains('sidebar-collapsed');
+                    localStorage.setItem('sidebarCollapsed', isCollapsed);
+                });
+            }
+        });
+    </script>
 </body>
 </html>
