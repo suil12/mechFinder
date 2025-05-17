@@ -22,7 +22,7 @@ const clienteRoutes = require('./routes/clienteRoutes');
 const meccanicoRoutes = require('./routes/meccanicoRoutes');
 const apiRoutes = require('./routes/apiRoutes');
 const riparazioneRoutes = require('./routes/riparazioneRoutes');
-
+const chatbotRoutes = require('./routes/chatbotRoutes');
 // Inizializzazione dell'app
 const app = express();
 
@@ -194,7 +194,7 @@ app.use('/cliente', clienteRoutes);
 app.use('/meccanico', meccanicoRoutes);
 app.use('/api', apiRoutes);
 app.use('/riparazioni', riparazioneRoutes);
-
+app.use('/api/chatbot', chatbotRoutes);
 // Gestione degli errori 404
 app.use((req, res) => {
     res.status(404).render('errors/404', {

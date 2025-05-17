@@ -1,0 +1,35 @@
+<!-- Pulsante per aprire il chatbot -->
+<link rel="stylesheet" href="/css/chatbot.css">
+<div id="chatbotButton" class="chatbot-button">
+    <i class="fas fa-comment"></i>
+</div>
+
+<!-- Contenitore del chatbot -->
+<div id="chatbotContainer" class="chatbot-container">
+    <div class="chatbot-header">
+        <div class="bot-avatar">
+            <i class="fas fa-robot"></i>
+            <h3>Assistente MechFinder</h3>
+        </div>
+        <button id="chatbotClose" class="chatbot-close">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    
+    <div id="chatbotMessages" class="chatbot-messages">
+        <!-- I messaggi saranno aggiunti dinamicamente qui -->
+    </div>
+    
+    <form id="chatbotForm" class="chatbot-form">
+        <input 
+            type="text" 
+            id="chatbotInput" 
+            class="chatbot-input" 
+            placeholder="Scrivi un messaggio..." 
+            autocomplete="off"
+        >
+        <button type="submit" class="chatbot-submit">
+            <i class="fas fa-paper-plane"></i>
+        </button>
+    </form>
+</div>

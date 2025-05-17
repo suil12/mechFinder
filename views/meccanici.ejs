@@ -10,6 +10,7 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
         <link rel="stylesheet" href="/css/style.css">
         <title>Meccanici - MechFinder</title>
+
 </head>
 <body>
     <%- include('./common/header') %>
@@ -21,39 +22,41 @@
             <div class="row">
                 <!-- Filtri laterali -->
                 <div class="col-lg-3">
-                    <div class="filter-card sticky-top" style="top: 100px;">
-                        <h4 class="mb-3">Filtri</h4>
-                        <form action="/meccanici" method="GET">
-                            <div class="mb-3">
-                                <label for="nome" class="form-label">Nome o Officina</label>
-                                <input type="text" class="form-control" id="nome" name="nome" value="<%= filtri.nome %>" placeholder="Nome, cognome o officina">
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="specializzazione" class="form-label">Specializzazione</label>
-                                <select class="form-select" id="specializzazione" name="specializzazione">
-                                    <option value="">Tutte le specializzazioni</option>
-                                    <% specializzazioni.forEach(spec => { %>
-                                        <option value="<%= spec.specializzazione %>" <%= filtri.specializzazione === spec.specializzazione ? 'selected' : '' %>><%= spec.specializzazione %></option>
-                                    <% }) %>
-                                </select>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="citta" class="form-label">Città</label>
-                                <select class="form-select" id="citta" name="citta">
-                                    <option value="">Tutte le città</option>
-                                    <% citta_list.forEach(c => { %>
-                                        <option value="<%= c.citta %>" <%= filtri.citta === c.citta ? 'selected' : '' %>><%= c.citta %></option>
-                                    <% }) %>
-                                </select>
-                            </div>
-                            
-                            <div class="d-grid gap-2">
-                                <button type="submit" class="btn btn-primary">Applica filtri</button>
-                                <button type="reset" class="btn btn-outline-secondary">Reimposta</button>
-                            </div>
-                        </form>
+                    <div class="filter-sidebar">
+                        <div class="filter-card">
+                            <h4 class="mb-3">Filtri</h4>
+                            <form action="/meccanici" method="GET">
+                                <div class="mb-3">
+                                    <label for="nome" class="form-label">Nome o Officina</label>
+                                    <input type="text" class="form-control" id="nome" name="nome" value="<%= filtri.nome %>" placeholder="Nome, cognome o officina">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="specializzazione" class="form-label">Specializzazione</label>
+                                    <select class="form-select" id="specializzazione" name="specializzazione">
+                                        <option value="">Tutte le specializzazioni</option>
+                                        <% specializzazioni.forEach(spec => { %>
+                                            <option value="<%= spec.specializzazione %>" <%= filtri.specializzazione === spec.specializzazione ? 'selected' : '' %>><%= spec.specializzazione %></option>
+                                        <% }) %>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="citta" class="form-label">Città</label>
+                                    <select class="form-select" id="citta" name="citta">
+                                        <option value="">Tutte le città</option>
+                                        <% citta_list.forEach(c => { %>
+                                            <option value="<%= c.citta %>" <%= filtri.citta === c.citta ? 'selected' : '' %>><%= c.citta %></option>
+                                        <% }) %>
+                                    </select>
+                                </div>
+                                
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary">Applica filtri</button>
+                                    <button type="reset" class="btn btn-outline-secondary">Reimposta</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
                 

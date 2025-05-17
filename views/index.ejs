@@ -1,32 +1,38 @@
 <!DOCTYPE html>
 <html lang="it">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="description" content="Contatti - MechFinder, trova il meccanico più adatto a te">
-        <meta name="keywords" content="meccanici, contatti, assistenza, riparazioni auto, officina">
-        <meta name="author" content="MechFinder">
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-        <link rel="stylesheet" href="/css/style.css">
-        <title>MechFinder - Trova il meccanico giusto per te</title>
-      </head>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="MechFinder - Trova il meccanico giusto per te">
+    <meta name="keywords" content="meccanici, riparazioni auto, officina, auto, moto">
+    <meta name="author" content="MechFinder">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <title>MechFinder - Trova il meccanico giusto per te</title>
+</head>
 <body>
     <%- include('./common/header') %>
     <main>
         <!-- Banner e ricerca -->
         <section class="section1">
             <div class="banner">
-                <h1>Trova il meccanico giusto per la tua auto</h1>
-                <h5>Connettiti con professionisti qualificati della tua zona</h5>
-                
-                <div class="search-cont">
-                    <form action="/search" method="GET">
-                        <input type="text" name="q" class="search-input" placeholder="Cerca meccanici, servizi o città..." value="<%= query %>">
-                        <button type="submit" class="search-button">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </form>
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-10 col-xl-8">
+                            <h1>Trova il meccanico giusto per la tua auto</h1>
+                            <h5>Connettiti con professionisti qualificati della tua zona</h5>
+                            
+                            <div class="search-cont">
+                                <form action="/search" method="GET">
+                                    <input type="text" name="q" class="search-input" placeholder="Cerca meccanici, servizi o città..." value="<%= query %>">
+                                    <button type="submit" class="search-button">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -39,7 +45,7 @@
                     <p class="lead text-muted">Risolviamo qualsiasi problema della tua auto</p>
                 </div>
                 
-                <div class="row g-4">
+                <div class="row g-4 justify-content-center">
                     <% servizi.forEach(servizio => { %>
                         <div class="col-lg-4 col-md-6">
                             <div class="servizio-card">
@@ -64,7 +70,7 @@
         <!-- Meccanici in evidenza -->
         <section class="card_mecc py-5 bg-light">
             <div class="container">
-                <h1 class="mb-4">I Meccanici Più Valutati</h1>
+                <h1 class="text-center mb-4">I Meccanici Più Valutati</h1>
                 
                 <div class="slider">
                     <% meccaniciEvidenziati.forEach(meccanico => { %>
@@ -91,7 +97,7 @@
         <!-- Recensioni dei clienti -->
         <section class="reviews py-5">
             <div class="container">
-                <h2 class="mb-4">Cosa dicono i nostri clienti</h2>
+                <h2 class="text-center mb-4">Cosa dicono i nostri clienti</h2>
                 
                 <div class="row justify-content-center">
                     <% recensioni.forEach(recensione => { %>
@@ -113,7 +119,7 @@
         <!-- Sezione CTA per Meccanici -->
         <section class="py-5 bg-light">
             <div class="container">
-                <div class="row align-items-center">
+                <div class="row align-items-center justify-content-center">
                     <div class="col-lg-7 mb-4 mb-lg-0">
                         <h2 class="fw-bold mb-3">Sei un meccanico?</h2>
                         <p class="lead">Entra a far parte della nostra rete di professionisti e amplia il tuo business.</p>
