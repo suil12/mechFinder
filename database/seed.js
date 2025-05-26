@@ -85,7 +85,8 @@ async function seed() {
                 cap: '20100',
                 descrizione: 'Specializzato in riparazioni di auto di tutte le marche, con oltre 20 anni di esperienza.',
                 valutazione: 4.8,
-                numero_recensioni: 24
+                numero_recensioni: 24,
+                avatar: '/media/img/meccanico.jpeg'
             },
             {
                 nome: 'Giuseppe', 
@@ -100,7 +101,8 @@ async function seed() {
                 cap: '00100',
                 descrizione: 'Esperto in diagnostica elettronica e riparazioni centraline di nuova generazione.',
                 valutazione: 4.5,
-                numero_recensioni: 18
+                numero_recensioni: 18,
+                avatar: '/media/img/meccanico1.jpeg'
             },
             {
                 nome: 'Luigi', 
@@ -115,7 +117,8 @@ async function seed() {
                 cap: '10100',
                 descrizione: 'Specializzato in pneumatici di tutte le marche, estate e inverno.',
                 valutazione: 4.2,
-                numero_recensioni: 15
+                numero_recensioni: 15,
+                avatar: '/media/img/meccanico2.png'
             },
             {
                 nome: 'Antonio', 
@@ -130,7 +133,8 @@ async function seed() {
                 cap: '80100',
                 descrizione: 'Carrozzieri da tre generazioni, con esperienza su auto di lusso e d\'epoca.',
                 valutazione: 4.9,
-                numero_recensioni: 32
+                numero_recensioni: 32,
+                avatar: '/media/img/meccanico3.png'
             },
             {
                 nome: 'Francesco', 
@@ -145,7 +149,8 @@ async function seed() {
                 cap: '50100',
                 descrizione: 'Centro specializzato in revisioni auto e moto, con strumentazione all\'avanguardia.',
                 valutazione: 4.4,
-                numero_recensioni: 21
+                numero_recensioni: 21,
+                avatar: '/media/img/default_mechanic.png'
             }
         ];
         
@@ -153,8 +158,8 @@ async function seed() {
             await db.run(
                 `INSERT INTO meccanici (
                     nome, cognome, nome_officina, specializzazione, email, password, telefono, 
-                    indirizzo, citta, cap, descrizione, valutazione, numero_recensioni, verificato, tipo
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                    indirizzo, citta, cap, descrizione, valutazione, numero_recensioni, verificato, tipo, avatar
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
                 [
                     meccanico.nome, 
                     meccanico.cognome, 
@@ -170,7 +175,8 @@ async function seed() {
                     meccanico.valutazione,
                     meccanico.numero_recensioni, 
                     1, // tutti verificati
-                    'meccanico' // tipo
+                    'meccanico', // tipo
+                    meccanico.avatar // avatar del meccanico
                 ]
             );
         }
@@ -219,6 +225,63 @@ async function seed() {
             }
         }
         console.log('Orari meccanici inseriti.');
+                // 4.1 Inserimento preventivi
+                console.log('Inserimento preventivi...');
+                await db.run('DELETE FROM preventivi');
+                console.log('Tabella preventivi svuotata.');
+        
+                // Recupera ID validi per meccanici e riparazioni
+                const meccaniciPreventivi = await db.query('SELECT id FROM meccanici');
+                const riparazioniPreventivi = await db.query('SELECT id FROM riparazioni');
+        
+                if (meccaniciPreventivi.length > 0 && riparazioniPreventivi.length > 0) {
+                    const preventivi = [
+                        {
+                            id_meccanico: meccaniciPreventivi[0].id,
+                            id_riparazione: riparazioniPreventivi[0].id,
+                            importo: 250.00,
+                            descrizione: 'Sostituzione freni anteriori',
+                            data_scadenza: '2025-06-15',
+                            stato: 'in_attesa'
+                        },
+                        {
+                            id_meccanico: meccaniciPreventivi[1].id,
+                            id_riparazione: riparazioniPreventivi[1]?.id || riparazioniPreventivi[0].id,
+                            importo: 430.00,
+                            descrizione: 'Riparazione centralina motore',
+                            data_scadenza: '2025-06-20',
+                            stato: 'accettato'
+                        },
+                        {
+                            id_meccanico: meccaniciPreventivi[2].id,
+                            id_riparazione: riparazioniPreventivi[2]?.id || riparazioniPreventivi[0].id,
+                            importo: 120.00,
+                            descrizione: 'Cambio pneumatici invernali',
+                            data_scadenza: '2025-06-10',
+                            stato: 'rifiutato'
+                        }
+                    ];
+        
+                    for (const preventivo of preventivi) {
+                        await db.run(
+                            `INSERT INTO preventivi (
+                                id_meccanico, id_riparazione, importo, descrizione, data_scadenza, stato
+                            ) VALUES (?, ?, ?, ?, ?, ?)`,
+                            [
+                                preventivo.id_meccanico,
+                                preventivo.id_riparazione,
+                                preventivo.importo,
+                                preventivo.descrizione,
+                                preventivo.data_scadenza,
+                                preventivo.stato
+                            ]
+                        );
+                    }
+                    console.log('Preventivi inseriti.');
+                } else {
+                    console.log('Non ci sono abbastanza meccanici o riparazioni per creare preventivi.');
+                }
+        
         // 4. Inserisci servizi-meccanici
         console.log('Inserimento relazioni servizi-meccanici...');
         // Elimina le relazioni esistenti
@@ -266,7 +329,8 @@ async function seed() {
                 telefono: '3336789012',
                 indirizzo: 'Via Veneto 12',
                 citta: 'Milano',
-                cap: '20100'
+                cap: '20100',
+                avatar: '/media/img/default_mechanic.png'
             },
             {
                 nome: 'Laura',
@@ -276,7 +340,8 @@ async function seed() {
                 telefono: '3398765432',
                 indirizzo: 'Via Roma 56',
                 citta: 'Roma',
-                cap: '00100'
+                cap: '00100',
+                avatar: '/media/img/default_mechanic.png'
             },
             {
                 nome: 'Giovanni',
@@ -286,15 +351,16 @@ async function seed() {
                 telefono: '3351234567',
                 indirizzo: 'Corso Nazionale 78',
                 citta: 'Torino',
-                cap: '10100'
+                cap: '10100',
+                avatar: '/media/img/default_mechanic.png'
             }
         ];
         
         for (const cliente of clienti) {
             await db.run(
                 `INSERT INTO clienti (
-                    nome, cognome, email, password, telefono, indirizzo, citta, cap, tipo
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                    nome, cognome, email, password, telefono, indirizzo, citta, cap, tipo, avatar
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
                 [
                     cliente.nome, 
                     cliente.cognome, 
@@ -304,7 +370,8 @@ async function seed() {
                     cliente.indirizzo, 
                     cliente.citta, 
                     cliente.cap, 
-                    'cliente'
+                    'cliente',
+                    cliente.avatar
                 ]
             );
         }
@@ -317,9 +384,9 @@ async function seed() {
         
         const adminPassword = await hashPassword('admin123');
         await db.run(
-            `INSERT INTO admin (nome, email, password, tipo)
-             VALUES (?, ?, ?, ?)`,
-            ['Admin', 'admin@mechfinder.it', adminPassword, 'admin']
+            `INSERT INTO admin (nome, email, password, tipo, avatar)
+             VALUES (?, ?, ?, ?, ?)`,
+            ['Admin', 'admin@mechfinder.it', adminPassword, 'admin', '/media/img/default_mechanic.png']
         );
         console.log('Admin inserito.');
         

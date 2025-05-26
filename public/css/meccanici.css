@@ -1,0 +1,488 @@
+/* CSS per la pagina Meccanici */
+
+/* Header della pagina */
+.mechanics-header {
+    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5)), url('/media/img/bg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    color: white;
+    padding: 5rem 0 4rem;
+    margin-bottom: 3rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.mechanics-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M20 20c0-5.5-4.5-10-10-10s-10 4.5-10 10 4.5 10 10 10 10-4.5 10-10zm10 0c0-5.5-4.5-10-10-10s-10 4.5-10 10 4.5 10 10 10 10-4.5 10-10z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+    opacity: 0.3;
+}
+
+.mechanics-header .container {
+    position: relative;
+    z-index: 2;
+}
+
+.mechanics-header h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.mechanics-header .subtitle {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    margin-bottom: 2rem;
+}
+
+.search-stats {
+    background: rgba(255,255,255,0.15);
+    border-radius: 10px;
+    padding: 1rem 2rem;
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.2);
+    display: inline-block;
+}
+
+/* Sidebar filtri */
+.filter-sidebar {
+    position: sticky;
+    top: 120px;
+    max-height: calc(100vh - 140px);
+    overflow-y: auto;
+}
+
+.filter-card {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.filter-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 35px rgba(0,0,0,0.15);
+}
+
+.filter-card h2 {
+    color: var(--primary-blue);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.filter-card h2::before {
+    content: "\f0b0";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: var(--accent-blue);
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 0.5rem;
+}
+
+.form-control, .form-select {
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+    background: white;
+}
+
+.btn-filter {
+    background: linear-gradient(135deg, var(--primary-blue), var(--accent-blue));
+    border: none;
+    border-radius: 10px;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn-filter:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+}
+
+.btn-reset {
+    border: 2px solid #dee2e6;
+    border-radius: 10px;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    background: white;
+    color: var(--text-dark);
+}
+
+.btn-reset:hover {
+    border-color: var(--accent-blue);
+    background: var(--accent-blue);
+    color: white;
+}
+
+/* Griglia meccanici */
+.mechanics-grid {
+    margin-top: 1rem;
+}
+
+.mechanics-grid .row {
+    margin: 0 -0.75rem;
+}
+
+.mechanics-grid .col-lg-6 {
+    padding: 0 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.mechanic-card {
+    background: white;
+    border-radius: 15px;
+    padding: 0;
+    border: none;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    overflow: hidden;
+    position: relative;
+    height: auto;
+    min-height: 300px;
+}
+
+.mechanic-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(135deg, var(--primary-blue), var(--accent-blue));
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.mechanic-card:hover::before {
+    transform: scaleX(1);
+}
+
+.mechanic-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+}
+
+.mechanic-card-body {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.mechanic-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.mechanic-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #f8f9fa;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-right: 1rem;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.mechanic-card:hover .mechanic-avatar {
+    transform: scale(1.1);
+    border-color: var(--accent-blue);
+}
+
+.mechanic-info h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 0.25rem;
+    line-height: 1.3;
+}
+
+.mechanic-specialty {
+    background: linear-gradient(135deg, var(--accent-blue), #3498db);
+    color: white;
+    padding: 0.2rem 0.6rem;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.mechanic-rating {
+    margin: 0.75rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.rating-stars {
+    color: #ffd700;
+    font-size: 1.1rem;
+}
+
+.rating-value {
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.rating-count {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.mechanic-details {
+    margin: 1rem 0;
+    flex-grow: 1;
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    color: var(--text-dark);
+    font-size: 0.9rem;
+}
+
+.detail-icon {
+    width: 16px;
+    margin-right: 0.5rem;
+    color: var(--accent-blue);
+    flex-shrink: 0;
+}
+
+.mechanic-description {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 0.75rem;
+    margin: 1rem 0;
+    border-left: 3px solid var(--accent-blue);
+    color: #6c757d;
+    line-height: 1.5;
+    font-size: 0.85rem;
+}
+
+.mechanic-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: auto;
+    flex-wrap: wrap;
+}
+
+.btn-profile {
+    background: linear-gradient(135deg, var(--primary-blue), var(--accent-blue));
+    border: none;
+    border-radius: 8px;
+    padding: 0.6rem 1.2rem;
+    color: white;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    flex: 1;
+    min-width: 120px;
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+.btn-profile:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+    color: white;
+}
+
+.btn-quote {
+    background: white;
+    border: 2px solid var(--success-green);
+    color: var(--success-green);
+    border-radius: 8px;
+    padding: 0.6rem 1.2rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    flex: 1;
+    min-width: 120px;
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+.btn-quote:hover {
+    background: var(--success-green);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(46, 204, 113, 0.4);
+}
+
+/* Stato vuoto */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #6c757d;
+}
+
+.empty-state .empty-icon {
+    font-size: 4rem;
+    color: #dee2e6;
+    margin-bottom: 2rem;
+}
+
+.empty-state h3 {
+    color: var(--text-dark);
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.empty-state p {
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+}
+
+.btn-clear-filters {
+    background: var(--accent-blue);
+    border: none;
+    color: white;
+    padding: 0.75rem 2rem;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-clear-filters:hover {
+    background: var(--primary-blue);
+    transform: translateY(-2px);
+}
+
+/* Animazioni */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.mechanic-card {
+    animation: fadeInUp 0.6s ease;
+}
+
+.mechanic-card:nth-child(2) { animation-delay: 0.1s; }
+.mechanic-card:nth-child(3) { animation-delay: 0.2s; }
+.mechanic-card:nth-child(4) { animation-delay: 0.3s; }
+
+/* Responsive */
+@media (max-width: 992px) {
+    .filter-sidebar {
+        position: static;
+        margin-bottom: 2rem;
+    }
+    
+    .mechanics-header {
+        padding: 3rem 0 2.5rem;
+    }
+    
+    .mechanics-header h1 {
+        font-size: 2.5rem;
+    }
+    
+    .mechanics-grid .col-lg-6 {
+        margin-bottom: 1.5rem;
+    }
+    
+    .mechanic-actions {
+        flex-direction: column;
+    }
+    
+    .btn-profile,
+    .btn-quote {
+        min-width: auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .mechanics-header {
+        padding: 2.5rem 0 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .mechanics-header h1 {
+        font-size: 2rem;
+    }
+    
+    .mechanics-header .subtitle {
+        font-size: 1rem;
+    }
+    
+    .mechanic-header {
+        flex-direction: column;
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+    
+    .mechanic-avatar {
+        margin-right: 0;
+        margin-bottom: 0.75rem;
+    }
+    
+    .filter-card {
+        padding: 1.25rem;
+    }
+    
+    .mechanic-card-body {
+        padding: 1.25rem;
+    }
+    
+    .mechanics-grid .col-lg-6 {
+        padding: 0 0.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .mechanics-grid .row {
+        margin: 0 -0.5rem;
+    }
+}
+
+/* Loading skeleton */
+.skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}

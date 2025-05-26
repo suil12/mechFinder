@@ -3,6 +3,8 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../database/db');
+// Importa esplicitamente la funzione
+const { getServiceIcon } = require('../utils/serviceIcons');
 
 // Home page
 router.get('/', async (req, res) => {
@@ -25,21 +27,23 @@ router.get('/', async (req, res) => {
         
         res.render('index', { 
             title: 'MechFinder - Trova il meccanico più adatto a te',
-            active: 'home',
+            active: 'index',
             meccaniciEvidenziati,
             servizi,
             recensioni,
-            query: req.query.q || ''
+            query: req.query.q || '',
+            getServiceIcon
         });
     } catch (err) {
         console.error('Errore nella home page:', err);
         res.render('index', { 
             title: 'MechFinder - Trova il meccanico più adatto a te',
-            active: 'home',
+            active: 'index',
             meccaniciEvidenziati: [],
             servizi: [],
             recensioni: [],
-            query: req.query.q || ''
+            query: req.query.q || '',
+            getServiceIcon
         });
     }
 });

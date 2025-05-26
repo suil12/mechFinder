@@ -1,0 +1,208 @@
+/* Stili per la sezione CTA */
+.cta-section {
+    background: linear-gradient(145deg, var(--accent-blue), #1e40af);
+    color: white;
+    padding: 5rem 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.cta-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        radial-gradient(circle at 5% 25%, rgba(255, 255, 255, 0.1) 0%, transparent 20%),
+        radial-gradient(circle at 95% 75%, rgba(255, 255, 255, 0.1) 0%, transparent 20%);
+    z-index: 0;
+}
+
+.cta-content {
+    position: relative;
+    z-index: 1;
+}
+
+.cta-heading {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    animation: fadeInLeft 1s ease-out;
+}
+
+.cta-subheading {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    margin-bottom: 2rem;
+    animation: fadeInLeft 1s ease-out 0.2s forwards;
+}
+
+.cta-list {
+    margin-bottom: 2rem;
+}
+
+.cta-list-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    animation: fadeInLeft 1s ease-out calc(0.2s + var(--i, 0) * 0.1s) forwards;
+    opacity: 0;
+}
+
+.cta-list-item:nth-child(1) {
+    --i: 1;
+}
+
+.cta-list-item:nth-child(2) {
+    --i: 2;
+}
+
+.cta-list-item:nth-child(3) {
+    --i: 3;
+}
+
+.cta-list-item:nth-child(4) {
+    --i: 4;
+}
+
+.cta-icon {
+    width: 24px;
+    height: 24px;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+}
+
+.cta-text {
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: white;
+    color: var(--accent-blue);
+    font-weight: 600;
+    padding: 1rem 2rem;
+    border-radius: var(--radius-full);
+    border: none;
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 1.1rem;
+    animation: fadeInUp 1s ease-out 0.6s forwards;
+    opacity: 0;
+}
+
+.cta-btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    background-color: var(--accent-orange);
+    color: white;
+}
+
+.cta-btn:hover i {
+    transform: translateX(5px);
+}
+
+.cta-btn i {
+    transition: transform 0.3s ease;
+}
+
+.cta-image {
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    height: 100%;
+    max-height: 400px;
+    animation: fadeInRight 1s ease-out;
+}
+
+.cta-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.cta-image:hover img {
+    transform: scale(1.05);
+}
+
+.cta-image::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.3), transparent);
+    z-index: 2;
+}
+
+/* Animazioni */
+@keyframes fadeInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Media queries */
+@media (max-width: 991px) {
+    .cta-heading {
+        font-size: 2rem;
+    }
+    
+    .cta-subheading {
+        font-size: 1rem;
+    }
+    
+    .cta-btn {
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 767px) {
+    .cta-image {
+        max-height: 300px;
+        margin-top: 2rem;
+    }
+}

@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS meccanici (
     valutazione REAL DEFAULT 0,
     numero_recensioni INTEGER DEFAULT 0,
     data_registrazione DATETIME DEFAULT CURRENT_TIMESTAMP,
-    avatar TEXT DEFAULT 'default_mechanic.png',
+    avatar TEXT DEFAULT '/public/media/img/default_mechanic.png',
     verificato BOOLEAN DEFAULT 0,
     reset_token TEXT,
     reset_token_expires DATETIME,
@@ -98,13 +98,15 @@ CREATE TABLE IF NOT EXISTS riparazioni (
 -- Tabella Preventivi
 CREATE TABLE IF NOT EXISTS preventivi (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id_meccanico INTEGER NOT NULL,
     id_riparazione INTEGER NOT NULL,
     importo REAL NOT NULL,
     descrizione TEXT NOT NULL,
     data_creazione DATETIME DEFAULT CURRENT_TIMESTAMP,
     data_scadenza DATETIME NOT NULL,
     stato TEXT DEFAULT 'in_attesa',
-    FOREIGN KEY (id_riparazione) REFERENCES riparazioni(id) ON DELETE CASCADE
+    FOREIGN KEY (id_riparazione) REFERENCES riparazioni(id) ON DELETE CASCADE,
+    FOREIGN KEY (id_meccanico) REFERENCES meccanici(id) ON DELETE CASCADE
 );
 
 -- Tabella Commenti

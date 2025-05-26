@@ -1,0 +1,97 @@
+/* Effetti Parallax */
+.parallax-bg {
+    position: relative;
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    z-index: 1;
+}
+
+.parallax-bg::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: -1;
+}
+
+.parallax-bg.light-overlay::before {
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+/* Wave dividers */
+.wave-divider {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    overflow: hidden;
+    line-height: 0;
+    z-index: 5;
+}
+
+.wave-divider.wave-top {
+    top: 0;
+}
+
+.wave-divider.wave-bottom {
+    bottom: 0;
+}
+
+.wave-divider svg {
+    display: block;
+    width: calc(100% + 1.3px);
+    height: 70px;
+}
+
+.wave-divider.wave-top .shape-fill {
+    fill: var(--gray-light);
+}
+
+.wave-divider.wave-bottom .shape-fill {
+    fill: var(--primary-color);
+}
+
+/* Sezioni con sfondi decorativi */
+.bg-pattern {
+    position: relative;
+    z-index: 1;
+}
+
+.bg-pattern::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0.05;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.pattern-grid::before {
+    background-image: 
+        linear-gradient(var(--accent-blue) 1px, transparent 1px),
+        linear-gradient(to right, var(--accent-blue) 1px, transparent 1px);
+    background-size: 20px 20px;
+}
+
+.pattern-dots::before {
+    background-image: radial-gradient(var(--accent-blue) 2px, transparent 2px);
+    background-size: 20px 20px;
+}
+
+.pattern-diagonal::before {
+    background-image: 
+        repeating-linear-gradient(
+            45deg,
+            var(--accent-blue),
+            var(--accent-blue) 2px,
+            transparent 2px,
+            transparent 10px
+        );
+}

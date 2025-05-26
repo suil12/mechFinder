@@ -1,0 +1,192 @@
+/* Stili responsivi per tutta la pagina */
+@media (max-width: 1200px) {
+    .hero-title {
+        font-size: 2.8rem;
+    }
+    
+    .search-container {
+        max-width: 600px;
+    }
+    
+    .section-title {
+        font-size: 2.2rem;
+    }
+    
+    .cta-heading {
+        font-size: 2.2rem;
+    }
+}
+
+@media (max-width: 991px) {
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.2rem;
+    }
+    
+    .search-container {
+        max-width: 100%;
+    }
+    
+    .section-title {
+        font-size: 2rem;
+    }
+    
+    .service-card-modern {
+        height: 320px;
+    }
+    
+    .cta-heading {
+        font-size: 2rem;
+    }
+    
+    .cta-image {
+        max-height: 350px;
+    }
+    
+    .footer-content {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+    }
+}
+
+@media (max-width: 767px) {
+    .hero-section {
+        min-height: 500px;
+    }
+    
+    .hero-title {
+        font-size: 2.2rem;
+    }
+    
+    .search-input-custom {
+        padding: 1rem;
+    }
+    
+    .stats-container .row {
+        margin: 0 -10px;
+    }
+    
+    .stat-item {
+        padding: 1rem;
+    }
+    
+    .testimonial-card {
+        flex: 0 0 300px;
+        padding: 1.5rem;
+        min-height: 220px;
+    }
+    
+    .mechanics-slider, .testimonials-carousel {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .hero-section {
+        min-height: 450px;
+    }
+    
+    .hero-title {
+        font-size: 1.8rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1rem;
+    }
+    
+    .search-tags .badge {
+        font-size: 0.75rem;
+        padding: 0.4rem 0.8rem;
+    }
+    
+    .section-subtitle {
+        font-size: 0.8rem;
+    }
+    
+    .section-title {
+        font-size: 1.8rem;
+    }
+    
+    .section-divider {
+        margin: 1rem auto;
+    }
+    
+    .service-card-modern {
+        height: 300px;
+    }
+    
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+    }
+    
+    .stat-number {
+        font-size: 1.8rem;
+    }
+    
+    .stat-title {
+        font-size: 0.85rem;
+    }
+    
+    .mechanic-card-modern {
+        flex: 0 0 260px;
+    }
+    
+    .testimonial-card {
+        flex: 0 0 260px;
+    }
+    
+    .cta-heading {
+        font-size: 1.8rem;
+    }
+    
+    .cta-subheading {
+        font-size: 1rem;
+    }
+    
+    .cta-list-item {
+        margin-bottom: 0.8rem;
+    }
+    
+    .cta-btn {
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
+    }
+    
+    .footer-content {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+}
+
+/* Animazioni per dispositivi che preferiscono animazioni ridotte */
+@media (prefers-reduced-motion: reduce) {
+    .hero-title, 
+    .hero-subtitle,
+    .search-container,
+    .search-tags,
+    .stat-item,
+    .mechanic-card-modern,
+    .testimonial-card,
+    .cta-heading,
+    .cta-subheading,
+    .cta-list-item,
+    .cta-btn,
+    .cta-image {
+        animation: none !important;
+        transition: none !important;
+    }
+    
+    .mechanic-card-modern:hover,
+    .testimonial-card:hover,
+    .service-card-modern:hover,
+    .stat-item:hover,
+    .cta-btn:hover {
+        transform: none !important;
+    }
+}

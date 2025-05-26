@@ -4,6 +4,15 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <!-- Custom JS -->
 <script src="/js/main.js"></script>
+<% if (active === 'index') { %>
+<script src="/js/home-animations.js"></script>
+<% } %>
+<% if (active === 'servizi') { %>
+<script src="/js/servizi.js"></script>
+<% } %>
+<% if (active === 'meccanici') { %>
+<script src="/js/meccanici.js"></script>
+<% } %>
 <% if (active === 'auth') { %>
 <script src="/js/auth.js"></script>
 <% } %>
@@ -15,6 +24,12 @@
 <% } %>
 <% if (active === 'admin') { %>
 <script src="/js/admin.js"></script>
+<% } %>
+<% if (active === 'chi-siamo') { %>
+<script src="/js/chi-siamo.js"></script>
+<% } %>
+<% if (active === 'contatti') { %>
+<script src="/js/contatti.js"></script>
 <% } %>
 
 <script>

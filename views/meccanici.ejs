@@ -3,58 +3,90 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Contatti - MechFinder, trova il meccanico più adatto a te">
-    <meta name="keywords" content="meccanici, contatti, assistenza, riparazioni auto, officina">
+    <meta name="description" content="Meccanici - MechFinder, trova il meccanico più adatto a te">
+    <meta name="keywords" content="meccanici, riparazioni auto, officina, manutenzione, preventivi">
     <meta name="author" content="MechFinder">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/meccanici.css">
     <title>Meccanici - MechFinder</title>
 </head>
 <body>
     <%- include('./common/header') %>
 
     <main>
+        <!-- Header della pagina -->
+        <section class="mechanics-header">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-8">
+                        <h1>I Nostri Meccanici</h1>
+                        <p class="subtitle">Trova il professionista perfetto per la tua auto</p>
+                    </div>
+                    <div class="col-lg-4 text-lg-end">
+                        <div class="search-stats">
+                            <i class="fas fa-users me-2"></i>
+                            <strong><%= meccanici ? meccanici.length : 0 %></strong> meccanici disponibili
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <section class="container py-5">
-            <header class="mb-4">
-                <h1>I Nostri Meccanici</h1>
-            </header>
-            
             <div class="row">
                 <!-- Sidebar filtri -->
                 <aside class="col-lg-3" aria-label="Filtri di ricerca">
                     <section class="filter-sidebar">
                         <div class="filter-card">
-                            <h2 class="h4 mb-3">Filtri</h2>
+                            <h2>Filtri di Ricerca</h2>
                             <form action="/meccanici" method="GET">
                                 <div class="mb-3">
-                                    <label for="nome" class="form-label">Nome o Officina</label>
-                                    <input type="text" class="form-control" id="nome" name="nome" value="<%= filtri.nome %>" placeholder="Nome, cognome o officina">
+                                    <label for="nome" class="form-label">
+                                        <i class="fas fa-search me-2"></i>Nome o Officina
+                                    </label>
+                                    <input type="text" class="form-control" id="nome" name="nome" 
+                                           value="<%= filtri.nome %>" placeholder="Cerca per nome o officina...">
                                 </div>
                                 
                                 <div class="mb-3">
-                                    <label for="specializzazione" class="form-label">Specializzazione</label>
+                                    <label for="specializzazione" class="form-label">
+                                        <i class="fas fa-tools me-2"></i>Specializzazione
+                                    </label>
                                     <select class="form-select" id="specializzazione" name="specializzazione">
                                         <option value="">Tutte le specializzazioni</option>
                                         <% specializzazioni.forEach(spec => { %>
-                                            <option value="<%= spec.specializzazione %>" <%= filtri.specializzazione === spec.specializzazione ? 'selected' : '' %>><%= spec.specializzazione %></option>
+                                            <option value="<%= spec.specializzazione %>" 
+                                                    <%= filtri.specializzazione === spec.specializzazione ? 'selected' : '' %>>
+                                                <%= spec.specializzazione %>
+                                            </option>
                                         <% }) %>
                                     </select>
                                 </div>
                                 
                                 <div class="mb-3">
-                                    <label for="citta" class="form-label">Città</label>
+                                    <label for="citta" class="form-label">
+                                        <i class="fas fa-map-marker-alt me-2"></i>Città
+                                    </label>
                                     <select class="form-select" id="citta" name="citta">
                                         <option value="">Tutte le città</option>
                                         <% citta_list.forEach(c => { %>
-                                            <option value="<%= c.citta %>" <%= filtri.citta === c.citta ? 'selected' : '' %>><%= c.citta %></option>
+                                            <option value="<%= c.citta %>" 
+                                                    <%= filtri.citta === c.citta ? 'selected' : '' %>>
+                                                <%= c.citta %>
+                                            </option>
                                         <% }) %>
                                     </select>
                                 </div>
                                 
                                 <div class="d-grid gap-2">
-                                    <button type="submit" class="btn btn-primary">Applica filtri</button>
-                                    <button type="reset" class="btn btn-outline-secondary">Reimposta</button>
+                                    <button type="submit" class="btn btn-filter">
+                                        <i class="fas fa-filter me-2"></i>Applica Filtri
+                                    </button>
+                                    <button type="reset" class="btn btn-reset">
+                                        <i class="fas fa-undo me-2"></i>Reimposta
+                                    </button>
                                 </div>
                             </form>
                         </div>
@@ -64,60 +96,102 @@
                 <!-- Elenco meccanici -->
                 <section class="col-lg-9" aria-label="Elenco dei meccanici disponibili">
                     <% if (meccanici && meccanici.length > 0) { %>
-                        <div class="row row-cols-1 row-cols-md-2 g-4">
-                            <% meccanici.forEach(meccanico => { %>
-                                <article class="col">
-                                    <div class="card mechanic-card h-100 border-0 shadow-sm">
-                                        <div class="card-body">
-                                            <header class="d-flex align-items-center mb-3">
-                                                <img src="<%= meccanico.avatar || '/media/img/default_mechanic.png' %>" alt="<%= meccanico.nome %> <%= meccanico.cognome %>" class="rounded-circle me-3" width="70" height="70" style="object-fit: cover;">
-                                                <div>
-                                                    <h3 class="card-title h5 mb-1"><%= meccanico.nome_officina || `${meccanico.nome} ${meccanico.cognome}` %></h3>
-                                                    <p class="card-text text-muted mb-0"><%= meccanico.specializzazione %></p>
+                        <div class="mechanics-grid">
+                            <div class="row">
+                                <% meccanici.forEach(meccanico => { %>
+                                    <div class="col-lg-6">
+                                        <article class="mechanic-card h-100">
+                                            <div class="mechanic-card-body">
+                                                <!-- Header con avatar e info base -->
+                                                <div class="mechanic-header">
+                                                    <img src="<%= meccanico.avatar || '/media/img/default_mechanic.png' %>" 
+                                                         alt="<%= meccanico.nome %> <%= meccanico.cognome %>" 
+                                                         class="mechanic-avatar">
+                                                    <div class="mechanic-info">
+                                                        <h3><%= meccanico.nome_officina || `${meccanico.nome} ${meccanico.cognome}` %></h3>
+                                                        <span class="mechanic-specialty">
+                                                            <i class="fas fa-tools me-1"></i>
+                                                            <%= meccanico.specializzazione %>
+                                                        </span>
+                                                    </div>
                                                 </div>
-                                            </header>
-                                            
-                                            <section class="mb-3" aria-label="Valutazione">
-                                                <div class="rating">
-                                                    <% for(let i=0; i<Math.floor(meccanico.valutazione); i++) { %>
-                                                        <i class="fas fa-star text-warning"></i>
-                                                    <% } %>
-                                                    <% for(let i=0; i<(5-Math.floor(meccanico.valutazione)); i++) { %>
-                                                        <i class="far fa-star text-warning"></i>
-                                                    <% } %>
-                                                    <span class="ms-2"><%= meccanico.valutazione.toFixed(1) %></span>
-                                                    <span class="text-muted">(<%= meccanico.numero_recensioni %> recensioni)</span>
+                                                
+                                                <!-- Rating -->
+                                                <div class="mechanic-rating">
+                                                    <div class="rating-stars">
+                                                        <% for(let i=0; i<Math.floor(meccanico.valutazione); i++) { %>
+                                                            <i class="fas fa-star"></i>
+                                                        <% } %>
+                                                        <% if(meccanico.valutazione % 1 !== 0) { %>
+                                                            <i class="fas fa-star-half-alt"></i>
+                                                        <% } %>
+                                                        <% for(let i=0; i<(5-Math.ceil(meccanico.valutazione)); i++) { %>
+                                                            <i class="far fa-star"></i>
+                                                        <% } %>
+                                                    </div>
+                                                    <span class="rating-value"><%= meccanico.valutazione.toFixed(1) %></span>
+                                                    <span class="rating-count">(<%= meccanico.numero_recensioni %>)</span>
                                                 </div>
-                                            </section>
-                                            
-                                            <p class="mb-1"><i class="fas fa-map-marker-alt text-danger me-2"></i> <%= meccanico.citta || 'N/D' %></p>
-                                            <p class="mb-3"><i class="fas fa-phone-alt text-primary me-2"></i> <%= meccanico.telefono || 'N/D' %></p>
-                                            
-                                            <section aria-label="Descrizione meccanico" class="mb-3">
+                                                
+                                                <!-- Dettagli di contatto -->
+                                                <div class="mechanic-details">
+                                                    <div class="detail-item">
+                                                        <i class="fas fa-map-marker-alt detail-icon"></i>
+                                                        <span><%= meccanico.citta || 'Città non specificata' %></span>
+                                                    </div>
+                                                    <div class="detail-item">
+                                                        <i class="fas fa-phone detail-icon"></i>
+                                                        <span><%= meccanico.telefono || 'Non disponibile' %></span>
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- Descrizione -->
                                                 <% if (meccanico.descrizione) { %>
-                                                    <p class="card-text"><%= meccanico.descrizione.length > 100 ? meccanico.descrizione.substring(0, 100) + '...' : meccanico.descrizione %></p>
+                                                    <div class="mechanic-description">
+                                                        <i class="fas fa-quote-left me-2"></i>
+                                                        <%= meccanico.descrizione.length > 100 ? 
+                                                            meccanico.descrizione.substring(0, 100) + '...' : 
+                                                            meccanico.descrizione %>
+                                                    </div>
                                                 <% } else { %>
-                                                    <p class="card-text text-muted fst-italic">Nessuna descrizione disponibile</p>
+                                                    <div class="mechanic-description">
+                                                        <i class="fas fa-info-circle me-2"></i>
+                                                        Meccanico specializzato in <%= meccanico.specializzazione.toLowerCase() %>.
+                                                    </div>
                                                 <% } %>
-                                            </section>
-                                            
-                                            <footer class="d-flex justify-content-between">
-                                                <a href="/meccanici/<%= meccanico.id %>" class="btn btn-primary">Visualizza profilo</a>
-                                                <% if (isAuthenticated && isCliente) { %>
-                                                    <a href="/riparazioni/richiedi/<%= meccanico.id %>" class="btn btn-outline-success">Richiedi preventivo</a>
-                                                <% } %>
-                                            </footer>
-                                        </div>
+                                                
+                                                <!-- Pulsanti azione -->
+                                                <div class="mechanic-actions">
+                                                    <a href="/meccanici/<%= meccanico.id %>" class="btn-profile">
+                                                        <i class="fas fa-user me-1"></i>
+                                                        Profilo
+                                                    </a>
+                                                    <% if (isAuthenticated && isCliente) { %>
+                                                        <a href="/riparazioni/richiedi/<%= meccanico.id %>" class="btn-quote">
+                                                            <i class="fas fa-calculator me-1"></i>
+                                                            Preventivo
+                                                        </a>
+                                                    <% } %>
+                                                </div>
+                                            </div>
+                                        </article>
                                     </div>
-                                </article>
-                            <% }) %>
+                                <% }) %>
+                            </div>
                         </div>
                     <% } else { %>
-                        <section class="alert alert-info text-center py-5" aria-label="Nessun meccanico trovato">
-                            <i class="fas fa-search fa-3x mb-3"></i>
+                        <!-- Stato vuoto -->
+                        <div class="empty-state">
+                            <div class="empty-icon">
+                                <i class="fas fa-search"></i>
+                            </div>
                             <h3>Nessun meccanico trovato</h3>
-                            <p>Prova a modificare i filtri di ricerca.</p>
-                        </section>
+                            <p>Non abbiamo trovato meccanici che corrispondono ai tuoi criteri di ricerca.</p>
+                            <button class="btn btn-clear-filters" onclick="window.location.href='/meccanici'">
+                                <i class="fas fa-undo me-2"></i>
+                                Mostra tutti i meccanici
+                            </button>
+                        </div>
                     <% } %>
                 </section>
             </div>

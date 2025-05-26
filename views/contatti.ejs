@@ -8,110 +8,244 @@
   <meta name="author" content="MechFinder">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/contatti.css">
   <title>Contatti - MechFinder</title>
 </head>
 <body>
   <%- include('./common/header') %>
+  
   <main>
-    <header>
-      <div class="container">
-        <h1 class="fw-bold mb-3">Contattaci</h1>
-        <p class="lead mb-4">Hai domande, suggerimenti o hai bisogno di assistenza? Siamo qui per aiutarti.</p>
+    <!-- Contact Hero Section -->
+    <section class="contact-hero">
+      <div class="hero-background">
+        <div class="parallax-overlay"></div>
       </div>
-    </header>
+      <div class="container">
+        <div class="row justify-content-center text-center">
+          <div class="col-lg-8">
+            <h1 class="hero-title" data-aos="fade-up">Contattaci</h1>
+            <p class="hero-subtitle" data-aos="fade-up" data-aos-delay="200">
+              Hai domande, suggerimenti o hai bisogno di assistenza? Siamo qui per aiutarti in ogni momento.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
 
-    <!-- Sezione Contatti -->
-    <section class="container mb-5">
-      <div class="row g-5">
-        <!-- Informazioni di contatto -->
-        <div class="col-lg-4">
-          <div class="card shadow-sm h-100">
-            <div class="card-body">
-              <h3 class="fs-4 mb-4 text-primary">Informazioni di contatto</h3>
-              
-              <div class="mb-4">
-                <h4 class="fs-5 mb-2"><i class="fas fa-map-marker-alt me-2 text-primary"></i> Sede principale</h4>
-                <p class="mb-0">Via Roma, 123</p>
-                <p>20121 Milano, Italia</p>
+    <!-- Quick Contact Cards -->
+    <section class="quick-contact-section">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="quick-contact-card">
+              <div class="contact-icon">
+                <i class="fas fa-phone"></i>
               </div>
-              
-              <div class="mb-4">
-                <h4 class="fs-5 mb-2"><i class="fas fa-phone me-2 text-primary"></i> Telefono</h4>
-                <p class="mb-1">Supporto clienti: <a href="tel:+390123456789">+39 01 2345 6789</a></p>
-                <p>Supporto meccanici: <a href="tel:+390123456780">+39 01 2345 6780</a></p>
+              <h3>Chiamaci</h3>
+              <p>Assistenza immediata per le tue esigenze</p>
+              <a href="tel:+390123456789" class="contact-link">+39 01 2345 6789</a>
+              <div class="contact-hours">Lun-Ven: 9:00-18:00</div>
+            </div>
+          </div>
+          
+          <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
+            <div class="quick-contact-card">
+              <div class="contact-icon">
+                <i class="fas fa-envelope"></i>
               </div>
-              
-              <div class="mb-4">
-                <h4 class="fs-5 mb-2"><i class="fas fa-envelope me-2 text-primary"></i> Email</h4>
-                <p class="mb-1">Informazioni: <a href="mailto:info@mechfinder.it">info@mechfinder.it</a></p>
-                <p class="mb-1">Supporto: <a href="mailto:supporto@mechfinder.it">supporto@mechfinder.it</a></p>
-                <p>Business: <a href="mailto:business@mechfinder.it">business@mechfinder.it</a></p>
+              <h3>Scrivi un'Email</h3>
+              <p>Ti risponderemo entro 24 ore</p>
+              <a href="mailto:info@mechfinder.it" class="contact-link">info@mechfinder.it</a>
+              <div class="contact-hours">Risposta garantita</div>
+            </div>
+          </div>
+          
+          <div class="col-lg-4" data-aos="fade-up" data-aos-delay="300">
+            <div class="quick-contact-card">
+              <div class="contact-icon">
+                <i class="fas fa-comments"></i>
               </div>
-              
-              <div>
-                <h4 class="fs-5 mb-2"><i class="fas fa-clock me-2 text-primary"></i> Orari di servizio</h4>
-                <p class="mb-1">Lunedì - Venerdì: 9:00 - 18:00</p>
-                <p>Sabato: 9:00 - 13:00</p>
-              </div>
+              <h3>Chat dal Vivo</h3>
+              <p>Supporto immediato online</p>
+              <a href="#" class="contact-link" onclick="openLiveChat()">Avvia Chat</a>
+              <div class="contact-hours">Online ora</div>
             </div>
           </div>
         </div>
-        
-        <!-- Modulo di contatto -->
-        <div class="col-lg-8">
-          <div class="card shadow-sm">
-            <div class="card-body">
-              <h3 class="fs-4 mb-4 text-primary">Inviaci un messaggio</h3>
+      </div>
+    </section>
+
+    <!-- Contact Information & Form Section -->
+    <section class="contact-section">
+      <div class="container">
+        <div class="row g-5">
+          <!-- Contact Information -->
+          <div class="col-lg-4" data-aos="fade-right">
+            <div class="contact-info-card">
+              <h3 class="info-title">Informazioni di Contatto</h3>
               
-              <form id="contactForm">
+              <div class="info-item">
+                <div class="info-icon">
+                  <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <div class="info-content">
+                  <h4>Sede Principale</h4>
+                  <p>Via Roma, 123<br>20121 Milano, Italia</p>
+                </div>
+              </div>
+              
+              <div class="info-item">
+                <div class="info-icon">
+                  <i class="fas fa-phone"></i>
+                </div>
+                <div class="info-content">
+                  <h4>Numeri di Telefono</h4>
+                  <p>Supporto clienti: <a href="tel:+390123456789">+39 01 2345 6789</a></p>
+                  <p>Supporto meccanici: <a href="tel:+390123456780">+39 01 2345 6780</a></p>
+                </div>
+              </div>
+              
+              <div class="info-item">
+                <div class="info-icon">
+                  <i class="fas fa-envelope"></i>
+                </div>
+                <div class="info-content">
+                  <h4>Indirizzi Email</h4>
+                  <p>Informazioni: <a href="mailto:info@mechfinder.it">info@mechfinder.it</a></p>
+                  <p>Supporto: <a href="mailto:supporto@mechfinder.it">supporto@mechfinder.it</a></p>
+                  <p>Business: <a href="mailto:business@mechfinder.it">business@mechfinder.it</a></p>
+                </div>
+              </div>
+              
+              <div class="info-item">
+                <div class="info-icon">
+                  <i class="fas fa-clock"></i>
+                </div>
+                <div class="info-content">
+                  <h4>Orari di Servizio</h4>
+                  <p>Lunedì - Venerdì: 9:00 - 18:00</p>
+                  <p>Sabato: 9:00 - 13:00</p>
+                  <p>Domenica: Chiuso</p>
+                </div>
+              </div>
+              
+              <div class="social-links">
+                <h4>Seguici sui Social</h4>
+                <div class="social-icons">
+                  <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                  <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                  <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                  <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Contact Form -->
+          <div class="col-lg-8" data-aos="fade-left">
+            <div class="contact-form-card">
+              <h3 class="form-title">Inviaci un Messaggio</h3>
+              <p class="form-subtitle">Compila il modulo e ti risponderemo al più presto</p>
+              
+              <form id="contactForm" class="contact-form">
                 <div class="row g-3">
                   <div class="col-md-6">
-                    <label for="nome" class="form-label">Nome e Cognome*</label>
-                    <input type="text" class="form-control" id="nome" required>
-                  </div>
-                  
-                  <div class="col-md-6">
-                    <label for="email" class="form-label">Email*</label>
-                    <input type="email" class="form-control" id="email" required>
-                  </div>
-                  
-                  <div class="col-md-6">
-                    <label for="telefono" class="form-label">Telefono</label>
-                    <input type="tel" class="form-control" id="telefono">
-                  </div>
-                  
-                  <div class="col-md-6">
-                    <label for="oggetto" class="form-label">Oggetto*</label>
-                    <select class="form-select" id="oggetto" required>
-                      <option value="" selected disabled>Seleziona un oggetto...</option>
-                      <option value="informazioni">Richiesta informazioni</option>
-                      <option value="assistenza">Assistenza tecnica</option>
-                      <option value="iscrizione">Iscrizione meccanici</option>
-                      <option value="partnership">Richiesta partnership</option>
-                      <option value="altro">Altro</option>
-                    </select>
-                  </div>
-                  
-                  <div class="col-12">
-                    <label for="messaggio" class="form-label">Messaggio*</label>
-                    <textarea class="form-control" id="messaggio" rows="5" required></textarea>
-                  </div>
-                  
-                  <div class="col-12">
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="privacy" required>
-                      <label class="form-check-label" for="privacy">
-                        Ho letto e accetto la <a href="/privacy-policy">Privacy Policy</a> e autorizzo il trattamento dei miei dati personali*
-                      </label>
+                    <div class="form-group">
+                      <label for="nome" class="form-label">Nome e Cognome *</label>
+                      <input type="text" class="form-control" id="nome" name="nome" required>
+                      <div class="validation-message"></div>
                     </div>
                   </div>
                   
-                  <div class="col-12 mt-4">
-                    <button type="submit" class="btn btn-primary btn-lg">
-                      <i class="fas fa-paper-plane me-2"></i> Invia messaggio
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="email" class="form-label">Email *</label>
+                      <input type="email" class="form-control" id="email" name="email" required>
+                      <div class="validation-message"></div>
+                    </div>
+                  </div>
+                  
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="telefono" class="form-label">Telefono</label>
+                      <input type="tel" class="form-control" id="telefono" name="telefono">
+                      <div class="validation-message"></div>
+                    </div>
+                  </div>
+                  
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="oggetto" class="form-label">Oggetto *</label>
+                      <select class="form-select" id="oggetto" name="oggetto" required>
+                        <option value="" selected disabled>Seleziona un oggetto...</option>
+                        <option value="informazioni">Richiesta Informazioni</option>
+                        <option value="assistenza">Assistenza Tecnica</option>
+                        <option value="iscrizione">Iscrizione Meccanici</option>
+                        <option value="partnership">Richiesta Partnership</option>
+                        <option value="feedback">Feedback</option>
+                        <option value="altro">Altro</option>
+                      </select>
+                      <div class="validation-message"></div>
+                    </div>
+                  </div>
+                  
+                  <div class="col-12">
+                    <div class="form-group">
+                      <label for="messaggio" class="form-label">Messaggio *</label>
+                      <textarea class="form-control" id="messaggio" name="messaggio" rows="6" required 
+                                placeholder="Descrivi la tua richiesta nel dettaglio..."></textarea>
+                      <div class="char-counter">
+                        <span id="charCount">0</span>/1000 caratteri
+                      </div>
+                      <div class="validation-message"></div>
+                    </div>
+                  </div>
+                  
+                  <div class="col-12">
+                    <div class="form-group">
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="privacy" name="privacy" required>
+                        <label class="form-check-label" for="privacy">
+                          Accetto la <a href="/privacy" target="_blank">Privacy Policy</a> e autorizzo il trattamento dei miei dati personali *
+                        </label>
+                        <div class="validation-message"></div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="col-12">
+                    <div class="form-group">
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="newsletter" name="newsletter">
+                        <label class="form-check-label" for="newsletter">
+                          Desidero ricevere newsletter e aggiornamenti sui servizi MechFinder
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="col-12">
+                    <button type="submit" class="btn btn-primary btn-send" id="submitBtn">
+                      <span class="btn-text">
+                        <i class="fas fa-paper-plane me-2"></i>Invia Messaggio
+                      </span>
+                      <span class="btn-loading d-none">
+                        <i class="fas fa-spinner fa-spin me-2"></i>Invio in corso...
+                      </span>
                     </button>
                   </div>
+                </div>
+                
+                <div id="form-success" class="alert alert-success d-none mt-3">
+                  <i class="fas fa-check-circle me-2"></i>
+                  Messaggio inviato con successo! Ti risponderemo al più presto.
+                </div>
+                
+                <div id="form-error" class="alert alert-danger d-none mt-3">
+                  <i class="fas fa-exclamation-triangle me-2"></i>
+                  Si è verificato un errore. Riprova o contattaci direttamente.
                 </div>
               </form>
             </div>
@@ -119,73 +253,120 @@
         </div>
       </div>
     </section>
-    
-    <!-- Mappa -->
-    <section class="container-fluid px-0 mb-5">
-      <div class="container mb-4">
-        <h2 class="text-center mb-4">Dove siamo</h2>
-      </div>
-      <div class="map-container">
-        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2798.088550397349!2d9.186329376542725!3d45.46519167107261!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4786c6aec34636a1%3A0xab7f4e27101a2e19!2sPiazza%20del%20Duomo%2C%20Milano%20MI!5e0!3m2!1sit!2sit!4v1684145216150!5m2!1sit!2sit" 
-                width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+
+    <!-- Map Section -->
+    <section class="map-section">
+      <div class="container">
+        <div class="text-center mb-5">
+          <h2 class="section-title" data-aos="fade-up">Vieni a trovarci</h2>
+          <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">
+            La nostra sede è nel cuore di Milano, facilmente raggiungibile con tutti i mezzi
+          </p>
+        </div>
+        
+        <div class="map-container" data-aos="fade-up" data-aos-delay="200">
+          <div class="map-overlay">
+            <div class="map-info">
+              <h4><i class="fas fa-map-marker-alt me-2"></i>MechFinder HQ</h4>
+              <p>Via Roma, 123 - 20121 Milano</p>
+              <a href="https://maps.google.com" target="_blank" class="btn btn-light btn-sm">
+                <i class="fas fa-directions me-2"></i>Ottieni Indicazioni
+              </a>
+            </div>
+          </div>
+          <iframe 
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2798.0!2d9.1889!3d45.4643!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDXCsDI3JzUxLjUiTiA5wrAxMScyMC4wIkU!5e0!3m2!1sen!2sit!4v1234567890"
+            width="100%" 
+            height="400" 
+            style="border:0;" 
+            allowfullscreen="" 
+            loading="lazy" 
+            referrerpolicy="no-referrer-when-downgrade">
+          </iframe>
+        </div>
       </div>
     </section>
-    
-    <!-- FAQ -->
-    <section class="container mb-5">
-      <h2 class="text-center mb-4">Domande frequenti</h2>
-      
-      <div class="row justify-content-center">
-        <div class="col-lg-8">
-          <div class="accordion" id="faqAccordion">
-            <div class="accordion-item">
-              <h2 class="accordion-header" id="faqHeading1">
-                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse1" aria-expanded="true" aria-controls="faqCollapse1">
-                  Come posso registrarmi come meccanico?
-                </button>
-              </h2>
-              <div id="faqCollapse1" class="accordion-collapse collapse show" aria-labelledby="faqHeading1" data-bs-parent="#faqAccordion">
-                <div class="accordion-body">
-                  Puoi registrarti come meccanico cliccando sul pulsante "Diventa un meccanico" nella homepage o nell'header del sito. Compila il form di registrazione con le tue informazioni professionali e invia la richiesta. Il nostro team verificherà le tue credenziali e attiverà il tuo profilo entro 24-48 ore lavorative.
+
+    <!-- FAQ Section -->
+    <section class="faq-section">
+      <div class="container">
+        <div class="text-center mb-5">
+          <h2 class="section-title" data-aos="fade-up">Domande Frequenti</h2>
+          <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">
+            Trova rapidamente le risposte alle domande più comuni
+          </p>
+        </div>
+        
+        <div class="row justify-content-center">
+          <div class="col-lg-8">
+            <div class="accordion" id="faqAccordion" data-aos="fade-up" data-aos-delay="200">
+              <div class="accordion-item">
+                <h3 class="accordion-header">
+                  <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                    <i class="fas fa-question-circle me-3"></i>
+                    Come posso registrarmi su MechFinder?
+                  </button>
+                </h3>
+                <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                  <div class="accordion-body">
+                    La registrazione è semplice e gratuita. Clicca su "Registrati" nella barra di navigazione, inserisci i tuoi dati e verifica la tua email. Potrai subito iniziare a cercare meccanici nella tua zona.
+                  </div>
                 </div>
               </div>
-            </div>
-            
-            <div class="accordion-item">
-              <h2 class="accordion-header" id="faqHeading2">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse2" aria-expanded="false" aria-controls="faqCollapse2">
-                  Come funziona il processo di prenotazione?
-                </button>
-              </h2>
-              <div id="faqCollapse2" class="accordion-collapse collapse" aria-labelledby="faqHeading2" data-bs-parent="#faqAccordion">
-                <div class="accordion-body">
-                  Per prenotare un servizio, cerca un meccanico nella tua zona utilizzando la barra di ricerca o navigando tra i profili. Seleziona il meccanico che preferisci e compila il modulo di richiesta specificando il problema, il veicolo e la data preferita. Il meccanico riceverà la tua richiesta e la confermerà entro breve tempo, proponendo eventualmente date e orari alternativi.
+              
+              <div class="accordion-item">
+                <h3 class="accordion-header">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                    <i class="fas fa-question-circle me-3"></i>
+                    È gratuito utilizzare MechFinder?
+                  </button>
+                </h3>
+                <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                  <div class="accordion-body">
+                    Sì, MechFinder è completamente gratuito per gli automobilisti. Puoi cercare meccanici, leggere recensioni e prenotare servizi senza alcun costo aggiuntivo.
+                  </div>
                 </div>
               </div>
-            </div>
-            
-            <div class="accordion-item">
-              <h2 class="accordion-header" id="faqHeading3">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse3" aria-expanded="false" aria-controls="faqCollapse3">
-                  Come funziona il sistema di pagamento?
-                </button>
-              </h2>
-              <div id="faqCollapse3" class="accordion-collapse collapse" aria-labelledby="faqHeading3" data-bs-parent="#faqAccordion">
-                <div class="accordion-body">
-                  MechFinder non gestisce direttamente i pagamenti tra clienti e meccanici. Una volta completato il servizio, il pagamento viene effettuato direttamente al meccanico secondo le modalità da lui accettate (contanti, carte, bonifico). Il meccanico emetterà regolare fattura o ricevuta per il servizio prestato.
+              
+              <div class="accordion-item">
+                <h3 class="accordion-header">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                    <i class="fas fa-question-circle me-3"></i>
+                    Come vengono verificati i meccanici?
+                  </button>
+                </h3>
+                <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                  <div class="accordion-body">
+                    Tutti i meccanici partner vengono accuratamente verificati. Controlliamo licenze, certificazioni, esperienza e raccogliamo feedback continui dai clienti per garantire la massima qualità del servizio.
+                  </div>
                 </div>
               </div>
-            </div>
-            
-            <div class="accordion-item">
-              <h2 class="accordion-header" id="faqHeading4">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse4" aria-expanded="false" aria-controls="faqCollapse4">
-                  Come posso cancellare o modificare una prenotazione?
-                </button>
-              </h2>
-              <div id="faqCollapse4" class="accordion-collapse collapse" aria-labelledby="faqHeading4" data-bs-parent="#faqAccordion">
-                <div class="accordion-body">
-                  Puoi gestire le tue prenotazioni direttamente dalla tua area personale. Accedi al tuo account, vai alla sezione "Le mie riparazioni" e seleziona la prenotazione che desideri modificare o cancellare. In caso di cancellazione, ti consigliamo di farlo con almeno 24 ore di anticipo e di contattare direttamente il meccanico per avvisarlo.
+              
+              <div class="accordion-item">
+                <h3 class="accordion-header">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                    <i class="fas fa-question-circle me-3"></i>
+                    Posso cancellare una prenotazione?
+                  </button>
+                </h3>
+                <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                  <div class="accordion-body">
+                    Sì, puoi cancellare una prenotazione fino a 24 ore prima dell'appuntamento senza alcuna penale. Per cancellazioni dell'ultimo momento, contatta direttamente il meccanico.
+                  </div>
+                </div>
+              </div>
+              
+              <div class="accordion-item">
+                <h3 class="accordion-header">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">
+                    <i class="fas fa-question-circle me-3"></i>
+                    Come posso diventare un meccanico partner?
+                  </button>
+                </h3>
+                <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                  <div class="accordion-body">
+                    Se sei un meccanico professionista, puoi candidarti tramite la sezione "Meccanici" del nostro sito. Il nostro team ti contatterà per valutare la tua candidatura e guidarti nel processo di registrazione.
+                  </div>
                 </div>
               </div>
             </div>
@@ -193,42 +374,32 @@
         </div>
       </div>
     </section>
-    
-    <!-- CTA -->
-    <section class="bg-primary text-white py-5 mb-5">
-      <div class="container text-center">
-        <h2 class="mb-4">Unisciti alla comunità MechFinder</h2>
-        <p class="lead mb-4">Migliaia di automobilisti e meccanici in tutta Italia stanno già utilizzando la nostra piattaforma</p>
-        <div class="d-flex justify-content-center gap-3 flex-wrap">
-          <a href="/meccanici" class="btn btn-light btn-lg">Trova un meccanico</a>
-          <a href="#" data-bs-toggle="modal" data-bs-target="#registerMeccanicoModal" class="btn btn-outline-light btn-lg">Diventa un meccanico</a>
+
+    <!-- CTA Section -->
+    <section class="contact-cta-section">
+      <div class="cta-background"></div>
+      <div class="container">
+        <div class="row justify-content-center text-center">
+          <div class="col-lg-8">
+            <h2 class="cta-title" data-aos="fade-up">Non hai trovato quello che cercavi?</h2>
+            <p class="cta-subtitle" data-aos="fade-up" data-aos-delay="100">
+              Il nostro team di supporto è sempre disponibile per aiutarti. Contattaci e riceverai una risposta personalizzata.
+            </p>
+            <div class="cta-buttons" data-aos="fade-up" data-aos-delay="200">
+              <a href="tel:+390123456789" class="btn btn-light btn-lg me-3">
+                <i class="fas fa-phone me-2"></i>Chiamaci Ora
+              </a>
+              <a href="mailto:info@mechfinder.it" class="btn btn-outline-light btn-lg">
+                <i class="fas fa-envelope me-2"></i>Scrivi un'Email
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </section>
   </main>
-  
+
   <%- include('./common/footer') %>
-  <%- include('./common/modals') %>
-  <%- include('./common/scripts') %> 
-  
-  <script>
-    // Script per la gestione del form di contatto
-    document.addEventListener('DOMContentLoaded', function() {
-      const contactForm = document.getElementById('contactForm');
-      
-      if (contactForm) {
-        contactForm.addEventListener('submit', function(e) {
-          e.preventDefault();
-          
-          // Qui puoi aggiungere la logica per l'invio del form
-          // Ad esempio, utilizzando fetch per inviare i dati a un endpoint API
-          
-          // Per ora, mostriamo solo un alert di conferma
-          alert('Grazie per averci contattato! Ti risponderemo il prima possibile.');
-          contactForm.reset();
-        });
-      }
-    });
-  </script>
+  <%- include('./common/scripts') %>
 </body>
 </html>

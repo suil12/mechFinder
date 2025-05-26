@@ -9,30 +9,50 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/stats-section.css">
+    <link rel="stylesheet" href="/css/mechanics-cards.css">
+    <link rel="stylesheet" href="/css/testimonials.css">
+    <link rel="stylesheet" href="/css/cta-section.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <link rel="stylesheet" href="/css/responsive.css">
+    <link rel="stylesheet" href="/css/scroll-to-top.css">
+    <link rel="stylesheet" href="/css/parallax-effects.css">
+    <link rel="stylesheet" href="/css/services-cards.css">
     <title>MechFinder - Trova il meccanico giusto per te</title>
 </head>
 <body>
     <%- include('./common/header') %>
     <main>
         <!-- Banner e ricerca -->
-        <section class="section1">
-            <div class="banner">
+        <section class="hero-section">
+            <div class="hero-overlay">
                 <div class="container">
                     <div class="row justify-content-center">
                         <div class="col-lg-10 col-xl-8">
-                            <h1>Trova il meccanico giusto per la tua auto</h1>
-                            <h5>Connettiti con professionisti qualificati della tua zona</h5>
+                            <h1 class="hero-title">Trova il meccanico giusto per la tua auto</h1>
+                            <p class="hero-subtitle">Connettiti con professionisti qualificati della tua zona</p>
                             <div class="d-flex justify-content-center w-100">
-                                <div class="search-cont" style="max-width: 500px; width: 100%;">
-                                    <form action="/search" method="GET">
-                                        <input type="text" name="q" class="search-input" placeholder="Cerca meccanici, servizi o città..." value="<%= query %>">
-                                        <button type="submit" class="search-button">
-                                            <i class="fas fa-search"></i>
-                                        </button>
+                                <div class="search-container">
+                                    <form action="/search" method="GET" class="search-form">
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i class="fas fa-map-marker-alt"></i>
+                                            </span>
+                                            <input type="text" name="q" class="form-control search-input-custom" placeholder="Cerca meccanici, servizi o città..." value="<%= query %>">
+                                            <button type="submit" class="btn btn-search">
+                                                <i class="fas fa-search"></i> Cerca
+                                            </button>
+                                        </div>
                                     </form>
                                 </div>
                             </div>
-                            
+                            <div class="search-tags mt-3">
+                                <span class="badge rounded-pill bg-light text-dark me-2 mb-2">Meccanica</span>
+                                <span class="badge rounded-pill bg-light text-dark me-2 mb-2">Elettronica</span>
+                                <span class="badge rounded-pill bg-light text-dark me-2 mb-2">Gomme</span>
+                                <span class="badge rounded-pill bg-light text-dark me-2 mb-2">Carrozzeria</span>
+                                <span class="badge rounded-pill bg-light text-dark me-2 mb-2">Tagliandi</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -40,108 +60,287 @@
         </section>
 
         <!-- Servizi offerti -->
-        <section class="py-5">
+        <section class="services-section py-5">
             <div class="container">
-                <div class="text-center mb-5">
-                    <h2 class="fw-bold">I nostri servizi</h2>
-                    <p class="lead text-muted">Risolviamo qualsiasi problema della tua auto</p>
+                <div class="section-header text-center mb-5">
+                    <span class="section-subtitle">I NOSTRI SERVIZI</span>
+                    <h2 class="section-title">Risolviamo qualsiasi problema della tua auto</h2>
+                    <div class="section-divider">
+                        <span class="divider-line"></span>
+                        <span class="divider-icon"><i class="fas fa-tools"></i></span>
+                        <span class="divider-line"></span>
+                    </div>
                 </div>
                 
                 <div class="row g-4 justify-content-center">
                     <% servizi.forEach(servizio => { %>
                         <div class="col-lg-4 col-md-6 d-flex justify-content-center">
-                            <div class="servizio-card">
-                                <div class="servizio-card-front">
-                                    <img src="/media/img/<%= servizio.icona %>" alt="<%= servizio.nome %>">
-                                    <h4><%= servizio.nome %></h4>
+                            <div class="service-card-modern">
+                                <div class="service-card-front">
+                                    <div class="service-img-container">
+                                        <img src="/media/img/<%= servizio.icona %>" alt="<%= servizio.nome %>" class="service-img">
+                                        <div class="service-overlay">
+                                            <span class="service-more">Scopri di più</span>
+                                        </div>
+                                    </div>
+                                    <div class="service-content">
+                                        <div class="service-icon-container">
+                                            <i class="<%= getServiceIcon(servizio.nome) %>"></i>
+                                        </div>
+                                        <h4 class="service-title"><%= servizio.nome %></h4>
+                                    </div>
                                 </div>
-                                <div class="servizio-card-back">
-                                    <p><%= servizio.descrizione %></p>
+                                <div class="service-card-back">
+                                    <p class="service-description"><%= servizio.descrizione %></p>
+                                    <a href="/servizi#<%= servizio.nome.toLowerCase().replace(/\s+/g, '-') %>" class="btn-service-details">Dettagli</a>
                                 </div>
                             </div>
                         </div>                        
                     <% }); %>
                 </div>
                 
-                <div class="text-center mt-4">
-                    <a href="/servizi" class="btn btn-primary">Scopri tutti i servizi</a>
+                <div class="text-center mt-5">
+                    <a href="/servizi" class="btn btn-outline-primary btn-lg btn-hover-effect">
+                        <span>Scopri tutti i servizi</span>
+                        <i class="fas fa-arrow-right ms-2"></i>
+                    </a>
                 </div>
             </div>
         </section>
 
-        <!-- Meccanici in evidenza -->
-        <section class="card_mecc py-5 bg-light">
+        <!-- Sezione Statistiche -->
+        <section class="stats-section py-5">
+            <div class="wave-divider wave-top">
+                <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                    <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="shape-fill"></path>
+                </svg>
+            </div>
             <div class="container">
-                <h1 class="text-center mb-4">I Meccanici Più Valutati</h1>
-                
-                <div class="slider">
-                    <% meccaniciEvidenziati.forEach(meccanico => { %>
-                        <div class="mechanic-card" data-id="<%= meccanico.id %>">
-                            <img src="<%= meccanico.avatar || '/media/img/default_mechanic.png' %>" alt="<%= meccanico.nome %> <%= meccanico.cognome %>">
-                            <h3><%= meccanico.nome_officina || `${meccanico.nome} ${meccanico.cognome}` %></h3>
-                            <p><%= meccanico.specializzazione %></p>
-                            <div class="rating">
-                                <% for(let i=0; i<Math.floor(meccanico.valutazione); i++) { %>★<% } %>
-                                <% for(let i=0; i<(5-Math.floor(meccanico.valutazione)); i++) { %>☆<% } %>
-                                <span class="rating-text"><%= meccanico.valutazione.toFixed(1) %></span>
+                <div class="stats-container">
+                    <div class="row text-center">
+                        <div class="col-md-3 col-6 mb-4 mb-md-0">
+                            <div class="stat-item">
+                                <div class="stat-icon">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <h3 class="stat-number counter" data-target="2500">0</h3>
+                                <p class="stat-title">Clienti Soddisfatti</p>
                             </div>
-                            <a href="/meccanici/<%= meccanico.id %>" class="btn-contact">Visualizza profilo</a>
+                        </div>
+                        <div class="col-md-3 col-6 mb-4 mb-md-0">
+                            <div class="stat-item">
+                                <div class="stat-icon">
+                                    <i class="fas fa-wrench"></i>
+                                </div>
+                                <h3 class="stat-number counter" data-target="850">0</h3>
+                                <p class="stat-title">Meccanici Professionisti</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="stat-item">
+                                <div class="stat-icon">
+                                    <i class="fas fa-car"></i>
+                                </div>
+                                <h3 class="stat-number counter" data-target="15000">0</h3>
+                                <p class="stat-title">Riparazioni Completate</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="stat-item">
+                                <div class="stat-icon">
+                                    <i class="fas fa-city"></i>
+                                </div>
+                                <h3 class="stat-number counter" data-target="120">0</h3>
+                                <p class="stat-title">Città Coperte</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="wave-divider wave-bottom">
+                <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                    <path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".25" class="shape-fill"></path>
+                    <path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z" opacity=".5" class="shape-fill"></path>
+                    <path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z" class="shape-fill"></path>
+                </svg>
+            </div>
+        </section>
+
+        <!-- Meccanici in evidenza -->
+        <section class="mechanics-section py-5 bg-pattern pattern-dots">
+            <div class="container">
+                <div class="section-header text-center mb-5">
+                    <span class="section-subtitle">I NOSTRI ESPERTI</span>
+                    <h2 class="section-title">I Meccanici Più Valutati</h2>
+                    <div class="section-divider">
+                        <span class="divider-line"></span>
+                        <span class="divider-icon"><i class="fas fa-star"></i></span>
+                        <span class="divider-line"></span>
+                    </div>
+                </div>
+                
+                <div class="mechanics-slider">
+                    <% meccaniciEvidenziati.forEach(meccanico => { %>
+                        <div class="mechanic-card-modern">
+                            <div class="mechanic-card-header">
+                                <div class="mechanic-avatar">
+                                    <img src="<%= meccanico.avatar || '/media/img/default_mechanic.png' %>" alt="<%= meccanico.nome %> <%= meccanico.cognome %>">
+                                </div>
+                                <div class="mechanic-specialty"><%= meccanico.specializzazione %></div>
+                            </div>
+                            <div class="mechanic-card-body">
+                                <h3 class="mechanic-name"><%= meccanico.nome_officina || `${meccanico.nome} ${meccanico.cognome}` %></h3>
+                                <div class="mechanic-location">
+                                    <i class="fas fa-map-marker-alt"></i> <%= meccanico.citta %>
+                                </div>
+                                <div class="mechanic-rating">
+                                    <div class="stars">
+                                        <% for(let i=0; i<Math.floor(meccanico.valutazione); i++) { %>
+                                            <i class="fas fa-star"></i>
+                                        <% } %>
+                                        <% if(meccanico.valutazione % 1 >= 0.5) { %>
+                                            <i class="fas fa-star-half-alt"></i>
+                                            <% for(let i=0; i<(4-Math.floor(meccanico.valutazione)); i++) { %>
+                                                <i class="far fa-star"></i>
+                                            <% } %>
+                                        <% } else { %>
+                                            <% for(let i=0; i<(5-Math.floor(meccanico.valutazione)); i++) { %>
+                                                <i class="far fa-star"></i>
+                                            <% } %>
+                                        <% } %>
+                                    </div>
+                                    <span class="rating-value"><%= meccanico.valutazione.toFixed(1) %></span>
+                                    <span class="reviews-count">(<%= meccanico.numero_recensioni %> recensioni)</span>
+                                </div>
+                            </div>
+                            <div class="mechanic-card-footer">
+                                <a href="/meccanici/<%= meccanico.id %>" class="btn-mechanic-profile">
+                                    <span>Visualizza profilo</span>
+                                    <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </div>
                         </div>
                     <% }); %>
                 </div>
                 
-                <div class="text-center mt-4">
-                    <a href="/meccanici" class="btn btn-outline-primary">Vedi tutti i meccanici</a>
+                <div class="text-center mt-5">
+                    <a href="/meccanici" class="btn btn-outline-primary btn-lg btn-hover-effect">
+                        <span>Vedi tutti i meccanici</span>
+                        <i class="fas fa-users ms-2"></i>
+                    </a>
                 </div>
             </div>
         </section>
 
         <!-- Recensioni dei clienti -->
-        <section class="reviews py-5">
+        <section class="testimonials-section py-5">
+            <div class="wave-divider wave-top">
+                <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                    <path d="M985.66,92.83C906.67,72,823.78,31,743.84,14.19c-82.26-17.34-168.06-16.33-250.45.39-57.84,11.73-114,31.07-172,41.86A600.21,600.21,0,0,1,0,27.35V120H1200V95.8C1132.19,118.92,1055.71,111.31,985.66,92.83Z" class="shape-fill"></path>
+                </svg>
+            </div>
             <div class="container">
-                <h2 class="text-center mb-4">Cosa dicono i nostri clienti</h2>
+                <div class="section-header text-center mb-5">
+                    <span class="section-subtitle">TESTIMONIANZE</span>
+                    <h2 class="section-title">Cosa dicono i nostri clienti</h2>
+                    <div class="section-divider">
+                        <span class="divider-line"></span>
+                        <span class="divider-icon"><i class="fas fa-quote-right"></i></span>
+                        <span class="divider-line"></span>
+                    </div>
+                </div>
                 
-                <div class="row justify-content-center">
+                <div class="testimonials-carousel">
                     <% recensioni.forEach(recensione => { %>
-                        <div class="col-lg-4 col-md-6 mb-4">
-                            <div class="review-card">
-                                <div class="review-rating">
-                                    <% for(let i=0; i<recensione.valutazione; i++) { %>★<% } %>
-                                    <% for(let i=0; i<(5-recensione.valutazione); i++) { %>☆<% } %>
+                        <div class="testimonial-card">
+                            <div class="testimonial-content">
+                                <div class="testimonial-rating">
+                                    <% for(let i=0; i<recensione.valutazione; i++) { %>
+                                        <i class="fas fa-star"></i>
+                                    <% } %>
+                                    <% for(let i=0; i<(5-recensione.valutazione); i++) { %>
+                                        <i class="far fa-star"></i>
+                                    <% } %>
                                 </div>
-                                <p class="review-text">"<%= recensione.commento %>"</p>
-                                <small class="review-author">- <%= recensione.nome_cliente %> <%= recensione.cognome_cliente %></small>
+                                <div class="testimonial-text">
+                                    <i class="fas fa-quote-left quote-icon"></i>
+                                    <%= recensione.commento %>
+                                </div>
+                            </div>
+                            <div class="testimonial-author">
+                                <div class="author-info">
+                                    <div class="author-name"><%= recensione.nome_cliente %> <%= recensione.cognome_cliente %></div>
+                                    <div class="author-title">Cliente verificato</div>
+                                </div>
                             </div>
                         </div>
                     <% }); %>
+                </div>
+                
+                <div class="testimonials-nav">
+                    <button class="testimonial-nav-btn prev-testimonial">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="testimonial-nav-btn next-testimonial">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
                 </div>
             </div>
         </section>
 
         <!-- Sezione CTA per Meccanici -->
-        <section class="py-5 bg-light">
+        <section class="cta-section parallax-bg" style="background-image: url('/media/img/bg.jpg');">
             <div class="container">
-                <div class="row align-items-center justify-content-center">
+                <div class="row align-items-center">
                     <div class="col-lg-7 mb-4 mb-lg-0">
-                        <h2 class="fw-bold mb-3">Sei un meccanico?</h2>
-                        <p class="lead">Entra a far parte della nostra rete di professionisti e amplia il tuo business.</p>
-                        <ul class="list-unstyled">
-                            <li class="mb-2"><i class="fas fa-check text-primary me-2"></i> Ricevi richieste di preventivo nella tua zona</li>
-                            <li class="mb-2"><i class="fas fa-check text-primary me-2"></i> Gestisci il tuo profilo professionale</li>
-                            <li class="mb-2"><i class="fas fa-check text-primary me-2"></i> Ottieni recensioni e costruisci la tua reputazione</li>
-                            <li class="mb-2"><i class="fas fa-check text-primary me-2"></i> Nessun costo fisso, paghi solo per le richieste accettate</li>
-                        </ul>
-                        <button type="button" class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#registerMeccanicoModal">
-                            Registrati come meccanico <i class="fas fa-arrow-right ms-2"></i>
-                        </button>
+                        <div class="cta-content">
+                            <h2 class="cta-heading">Sei un meccanico professionista?</h2>
+                            <p class="cta-subheading">Entra a far parte della nostra rete di esperti e amplia il tuo business</p>
+                            <div class="cta-list">
+                                <div class="cta-list-item">
+                                    <div class="cta-icon">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                    <div class="cta-text">Ricevi richieste di preventivo nella tua zona</div>
+                                </div>
+                                <div class="cta-list-item">
+                                    <div class="cta-icon">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                    <div class="cta-text">Gestisci il tuo profilo professionale e i tuoi servizi</div>
+                                </div>
+                                <div class="cta-list-item">
+                                    <div class="cta-icon">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                    <div class="cta-text">Ottieni recensioni e costruisci la tua reputazione online</div>
+                                </div>
+                                <div class="cta-list-item">
+                                    <div class="cta-icon">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                    <div class="cta-text">Nessun costo fisso, paghi solo per le richieste accettate</div>
+                                </div>
+                            </div>
+                            <button type="button" class="cta-btn" data-bs-toggle="modal" data-bs-target="#registerMeccanicoModal">
+                                Registrati come meccanico <i class="fas fa-arrow-right ms-2"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="col-lg-5">
-                        <img src="/media/img/meccanico.jpg" alt="Meccanico al lavoro" class="img-fluid rounded shadow">
+                        <div class="cta-image">
+                            <img src="/media/img/meccanico.jpeg" alt="Meccanico al lavoro" class="img-fluid">
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
     </main>
+
+    <!-- Pulsante torna su -->
+    <div class="scroll-to-top">
+        <i class="fas fa-chevron-up"></i>
+    </div>
 
     <%- include('./common/footer') %>
     <%- include('./common/modals') %>

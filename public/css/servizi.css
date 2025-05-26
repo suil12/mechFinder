@@ -1,0 +1,327 @@
+/* CSS per la pagina Servizi */
+.services-header-block {
+    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/media/img/bg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    color: white;
+    padding: 6rem 0 4rem;
+    margin-bottom: 4rem;
+    position: relative;
+}
+
+.services-header-block h1 {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    animation: fadeInUp 0.8s ease;
+}
+
+.services-header-block h2 {
+    font-size: 1.5rem;
+    font-weight: 400;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+    animation: fadeInUp 1s ease;
+}
+
+.services-header-block .breadcrumb {
+    background-color: transparent;
+    padding: 0;
+    margin-bottom: 2rem;
+}
+
+.services-header-block .breadcrumb-item,
+.services-header-block .breadcrumb-item a {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+}
+
+.services-header-block .breadcrumb-item.active {
+    color: white;
+}
+
+.services-header-block .btn {
+    animation: fadeInUp 1.2s ease;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.services-header-block .btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.service-section {
+    padding: 6rem 0;
+    overflow: hidden;
+}
+
+.service-section:nth-child(even) {
+    background-color: var(--gray-light);
+}
+
+.service-img {
+    width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transition: all 0.5s ease;
+    transform: scale(0.95);
+}
+
+.service-img:hover {
+    transform: scale(1);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+}
+
+.service-section h2 {
+    position: relative;
+    padding-bottom: 1rem;
+    margin-bottom: 2rem;
+}
+
+.service-section h2:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 80px;
+    height: 4px;
+    background: var(--accent-blue);
+    border-radius: 2px;
+}
+
+.service-section:nth-child(even) .row .col-lg-6:nth-child(2) h2:after {
+    left: 0;
+}
+
+.service-icon-container {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 70px;
+    height: 70px;
+    background-color: var(--accent-blue);
+    border-radius: 50%;
+    color: white;
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 5px 15px rgba(37, 99, 235, 0.3);
+    transition: all 0.3s ease;
+}
+
+.service-icon-container:hover {
+    background-color: var(--accent-orange);
+}
+
+.service-feature-list {
+    margin: 2rem 0;
+}
+
+.service-feature-item {
+    background-color: white;
+    border-radius: 10px;
+    padding: 1.2rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    border-left: 4px solid var(--accent-blue);
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+}
+
+.service-feature-item:hover {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.service-feature-icon {
+    margin-right: 1rem;
+    color: var(--accent-blue);
+    font-size: 1.2rem;
+}
+
+.service-feature-text {
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.service-card {
+    height: 100%;
+    background-color: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    margin-bottom: 2rem;
+}
+
+.service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+.service-card-img {
+    height: 200px;
+    object-fit: cover;
+    width: 100%;
+}
+
+.service-card-body {
+    padding: 1.5rem;
+}
+
+.service-card-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.service-card-text {
+    color: var(--gray-dark);
+    margin-bottom: 1.5rem;
+}
+
+.service-cta {
+    background: linear-gradient(to right, var(--accent-blue), var(--accent-orange));
+    color: white;
+    padding: 5rem 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.service-cta::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('/media/img/bg.jpg') center/cover;
+    opacity: 0.1;
+    z-index: 0;
+}
+
+.service-cta .container {
+    position: relative;
+    z-index: 1;
+}
+
+.service-cta h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.service-cta p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+}
+
+.service-cta .btn {
+    font-size: 1.1rem;
+    padding: 0.8rem 2rem;
+    border-radius: 50px;
+    box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+}
+
+.service-cta .btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(255, 255, 255, 0.3);
+}
+
+/* Animazioni */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Classi per animazioni */
+.fadeInUp {
+    animation: fadeInUp 0.8s ease;
+}
+
+.fadeIn {
+    animation: fadeIn 1s ease;
+}
+
+.slideInRight {
+    animation: slideInRight 0.8s ease;
+}
+
+.slideInLeft {
+    animation: slideInLeft 0.8s ease;
+}
+
+/* Media queries */
+@media (max-width: 992px) {
+    .services-header-block h1 {
+        font-size: 2.5rem;
+    }
+    
+    .services-header-block h2 {
+        font-size: 1.2rem;
+    }
+    
+    .service-section {
+        padding: 4rem 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .services-header-block {
+        padding: 4rem 0 3rem;
+    }
+    
+    .service-section {
+        padding: 3rem 0;
+    }
+    
+    .service-img {
+        margin-bottom: 2rem;
+    }
+    
+    .services-header-block h1 {
+        font-size: 2rem;
+    }
+}
