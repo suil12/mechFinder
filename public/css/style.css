@@ -73,8 +73,11 @@ ul {
 .navbar {
     width: 100%;
 }
-.navbar-brand {
-    margin-right: 2rem;
+.navbar h2{
+    font-style:var(--shadow-sm);
+    font-size: larger;
+    font-weight: bold;
+    color: cornflowerblue;
 }
 #navbarNav {
     max-width: 800px;
