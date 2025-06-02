@@ -1,18 +1,4 @@
-/* profile.css */
-:root {
-    --primary-color: #ffffff;
-    --secondary-color: #1a1a1a;
-    --accent-blue: #2563eb;
-    --accent-orange: #f59e0b;
-    --gray-light: #f3f4f6;
-    --gray-medium: #e5e7eb;
-    --gray-dark: #6b7280;
-    --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
-    --radius: 0.5rem;
-    --transition: all 0.3s ease;
-  }
+/* profile.css - utilizzando il sistema unificato da style.css */
   
   main {
     padding-top: 120px;
@@ -114,7 +100,7 @@
     display: flex;
     align-items: center;
     padding: 1rem;
-    background-color: #f9fafb;
+    background-color: var(--bg-light);
     border-radius: var(--radius);
   }
   
@@ -124,7 +110,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: rgba(37, 99, 235, 0.1);
+    background-color: var(--accent-blue-bg);
     color: var(--accent-blue);
     border-radius: 50%;
     margin-right: 1rem;
@@ -132,7 +118,7 @@
   }
   
   .activity-icon.active {
-    background-color: rgba(245, 158, 11, 0.1);
+    background-color: var(--accent-orange-bg);
     color: var(--accent-orange);
   }
   
@@ -150,7 +136,7 @@
   
   /* Meccanico profile specifico */
   .mechanic-profile-header {
-    background: linear-gradient(to right, var(--primary-color) 0%, rgba(37, 99, 235, 0.05) 100%);
+    background: linear-gradient(to right, var(--primary-color) 0%, var(--accent-blue-bg) 100%);
   }
   
   .mechanic-stats {
@@ -244,15 +230,15 @@
   }
   
   .vehicle-status.text-success {
-    color: #10b981;
+    color: var(--success-color);
   }
   
   .vehicle-status.text-warning {
-    color: #f59e0b;
+    color: var(--accent-orange);
   }
   
   .vehicle-status.text-danger {
-    color: #ef4444;
+    color: var(--danger-color);
   }
   
   .vehicle-card-footer {

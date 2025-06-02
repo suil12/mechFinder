@@ -1,6 +1,6 @@
 /* CSS per la pagina Servizi */
 .services-header-block {
-    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/media/img/bg.jpg');
+    background: var(--gradient-primary), url('/media/img/bg.jpg');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
@@ -44,12 +44,12 @@
 .services-header-block .btn {
     animation: fadeInUp 1.2s ease;
     transition: all 0.3s ease;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--shadow-md);
 }
 
 .services-header-block .btn:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    box-shadow: var(--shadow-lg);
 }
 
 .service-section {
@@ -64,14 +64,14 @@
 .service-img {
     width: 100%;
     border-radius: 10px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-lg);
     transition: all 0.5s ease;
     transform: scale(0.95);
 }
 
 .service-img:hover {
     transform: scale(1);
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--shadow-xl);
 }
 
 .service-section h2 {
@@ -106,7 +106,7 @@
     color: white;
     font-size: 1.8rem;
     margin-bottom: 1.5rem;
-    box-shadow: 0 5px 15px rgba(37, 99, 235, 0.3);
+    box-shadow: var(--shadow-blue);
     transition: all 0.3s ease;
 }
 
@@ -123,7 +123,7 @@
     border-radius: 10px;
     padding: 1.2rem;
     margin-bottom: 1rem;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    box-shadow: var(--shadow-xs);
     transition: all 0.3s ease;
     border-left: 4px solid var(--accent-blue);
     display: flex;
@@ -133,7 +133,7 @@
 }
 
 .service-feature-item:hover {
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-sm);
 }
 
 .service-feature-icon {
@@ -152,14 +152,14 @@
     background-color: white;
     border-radius: 15px;
     overflow: hidden;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-md);
     transition: all 0.3s ease;
     margin-bottom: 2rem;
 }
 
 .service-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    box-shadow: var(--shadow-lg);
 }
 
 .service-card-img {
@@ -184,7 +184,7 @@
 }
 
 .service-cta {
-    background: linear-gradient(to right, var(--accent-blue), var(--accent-orange));
+    background: var(--gradient-secondary);
     color: white;
     padding: 5rem 0;
     position: relative;

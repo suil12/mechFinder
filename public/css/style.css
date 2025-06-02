@@ -1,22 +1,63 @@
 :root {
-    --primary-color: #ffffff;
-    --secondary-color: #1a1a1a;
-    --accent-blue: #2563eb;
-    --accent-orange: #f59e0b;
-    --gray-light: #f3f4f6;
-    --gray-medium: #e5e7eb;
-    --gray-dark: #6b7280;
+    /* Palette colori principale: Bianco come base, Arancione e Blu come accenti */
+    --primary-color: #ffffff;       /* Bianco principale */
+    --secondary-color: #1a1a1a;     /* Nero/grigio scuro */
+    --accent-blue: #3b82f6;         /* Blu accento */
+    --accent-blue-light: #60a5fa;   /* Blu chiaro */
+    --accent-blue-dark: #1d4ed8;    /* Blu scuro */
+    --accent-orange: #f59e0b;       /* Arancione principale */
+    --accent-orange-light: #fbbf24;  /* Arancione chiaro */
+    --accent-orange-dark: #d97706;   /* Arancione scuro */
+    
+    /* Sfumature */
+    --gradient-primary: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-orange) 100%);
+    --gradient-secondary: linear-gradient(135deg, var(--accent-orange) 0%, var(--accent-blue) 100%);
+    --gradient-subtle: linear-gradient(135deg, var(--accent-blue-light) 0%, var(--accent-orange-light) 100%);
+    
+    /* Grigi e neutri */
+    --white: #ffffff;
+    --gray-light: #f8fafc;
+    --gray-medium: #e2e8f0;
+    --gray-dark: #64748b;
+    --black: #0f172a;
+    
+    /* Colori di testo */
+    --text-dark: #2c3e50;
+    --text-muted: #6c757d;
+    --text-light: #ffffff;
+    
+    /* Colori di background */
+    --bg-light: #f8f9fa;
+    --bg-white: #ffffff;
+    --primary-bg: rgba(37, 99, 235, 0.05);
+    --accent-orange-bg: rgba(245, 158, 11, 0.1);
+    
+    /* Colori di stato */
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --warning-color: var(--accent-orange);
+    
+    /* Bordi */
+    --border-light: rgba(0,0,0,0.05);
+    --border-medium: rgba(0,0,0,0.1);
+    
+    /* Dimensioni */
     --radius: 0.5rem;
     --radius-sm: 0.25rem;
     --radius-lg: 1rem;
+    --radius-xl: 1.5rem;
     --radius-full: 9999px;
     --transition: all 0.3s ease;
-    /* Definizioni mancanti per le ombre */
-    --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
-    --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+    
+    /* Ombre con colori arancione/blu */
+    --shadow: 0 1px 3px rgba(37, 99, 235, 0.1);
+    --shadow-sm: 0 1px 2px rgba(37, 99, 235, 0.05);
+    --shadow-md: 0 4px 6px rgba(37, 99, 235, 0.1);
+    --shadow-lg: 0 10px 15px rgba(37, 99, 235, 0.1);
+    --shadow-xl: 0 20px 25px rgba(37, 99, 235, 0.15);
+    --shadow-orange: 0 4px 6px rgba(245, 158, 11, 0.2);
+    --shadow-blue: 0 4px 6px rgba(37, 99, 235, 0.2);
+    --shadow-dark: 2px 2px 4px rgba(0,0,0,0.5);
 }
 
 

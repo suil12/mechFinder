@@ -31,7 +31,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, rgba(0, 123, 255, 0.7), rgba(40, 167, 69, 0.5));
+    background: var(--gradient-primary);
     z-index: 2;
 }
 
@@ -44,7 +44,7 @@
     font-size: 3.5rem;
     font-weight: 700;
     margin-bottom: 1.5rem;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    text-shadow: var(--shadow-dark);
     animation: fadeInUp 1s ease-out;
 }
 
@@ -61,7 +61,7 @@
 /* Quick Contact Section */
 .quick-contact-section {
     padding: 80px 0;
-    background: #f8f9fa;
+    background: var(--bg-light);
     margin-top: -50px;
     position: relative;
     z-index: 10;
@@ -73,9 +73,9 @@
     border-radius: 20px;
     text-align: center;
     height: 100%;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    box-shadow: var(--shadow-lg);
     transition: all 0.4s ease;
-    border: 1px solid rgba(0,0,0,0.05);
+    border: 1px solid var(--border-light);
     position: relative;
     overflow: hidden;
 }
@@ -87,7 +87,7 @@
     left: 0;
     width: 100%;
     height: 4px;
-    background: linear-gradient(135deg, #007bff, #28a745);
+    background: var(--gradient-primary);
     transform: scaleX(0);
     transition: transform 0.3s ease;
 }
@@ -98,13 +98,13 @@
 
 .quick-contact-card:hover {
     transform: translateY(-10px);
-    box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+    box-shadow: var(--shadow-xl);
 }
 
 .contact-icon {
     width: 80px;
     height: 80px;
-    background: linear-gradient(135deg, #007bff, #28a745);
+    background: var(--gradient-primary);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -117,25 +117,25 @@
 
 .quick-contact-card:hover .contact-icon {
     transform: scale(1.1) rotate(5deg);
-    box-shadow: 0 10px 25px rgba(0,123,255,0.3);
+    box-shadow: var(--shadow-blue);
 }
 
 .quick-contact-card h3 {
     font-size: 1.4rem;
     font-weight: 600;
     margin-bottom: 1rem;
-    color: #2c3e50;
+    color: var(--text-dark);
 }
 
 .quick-contact-card p {
-    color: #6c757d;
+    color: var(--text-muted);
     margin-bottom: 1.5rem;
     line-height: 1.6;
 }
 
 .contact-link {
     display: inline-block;
-    color: #007bff;
+    color: var(--primary-color);
     font-weight: 600;
     text-decoration: none;
     font-size: 1.1rem;
@@ -144,15 +144,15 @@
 }
 
 .contact-link:hover {
-    color: #0056b3;
+    color: var(--accent-blue-dark);
     transform: translateX(5px);
 }
 
 .contact-hours {
     font-size: 0.9rem;
-    color: #28a745;
+    color: var(--accent-orange);
     font-weight: 500;
-    background: rgba(40, 167, 69, 0.1);
+    background: var(--accent-orange-bg);
     padding: 0.3rem 0.8rem;
     border-radius: 15px;
     display: inline-block;
@@ -165,25 +165,25 @@
 }
 
 .contact-info-card {
-    background: #f8f9fa;
+    background: var(--bg-light);
     padding: 2.5rem;
     border-radius: 20px;
     height: 100%;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-    border: 1px solid rgba(0,0,0,0.05);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-light);
     transition: all 0.3s ease;
 }
 
 .contact-info-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+    box-shadow: var(--shadow-lg);
 }
 
 .info-title {
     font-size: 1.8rem;
     font-weight: 600;
     margin-bottom: 2rem;
-    color: #2c3e50;
+    color: var(--text-dark);
     text-align: center;
 }
 
@@ -197,14 +197,14 @@
 }
 
 .info-item:hover {
-    background: rgba(0,123,255,0.05);
+    background: var(--primary-bg);
     transform: translateX(5px);
 }
 
 .info-icon {
     width: 50px;
     height: 50px;
-    background: linear-gradient(135deg, #007bff, #28a745);
+    background: var(--gradient-primary);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -219,23 +219,23 @@
     font-size: 1.1rem;
     font-weight: 600;
     margin-bottom: 0.5rem;
-    color: #2c3e50;
+    color: var(--text-dark);
 }
 
 .info-content p {
     margin-bottom: 0.3rem;
-    color: #6c757d;
+    color: var(--text-muted);
     line-height: 1.5;
 }
 
 .info-content a {
-    color: #007bff;
+    color: var(--primary-color);
     text-decoration: none;
     transition: color 0.3s ease;
 }
 
 .info-content a:hover {
-    color: #0056b3;
+    color: var(--accent-blue-dark);
 }
 
 .social-links {
@@ -247,7 +247,7 @@
     font-size: 1.1rem;
     font-weight: 600;
     margin-bottom: 1rem;
-    color: #2c3e50;
+    color: var(--text-dark);
 }
 
 .social-icons {
@@ -260,7 +260,7 @@
     width: 45px;
     height: 45px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #007bff, #28a745);
+    background: var(--gradient-primary);
     color: white;
     display: flex;
     align-items: center;
@@ -272,7 +272,7 @@
 
 .social-link:hover {
     transform: translateY(-3px) scale(1.1);
-    box-shadow: 0 10px 25px rgba(0,123,255,0.3);
+    box-shadow: var(--shadow-blue);
     color: white;
 }
 
@@ -281,20 +281,20 @@
     background: white;
     padding: 3rem;
     border-radius: 20px;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-    border: 1px solid rgba(0,0,0,0.05);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border-light);
 }
 
 .form-title {
     font-size: 1.8rem;
     font-weight: 600;
     margin-bottom: 1rem;
-    color: #2c3e50;
+    color: var(--text-dark);
     text-align: center;
 }
 
 .form-subtitle {
-    color: #6c757d;
+    color: var(--text-muted);
     text-align: center;
     margin-bottom: 2.5rem;
 }
@@ -305,24 +305,24 @@
 
 .contact-form .form-label {
     font-weight: 500;
-    color: #2c3e50;
+    color: var(--text-dark);
     margin-bottom: 0.5rem;
     display: block;
 }
 
 .contact-form .form-control {
-    border: 2px solid #e9ecef;
+    border: 2px solid var(--gray-medium);
     border-radius: 10px;
     padding: 0.8rem 1rem;
     font-size: 1rem;
     transition: all 0.3s ease;
-    background: #f8f9fa;
+    background: var(--bg-light);
     width: 100%;
 }
 
 .contact-form .form-control:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.15);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem var(--primary-bg);
     background: white;
     outline: none;
 }
@@ -339,30 +339,30 @@
 }
 
 .form-validation.valid {
-    color: #28a745;
+    color: var(--accent-orange);
 }
 
 .form-validation.invalid {
-    color: #dc3545;
+    color: var(--danger-color);
 }
 
 .character-counter {
     font-size: 0.8rem;
-    color: #6c757d;
+    color: var(--text-muted);
     text-align: right;
     margin-top: 0.25rem;
 }
 
 .character-counter.warning {
-    color: #ffc107;
+    color: var(--accent-orange);
 }
 
 .character-counter.danger {
-    color: #dc3545;
+    color: var(--danger-color);
 }
 
 .btn-submit {
-    background: linear-gradient(135deg, #007bff, #28a745);
+    background: var(--gradient-primary);
     border: none;
     color: white;
     padding: 1rem 2.5rem;
@@ -379,7 +379,7 @@
 
 .btn-submit:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 25px rgba(0,123,255,0.3);
+    box-shadow: var(--shadow-blue);
 }
 
 .btn-submit:disabled {
@@ -404,14 +404,14 @@
 /* Map Section */
 .map-section {
     padding: 80px 0;
-    background: #f8f9fa;
+    background: var(--bg-light);
 }
 
 .map-container {
     position: relative;
     border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    box-shadow: var(--shadow-lg);
     height: 400px;
 }
 
@@ -436,7 +436,7 @@
     border-radius: 15px;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    box-shadow: var(--shadow-md);
     max-width: 300px;
 }
 
@@ -444,17 +444,17 @@
     font-size: 1.2rem;
     font-weight: 600;
     margin-bottom: 0.5rem;
-    color: #2c3e50;
+    color: var(--text-dark);
 }
 
 .overlay-address {
-    color: #6c757d;
+    color: var(--text-muted);
     margin-bottom: 1rem;
     line-height: 1.5;
 }
 
 .overlay-link {
-    color: #007bff;
+    color: var(--primary-color);
     text-decoration: none;
     font-weight: 500;
     font-size: 0.9rem;
@@ -462,7 +462,7 @@
 }
 
 .overlay-link:hover {
-    color: #0056b3;
+    color: var(--accent-blue-dark);
 }
 
 /* FAQ Section */
@@ -476,12 +476,12 @@
     font-weight: 700;
     text-align: center;
     margin-bottom: 3rem;
-    color: #2c3e50;
+    color: var(--text-dark);
 }
 
 .faq-item {
     background: white;
-    border: 1px solid #e9ecef;
+    border: 1px solid var(--gray-medium);
     border-radius: 15px;
     margin-bottom: 1rem;
     overflow: hidden;
@@ -489,11 +489,11 @@
 }
 
 .faq-item:hover {
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    box-shadow: var(--shadow-md);
 }
 
 .faq-question {
-    background: #f8f9fa;
+    background: var(--bg-light);
     padding: 1.5rem 2rem;
     border: none;
     width: 100%;
@@ -501,7 +501,7 @@
     cursor: pointer;
     font-size: 1.1rem;
     font-weight: 600;
-    color: #2c3e50;
+    color: var(--text-dark);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -509,11 +509,11 @@
 }
 
 .faq-question:hover {
-    background: #e9ecef;
+    background: var(--gray-medium);
 }
 
 .faq-question.active {
-    background: linear-gradient(135deg, #007bff, #28a745);
+    background: var(--gradient-primary);
     color: white;
 }
 
@@ -539,7 +539,7 @@
 }
 
 .faq-answer p {
-    color: #6c757d;
+    color: var(--text-muted);
     line-height: 1.6;
     margin-bottom: 0;
 }
@@ -547,7 +547,7 @@
 /* CTA Section */
 .cta-section {
     padding: 80px 0;
-    background: linear-gradient(135deg, #007bff, #28a745);
+    background: var(--gradient-primary);
     color: white;
     text-align: center;
     position: relative;

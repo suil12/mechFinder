@@ -1,28 +1,5 @@
-/* Variabili dei colori */
+/* Variabili dei colori - utilizzando il sistema unificato da style.css */
 :root {
-    --primary-color: #ffffff;
-    --secondary-color: #1a1a1a;
-    --accent-blue: #2563eb;
-    --accent-orange: #f59e0b;
-    --gray-light: #f3f4f6;
-    --gray-medium: #e5e7eb;
-    --gray-dark: #6b7280;
-    --success: #10b981;
-    --danger: #ef4444;
-    --warning: #f59e0b;
-    --info: #3b82f6;
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
-    --radius: 0.5rem;
-    --radius-sm: 0.25rem;
-    --radius-lg: 1rem;
-    --radius-full: 9999px;
-    --transition: all 0.3s ease;
-    
     /* Dashboard specifiche */
     --sidebar-width: 250px;
     --sidebar-collapsed-width: 70px;
@@ -40,7 +17,7 @@ body {
     font-family: 'Roboto', 'Segoe UI', sans-serif;
     line-height: 1.6;
     color: var(--secondary-color);
-    background-color: var(--gray-light);
+    background-color: var(--bg-light);
     min-height: 100vh;
     overflow-x: hidden;
 }
@@ -89,7 +66,7 @@ ul {
     align-items: center;
     justify-content: space-between;
     padding: 0 1.5rem;
-    border-bottom: 1px solid var(--gray-medium);
+    border-bottom: 1px solid var(--border-light);
     position: sticky;
     top: 0;
     background-color: var(--primary-color);
@@ -119,7 +96,7 @@ ul {
 .sidebar-toggle {
     background: none;
     border: none;
-    color: var(--gray-dark);
+    color: var(--text-muted);
     font-size: 1.25rem;
     cursor: pointer;
     transition: var(--transition);
@@ -146,7 +123,7 @@ ul {
     align-items: center;
     gap: 1rem;
     padding: 0.75rem 1.5rem;
-    color: var(--gray-dark);
+    color: var(--text-muted);
     font-weight: 500;
     transition: var(--transition);
     border-left: 3px solid transparent;
@@ -221,7 +198,7 @@ ul {
 }
 
 .header-search .form-control {
-    background-color: var(--gray-light);
+    background-color: var(--bg-light);
     border: none;
     border-radius: var(--radius-full);
     padding: 0.5rem 1rem;
@@ -246,7 +223,7 @@ ul {
     background: none;
     border: none;
     font-size: 1.25rem;
-    color: var(--gray-dark);
+    color: var(--text-muted);
     cursor: pointer;
     transition: var(--transition);
 }
@@ -259,7 +236,7 @@ ul {
     position: absolute;
     top: -5px;
     right: -5px;
-    background-color: var(--danger);
+    background-color: var(--danger-color);
     color: white;
     font-size: 0.7rem;
     width: 18px;
@@ -294,7 +271,7 @@ ul {
 }
 
 .notification-content small {
-    color: var(--gray-dark);
+    color: var(--text-muted);
     font-size: 0.75rem;
 }
 
@@ -321,7 +298,7 @@ ul {
     height: 40px;
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid var(--gray-medium);
+    border: 2px solid var(--border-light);
 }
 
 .user-btn span {
@@ -350,7 +327,7 @@ ul {
 }
 
 .breadcrumb-item a {
-    color: var(--gray-dark);
+    color: var(--text-muted);
 }
 
 .breadcrumb-item.active {
@@ -368,7 +345,7 @@ ul {
 
 .card-header {
     background-color: var(--primary-color);
-    border-bottom: 1px solid var(--gray-medium);
+    border-bottom: 1px solid var(--border-light);
     padding: 1rem 1.5rem;
     display: flex;
     align-items: center;
@@ -400,9 +377,9 @@ ul {
 
 .table thead th {
     border-top: none;
-    border-bottom: 2px solid var(--gray-medium);
+    border-bottom: 2px solid var(--border-light);
     font-weight: 600;
-    color: var(--gray-dark);
+    color: var(--text-muted);
     text-transform: uppercase;
     font-size: 0.8rem;
     letter-spacing: 0.5px;
@@ -424,7 +401,7 @@ ul {
 
 .form-control,
 .form-select {
-    border: 1px solid var(--gray-medium);
+    border: 1px solid var(--border-light);
     border-radius: var(--radius);
     padding: 0.5rem 1rem;
     font-size: 0.9rem;
@@ -457,8 +434,8 @@ ul {
 }
 
 .btn-success {
-    background-color: var(--success);
-    border-color: var(--success);
+    background-color: var(--success-color);
+    border-color: var(--success-color);
 }
 
 .btn-success:hover {
@@ -469,8 +446,8 @@ ul {
 }
 
 .btn-danger {
-    background-color: var(--danger);
-    border-color: var(--danger);
+    background-color: var(--danger-color);
+    border-color: var(--danger-color);
 }
 
 .btn-danger:hover {

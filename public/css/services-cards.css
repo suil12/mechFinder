@@ -37,7 +37,7 @@
 }
 
 .service-card-back {
-    background: linear-gradient(145deg, var(--accent-blue), #1e40af);
+    background: var(--gradient-primary);
     color: white;
     transform: rotateY(180deg);
     display: flex;
@@ -79,7 +79,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(37, 99, 235, 0.2);
+    background-color: var(--accent-blue-bg);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -119,7 +119,7 @@
 .service-icon-container {
     width: 60px;
     height: 60px;
-    background-color: rgba(37, 99, 235, 0.1);
+    background-color: var(--accent-blue-bg);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -166,7 +166,7 @@
     background-color: var(--accent-orange);
     color: white;
     transform: translateY(-5px);
-    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 10px 15px var(--shadow-md);
 }
 
 .btn-outline-primary {

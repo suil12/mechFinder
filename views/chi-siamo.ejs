@@ -1,289 +1,285 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="MechFinder - Trova il meccanico più adatto a te">
-  <meta name="keywords" content="meccanici, riparazioni auto, officina, auto, moto">
-  <meta name="author" content="MechFinder">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-  <link rel="stylesheet" href="/css/style.css">
-  <link rel="stylesheet" href="/css/chi-siamo.css">
-  <title>Chi Siamo - MechFinder</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Chi Siamo - MechFinder, scopri la nostra storia e missione">
+    <meta name="keywords" content="meccanici, chi siamo, storia, missione, valori, team">
+    <meta name="author" content="MechFinder">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/chi-siamo.css">
+    <title>Chi Siamo - MechFinder</title>
 </head>
 <body>
     <%- include('./common/header') %>
-  
-  <main>
-    <!-- Hero Section -->
-    <section class="about-hero">
-      <div class="hero-background">
-        <div class="parallax-overlay"></div>
-      </div>
-      <div class="container">
-        <div class="row justify-content-center text-center">
-          <div class="col-lg-8">
-            <h1 class="hero-title" data-aos="fade-up">Chi Siamo</h1>
-            <p class="hero-subtitle" data-aos="fade-up" data-aos-delay="200">
-              Scopri la storia, i valori e la missione che guidano MechFinder
-            </p>
-            <div class="hero-scroll" data-aos="fade-up" data-aos-delay="400">
-              <i class="fas fa-chevron-down"></i>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
 
-    <!-- Story Section -->
-    <section class="story-section">
-      <div class="container">
-        <div class="row g-4">
-          <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
-            <div class="story-card">
-              <div class="story-icon">
-                <i class="fas fa-lightbulb"></i>
-              </div>
-              <h3>La Nascita</h3>
-              <p>MechFinder nasce dalla passione per l'automotive e dalla volontà di rivoluzionare il modo in cui i proprietari di veicoli trovano e prenotano servizi di riparazione.</p>
-            </div>
-          </div>
-          
-          <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
-            <div class="story-card">
-              <div class="story-icon">
-                <i class="fas fa-rocket"></i>
-              </div>
-              <h3>La Crescita</h3>
-              <p>Fondata nel 2023 da un gruppo di esperti del settore automobilistico e della tecnologia, abbiamo rapidamente conquistato la fiducia di migliaia di utenti.</p>
-            </div>
-          </div>
-          
-          <div class="col-lg-4" data-aos="fade-up" data-aos-delay="300">
-            <div class="story-card">
-              <div class="story-icon">
-                <i class="fas fa-trophy"></i>
-              </div>
-              <h3>Il Successo</h3>
-              <p>Oggi siamo diventati un punto di riferimento per automobilisti e meccanici professionisti, creando un ecosistema di fiducia e qualità.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Values Section -->
-    <section class="values-section">
-      <div class="values-background"></div>
-      <div class="container">
-        <div class="text-center mb-5">
-          <h2 class="section-title" data-aos="fade-up">I Nostri Valori</h2>
-          <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">
-            Principi che guidano ogni nostra azione e decisione
-          </p>
-        </div>
-        
-        <div class="row g-4">
-          <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
-            <div class="value-card">
-              <div class="value-icon">
-                <i class="fas fa-handshake"></i>
-              </div>
-              <h3>Trasparenza</h3>
-              <p>Crediamo nella chiarezza dei prezzi, nelle recensioni oneste e nella comunicazione aperta tra meccanici e clienti.</p>
-            </div>
-          </div>
-          
-          <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
-            <div class="value-card">
-              <div class="value-icon">
-                <i class="fas fa-certificate"></i>
-              </div>
-              <h3>Qualità</h3>
-              <p>Verifichiamo e selezioniamo i meccanici migliori, garantendo standard elevati di servizio e professionalità.</p>
-            </div>
-          </div>
-          
-          <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
-            <div class="value-card">
-              <div class="value-icon">
-                <i class="fas fa-users"></i>
-              </div>
-              <h3>Comunità</h3>
-              <p>Costruiamo una comunità di fiducia tra automobilisti e meccanici, basata su rispetto e supporto reciproco.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Timeline Section -->
-    <section class="timeline-section">
-      <div class="container">
-        <div class="text-center mb-5">
-          <h2 class="section-title" data-aos="fade-up">Il Nostro Percorso</h2>
-          <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">
-            Le tappe fondamentali che hanno segnato la crescita di MechFinder
-          </p>
-        </div>
-        
-        <div class="timeline">
-          <div class="timeline-item" data-aos="fade-left">
-            <div class="timeline-content">
-              <div class="timeline-year">2023</div>
-              <h3>La Nascita di un'Idea</h3>
-              <p>Nasce l'idea di MechFinder. Un gruppo di appassionati di auto e tecnologia si unisce per sviluppare una piattaforma innovativa.</p>
-            </div>
-            <div class="timeline-icon">
-              <i class="fas fa-lightbulb"></i>
-            </div>
-          </div>
-          
-          <div class="timeline-item" data-aos="fade-right">
-            <div class="timeline-content">
-              <div class="timeline-year">2023</div>
-              <h3>Il Lancio</h3>
-              <p>Lancio ufficiale della piattaforma MechFinder con i primi 50 meccanici partner e oltre 100 utenti registrati.</p>
-            </div>
-            <div class="timeline-icon">
-              <i class="fas fa-rocket"></i>
-            </div>
-          </div>
-          
-          <div class="timeline-item" data-aos="fade-left">
-            <div class="timeline-content">
-              <div class="timeline-year">2024</div>
-              <h3>Espansione Nazionale</h3>
-              <p>Raggiungimento di 1000+ meccanici certificati e 10,000+ utenti attivi su tutto il territorio nazionale.</p>
-            </div>
-            <div class="timeline-icon">
-              <i class="fas fa-chart-line"></i>
-            </div>
-          </div>
-          
-          <div class="timeline-item" data-aos="fade-right">
-            <div class="timeline-content">
-              <div class="timeline-year">2024</div>
-              <h3>Il Futuro</h3>
-              <p>Continuiamo a innovare con nuove funzionalità e servizi per migliorare l'esperienza di automobilisti e meccanici.</p>
-            </div>
-            <div class="timeline-icon">
-              <i class="fas fa-star"></i>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Team Section -->
-    <section class="team-section">
-      <div class="container">
-        <div class="text-center mb-5">
-          <h2 class="section-title" data-aos="fade-up">Il Nostro Team</h2>
-          <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">
-            Le persone che rendono possibile MechFinder
-          </p>
-        </div>
-        
-        <div class="row g-4">
-          <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
-            <div class="team-card">
-              <div class="team-avatar">
-                <img src="/media/img/team-1.jpg" alt="Marco Rossi" onerror="this.src='/media/img/placeholder-avatar.jpg'">
-              </div>
-              <div class="team-info">
-                <h4>Marco Rossi</h4>
-                <p class="team-role">CEO & Founder</p>
-                <p class="team-description">Esperto del settore automotive con oltre 15 anni di esperienza.</p>
-                <div class="team-social">
-                  <a href="#"><i class="fab fa-linkedin"></i></a>
-                  <a href="#"><i class="fab fa-twitter"></i></a>
+    <main>
+        <!-- Header della pagina -->
+        <section class="about-header">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-8">
+                        <h1>Chi Siamo</h1>
+                        <p class="subtitle">Scopri la storia e la missione di MechFinder</p>
+                    </div>
+                    <div class="col-lg-4 text-lg-end">
+                        <div class="header-stats">
+                            <i class="fas fa-calendar me-2"></i>
+                            <strong>Dal 2023</strong> al tuo servizio
+                        </div>
+                    </div>
                 </div>
-              </div>
             </div>
-          </div>
-          
-          <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
-            <div class="team-card">
-              <div class="team-avatar">
-                <img src="/media/img/team-2.jpg" alt="Sara Bianchi" onerror="this.src='/media/img/placeholder-avatar.jpg'">
-              </div>
-              <div class="team-info">
-                <h4>Sara Bianchi</h4>
-                <p class="team-role">CTO</p>
-                <p class="team-description">Sviluppatrice full-stack specializzata in piattaforme digitali innovative.</p>
-                <div class="team-social">
-                  <a href="#"><i class="fab fa-linkedin"></i></a>
-                  <a href="#"><i class="fab fa-github"></i></a>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
-            <div class="team-card">
-              <div class="team-avatar">
-                <img src="/media/img/team-3.jpg" alt="Luca Verdi" onerror="this.src='/media/img/placeholder-avatar.jpg'">
-              </div>
-              <div class="team-info">
-                <h4>Luca Verdi</h4>
-                <p class="team-role">Head of Operations</p>
-                <p class="team-description">Gestisce le operazioni quotidiane e i rapporti con i meccanici partner.</p>
-                <div class="team-social">
-                  <a href="#"><i class="fab fa-linkedin"></i></a>
-                  <a href="#"><i class="fab fa-twitter"></i></a>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="400">
-            <div class="team-card">
-              <div class="team-avatar">
-                <img src="/media/img/team-4.jpg" alt="Anna Neri" onerror="this.src='/media/img/placeholder-avatar.jpg'">
-              </div>
-              <div class="team-info">
-                <h4>Anna Neri</h4>
-                <p class="team-role">Customer Success</p>
-                <p class="team-description">Si occupa dell'assistenza clienti e del miglioramento dell'esperienza utente.</p>
-                <div class="team-social">
-                  <a href="#"><i class="fab fa-linkedin"></i></a>
-                  <a href="#"><i class="fab fa-instagram"></i></a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+        </section>
 
-    <!-- CTA Section -->
-    <section class="cta-section">
-      <div class="cta-background"></div>
-      <div class="container">
-        <div class="row justify-content-center text-center">
-          <div class="col-lg-8">
-            <h2 class="cta-title" data-aos="fade-up">Unisciti alla Famiglia MechFinder</h2>
-            <p class="cta-subtitle" data-aos="fade-up" data-aos-delay="100">
-              Che tu sia un automobilista alla ricerca del meccanico perfetto o un professionista che vuole espandere la propria clientela, MechFinder è la soluzione che fa per te.
-            </p>
-            <div class="cta-buttons" data-aos="fade-up" data-aos-delay="200">
-              <a href="/servizi" class="btn btn-primary btn-lg me-3">
-                <i class="fas fa-search me-2"></i>Trova un Meccanico
-              </a>
-              <a href="/meccanici" class="btn btn-outline-light btn-lg">
-                <i class="fas fa-user-plus me-2"></i>Diventa Partner
-              </a>
+        <!-- Sezione Storia -->
+        <section class="container py-5">
+            <div class="row align-items-center mb-5">
+                <div class="col-lg-6">
+                    <div class="about-content">
+                        <div class="section-header mb-4">
+                            <span class="section-subtitle">LA NOSTRA STORIA</span>
+                            <h2 class="section-title">Come è nato MechFinder</h2>
+                            <div class="section-divider">
+                                <span class="divider-line"></span>
+                                <span class="divider-icon"><i class="fas fa-lightbulb"></i></span>
+                                <span class="divider-line"></span>
+                            </div>
+                        </div>
+                        <p class="lead mb-4">
+                            MechFinder nasce dalla passione per l'automotive e dalla volontà di rivoluzionare 
+                            il modo in cui i proprietari di veicoli trovano e prenotano servizi di riparazione e manutenzione.
+                        </p>
+                        <p class="mb-4">
+                            Fondata nel 2023 da un gruppo di esperti del settore automobilistico e della tecnologia, 
+                            la nostra piattaforma mira a semplificare il processo di ricerca e prenotazione di servizi meccanici, 
+                            garantendo al contempo qualità e trasparenza.
+                        </p>
+                        <p class="mb-0">
+                            Oggi, MechFinder è diventata un punto di riferimento per migliaia di automobilisti e 
+                            meccanici professionisti in tutta Italia, creando un ecosistema di fiducia e professionalità 
+                            nel settore delle riparazioni auto.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="about-image">
+                        <img src="/media/img/bg.jpg" alt="MechFinder Team" class="img-fluid rounded shadow">
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
+        </section>
 
-  <%- include('./common/footer') %>
-  <%- include('./common/scripts') %>
+        <!-- Sezione Valori -->
+        <section class="values-section py-5">
+            <div class="container">
+                <div class="section-header text-center mb-5">
+                    <span class="section-subtitle">I NOSTRI VALORI</span>
+                    <h2 class="section-title">Principi che ci guidano</h2>
+                    <div class="section-divider">
+                        <span class="divider-line"></span>
+                        <span class="divider-icon"><i class="fas fa-heart"></i></span>
+                        <span class="divider-line"></span>
+                    </div>
+                    <p class="lead text-muted mt-3">I valori che guidano ogni nostra azione e decisione</p>
+                </div>
+                
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="value-card">
+                            <div class="value-icon">
+                                <i class="fas fa-handshake"></i>
+                            </div>
+                            <h3>Trasparenza</h3>
+                            <p>Crediamo nella chiarezza dei prezzi, nelle recensioni oneste e nella comunicazione aperta tra meccanici e clienti.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="value-card">
+                            <div class="value-icon">
+                                <i class="fas fa-certificate"></i>
+                            </div>
+                            <h3>Qualità</h3>
+                            <p>Verifichiamo e selezioniamo i meccanici migliori, garantendo standard elevati di servizio e professionalità.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="value-card">
+                            <div class="value-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <h3>Comunità</h3>
+                            <p>Costruiamo una comunità di fiducia tra automobilisti e meccanici, basata su rispetto e supporto reciproco.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sezione Timeline -->
+        <section class="container py-5">
+            <div class="section-header text-center mb-5">
+                <span class="section-subtitle">IL NOSTRO PERCORSO</span>
+                <h2 class="section-title">Le tappe della nostra crescita</h2>
+                <div class="section-divider">
+                    <span class="divider-line"></span>
+                    <span class="divider-icon"><i class="fas fa-route"></i></span>
+                    <span class="divider-line"></span>
+                </div>
+                <p class="lead text-muted mt-3">I momenti chiave che hanno segnato la storia di MechFinder</p>
+            </div>
+            
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-marker">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-year">2023</div>
+                        <h3>La nascita dell'idea</h3>
+                        <p>Nasce l'idea di MechFinder. Un gruppo di appassionati di auto e tecnologia si unisce per sviluppare una piattaforma innovativa che colmi il divario tra automobilisti e meccanici professionisti.</p>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-marker">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-year">2023</div>
+                        <h3>Il lancio della piattaforma</h3>
+                        <p>Lancio ufficiale di MechFinder in Italia. La piattaforma debutta con i primi meccanici certificati e inizia a costruire la sua comunità di utenti fidati.</p>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-marker">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-year">2024</div>
+                        <h3>Crescita e espansione</h3>
+                        <p>Espansione della rete di meccanici professionisti in tutte le principali città italiane. Introduzione di nuove funzionalità per migliorare l'esperienza utente.</p>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-marker">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-year">2025</div>
+                        <h3>Leadership di mercato</h3>
+                        <p>MechFinder diventa la piattaforma di riferimento per la ricerca di meccanici in Italia, con migliaia di professionisti certificati e clienti soddisfatti.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sezione Team -->
+        <section class="team-section py-5">
+            <div class="container">
+                <div class="section-header text-center mb-5">
+                    <span class="section-subtitle">IL NOSTRO TEAM</span>
+                    <h2 class="section-title">Le persone dietro MechFinder</h2>
+                    <div class="section-divider">
+                        <span class="divider-line"></span>
+                        <span class="divider-icon"><i class="fas fa-users"></i></span>
+                        <span class="divider-line"></span>
+                    </div>
+                    <p class="lead text-muted mt-3">Incontra il team che rende possibile MechFinder ogni giorno</p>
+                </div>
+                
+                <div class="row g-4 justify-content-center">
+                    <div class="col-lg-4 col-md-6">
+                        <div class="team-card">
+                            <div class="team-image">
+                                <img src="/media/img/default_mechanic.png" alt="Marco Rossi" class="img-fluid">
+                            </div>
+                            <div class="team-info">
+                                <h4>Marco Rossi</h4>
+                                <p class="team-role">CEO & Fondatore</p>
+                                <p class="team-description">
+                                    Appassionato di auto e tecnologia, ha fondato MechFinder con l'obiettivo di rivoluzionare il settore delle riparazioni auto.
+                                </p>
+                                <div class="team-social">
+                                    <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                                    <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-4 col-md-6">
+                        <div class="team-card">
+                            <div class="team-image">
+                                <img src="/media/img/default_mechanic.png" alt="Laura Bianchi" class="img-fluid">
+                            </div>
+                            <div class="team-info">
+                                <h4>Laura Bianchi</h4>
+                                <p class="team-role">CTO</p>
+                                <p class="team-description">
+                                    Con oltre 15 anni di esperienza nello sviluppo software, guida il team tecnologico di MechFinder.
+                                </p>
+                                <div class="team-social">
+                                    <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                                    <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-4 col-md-6">
+                        <div class="team-card">
+                            <div class="team-image">
+                                <img src="/media/img/default_mechanic.png" alt="Antonio Ferrari" class="img-fluid">
+                            </div>
+                            <div class="team-info">
+                                <h4>Antonio Ferrari</h4>
+                                <p class="team-role">Responsabile Meccanici</p>
+                                <p class="team-description">
+                                    Ex meccanico con 20 anni di esperienza, verifica e supporta i professionisti della nostra rete.
+                                </p>
+                                <div class="team-social">
+                                    <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                                    <a href="#" class="social-link"><i class="fas fa-envelope"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sezione CTA -->
+        <section class="cta-section">
+            <div class="container">
+                <div class="row justify-content-center text-center">
+                    <div class="col-lg-8">
+                        <h2 class="cta-title">Unisciti alla famiglia MechFinder</h2>
+                        <p class="cta-subtitle">
+                            Che tu sia un automobilista in cerca del meccanico perfetto o un professionista che vuole far crescere la propria attività
+                        </p>
+                        <div class="cta-buttons">
+                            <a href="/meccanici" class="btn btn-primary btn-lg me-3 mb-3">
+                                <i class="fas fa-search me-2"></i>Trova un meccanico
+                            </a>
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#registerMeccanicoModal" class="btn btn-outline-light btn-lg mb-3">
+                                <i class="fas fa-plus me-2"></i>Diventa un meccanico
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <%- include('./common/footer') %>
+    <%- include('./common/modals') %>
+    <%- include('./common/scripts') %>
 </body>
 </html>

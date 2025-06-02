@@ -1,12 +1,7 @@
-/* chatbot.css - Stili per il chatbot */
+/* chatbot.css - Stili per il chatbot - utilizzando il sistema unificato da style.css */
 
 :root {
-    --chatbot-primary: #2563eb;
-    --chatbot-secondary: #f3f4f6;
-    --chatbot-text: #1a1a1a;
-    --chatbot-light-text: #6b7280;
-    --chatbot-success: #10b981;
-    --chatbot-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    /* Chatbot specifiche */
     --chatbot-border-radius: 16px;
     --chatbot-message-radius: 18px;
 }
@@ -19,12 +14,12 @@
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    background-color: var(--chatbot-primary);
+    background-color: var(--accent-blue);
     color: white;
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: var(--chatbot-shadow);
+    box-shadow: var(--shadow-md);
     cursor: pointer;
     transition: transform 0.3s ease, background-color 0.3s ease;
     z-index: 999;
@@ -32,7 +27,7 @@
 
 .chatbot-button:hover {
     transform: scale(1.05);
-    background-color: #1d4ed8;
+    background-color: var(--accent-blue-dark);
 }
 
 .chatbot-button i {
@@ -48,7 +43,7 @@
     height: 500px;
     background-color: white;
     border-radius: var(--chatbot-border-radius);
-    box-shadow: var(--chatbot-shadow);
+    box-shadow: var(--shadow-md);
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -66,7 +61,7 @@
 
 /* Header del chatbot */
 .chatbot-header {
-    background-color: var(--chatbot-primary);
+    background-color: var(--accent-blue);
     color: white;
     padding: 15px;
     display: flex;
@@ -126,7 +121,7 @@
 .message-avatar {
     width: 30px;
     height: 30px;
-    background-color: var(--chatbot-primary);
+    background-color: var(--accent-blue);
     border-radius: 50%;
     display: flex;
     justify-content: center;
@@ -136,20 +131,20 @@
 }
 
 .message-content {
-    background-color: var(--chatbot-secondary);
+    background-color: var(--bg-light);
     padding: 10px 15px;
     border-radius: var(--chatbot-message-radius);
     position: relative;
 }
 
 .bot-message .message-content {
-    background-color: var(--chatbot-secondary);
-    color: var(--chatbot-text);
+    background-color: var(--bg-light);
+    color: var(--text-dark);
     border-top-left-radius: 0;
 }
 
 .user-message .message-content {
-    background-color: var(--chatbot-primary);
+    background-color: var(--accent-blue);
     color: white;
     border-top-right-radius: 0;
 }
@@ -173,7 +168,7 @@
 /* Form di input */
 .chatbot-form {
     padding: 10px;
-    border-top: 1px solid var(--chatbot-secondary);
+    border-top: 1px solid var(--bg-light);
     display: flex;
     align-items: center;
 }
@@ -181,14 +176,14 @@
 .chatbot-input {
     flex: 1;
     padding: 10px 15px;
-    border: 1px solid var(--chatbot-secondary);
+    border: 1px solid var(--bg-light);
     border-radius: 20px;
     outline: none;
     font-size: 14px;
 }
 
 .chatbot-submit {
-    background-color: var(--chatbot-primary);
+    background-color: var(--accent-blue);
     color: white;
     border: none;
     width: 40px;
@@ -202,13 +197,13 @@
 }
 
 .chatbot-submit:hover {
-    background-color: #1d4ed8;
+    background-color: var(--accent-blue-dark);
 }
 
 /* Indicatore di digitazione */
 .typing-indicator .message-content {
     padding: 10px 15px;
-    background-color: var(--chatbot-secondary);
+    background-color: var(--bg-light);
 }
 
 .typing-dots {
@@ -222,7 +217,7 @@
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background-color: var(--chatbot-light-text);
+    background-color: var(--text-muted);
     margin-right: 5px;
     animation: typingDot 1.4s infinite ease-in-out;
 }

@@ -1,15 +1,31 @@
 <nav class="navbar navbar-expand-lg fixed-top header_nav">
     <div class="container-fluid">
-        <a class="navbar-brand d-flex align-items-center" href="/">
+        <!-- Bottone Accedi a sinistra -->
+        <div class="d-none d-lg-block me-auto">
+            <a href="#" class="login-button" data-bs-toggle="modal" data-bs-target="#loginModal">Accedi</a>
+        </div>
+        
+        <!-- Menu centrale -->
+        <div class="navbar-nav d-none d-lg-flex mx-auto">
+            <a class="nav-link <%= active === 'home' ? 'active' : '' %>" href="/">Home</a>
+            <a class="nav-link <%= active === 'servizi' ? 'active' : '' %>" href="/servizi">Servizi</a>
+            <a class="nav-link <%= active === 'meccanici' ? 'active' : '' %>" href="/meccanici">Meccanici</a>
+            <a class="nav-link <%= active === 'chi-siamo' ? 'active' : '' %>" href="/chi-siamo">Chi Siamo</a>
+            <a class="nav-link <%= active === 'contatti' ? 'active' : '' %>" href="/contatti">Contatti</a>
+        </div>
+        
+        <!-- Logo e testo a destra -->
+        <a class="navbar-brand d-flex align-items-center ms-auto" href="/">
             <img src="/media/img/logo.png" alt="Logo MechFinder" class="logo-img me-2">
             <span>MechFinder</span>
         </a>
         
-        <button class="navbar-toggler border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-expanded="false" aria-label="Toggle navigation">
+        <!-- Toggler per mobile -->
+        <button class="navbar-toggler border-0 d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         
-        <!-- Menu -->
+        <!-- Menu mobile -->
         <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
             <div class="offcanvas-header">
                 <h5 class="offcanvas-title" id="offcanvasNavbarLabel">MechFinder</h5>
@@ -17,8 +33,8 @@
             </div>
             
             <div class="offcanvas-body">
-                <!-- Menu principale -->
-                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <!-- Menu principale mobile -->
+                <ul class="navbar-nav mb-2 mb-lg-0">
                     <li class="nav-item">
                         <a class="nav-link <%= active === 'home' ? 'active' : '' %>" href="/">Home</a>
                     </li>
@@ -36,16 +52,11 @@
                     </li>
                 </ul>
                 
-                <!-- login mobile -->
-                <div class="d-lg-none mt-3">
+                <!-- Bottone accedi mobile -->
+                <div class="mt-3">
                     <a href="#" class="login-button w-100" data-bs-toggle="modal" data-bs-target="#loginModal">Accedi</a>
                 </div>
             </div>
-        </div>
-        
-        <!-- login desktop -->
-        <div class="d-none d-lg-block ms-3">
-            <a href="#" class="login-button" data-bs-toggle="modal" data-bs-target="#loginModal">Accedi</a>
         </div>
     </div>
 </nav>

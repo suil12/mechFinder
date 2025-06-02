@@ -14,8 +14,8 @@
     width: 100%;
     height: 100%;
     background-image: 
-        radial-gradient(circle at 10% 10%, rgba(37, 99, 235, 0.05) 0%, transparent 80%),
-        radial-gradient(circle at 90% 90%, rgba(245, 158, 11, 0.05) 0%, transparent 80%);
+        radial-gradient(circle at 10% 10%, var(--accent-blue-bg) 0%, transparent 80%),
+        radial-gradient(circle at 90% 90%, var(--accent-orange-bg) 0%, transparent 80%);
     z-index: 0;
 }
 
@@ -56,7 +56,7 @@
     font-size: 6rem;
     line-height: 1;
     font-family: 'Georgia', serif;
-    color: rgba(37, 99, 235, 0.1);
+    color: var(--accent-blue-bg);
     z-index: 0;
 }
 
@@ -73,7 +73,7 @@
 
 .testimonial-rating {
     margin-bottom: 1rem;
-    color: #ffc107;
+    color: var(--accent-orange);
 }
 
 .testimonial-text {
