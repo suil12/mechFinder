@@ -160,7 +160,7 @@ ul {
     color: white;
     font-size: 0.9rem;
     padding: 0.5rem 1.5rem;
-    border-radius: var(--radius-full);
+    border-radius: var(--radius-lgs);
     border: none;
     cursor: pointer;
     transition: var(--transition);
@@ -335,6 +335,11 @@ ul {
 .search-tags {
     animation: fadeInUp 1s ease-out 0.6s forwards;
     opacity: 0;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
 }
 
 .search-tags .badge {
@@ -342,6 +347,7 @@ ul {
     padding: 0.5rem 1rem;
     cursor: pointer;
     transition: var(--transition);
+    margin: 0 0.25rem 0.5rem 0.25rem;
 }
 
 .search-tags .badge:hover {
@@ -1540,90 +1546,6 @@ main {
     border-color: var(--accent-blue);
 }
 
-.footer {
-    background-color: var(--gray-light);
-    border-top: 1px solid var(--accent-orange);
-    padding: 3rem 0;
-    color: var(--secondary-color);
-}
-
-.footer-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 2rem;
-}
-
-.footer-content {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 2rem;
-    margin-bottom: 2rem;
-}
-
-.footer-section h4 {
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin-bottom: 1.5rem;
-    color: var(--accent-orange);
-}
-
-.footer-section p,
-.footer-section a {
-    font-size: 0.9rem;
-    margin-bottom: 0.5rem;
-    color: var(--secondary-color);
-}
-
-.footer-section a:hover {
-    color: var(--accent-blue);
-}
-
-.social-icons {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-}
-
-.social-icons a {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background-color: var(--gray-medium);
-    color: var(--secondary-color);
-    transition: var(--transition);
-}
-
-.social-icons a:hover {
-    background-color: var(--accent-blue);
-    color: var(--primary-color);
-    transform: translateY(-3px);
-}
-
-.app-badges {
-    display: flex;
-    gap: 1rem;
-}
-
-.app-badges img {
-    height: 40px;
-    transition: var(--transition);
-}
-
-.app-badges img:hover {
-    transform: scale(1.05);
-}
-
-.footer-bottom {
-    text-align: center;
-    border-top: 1px solid var(--gray-medium);
-    padding-top: 1.5rem;
-    font-size: 0.9rem;
-    color: var(--gray-dark);
-}
-
 .modal-header {
     background-color: var(--primary-color);
     border-bottom: 1px solid var(--gray-medium);
@@ -1706,9 +1628,5 @@ main {
     .mechanic-card,
     .review-card {
         min-width: 240px;
-    }
-    
-    .footer-content {
-        grid-template-columns: 1fr;
     }
 }

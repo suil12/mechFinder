@@ -10,14 +10,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/contatti.css">
+    <link rel="stylesheet" href="/css/footer.css">
     <title>Contatti - MechFinder</title>
 </head>
 <body>
     <%- include('./common/header') %>
-  
     <main>
         <!-- Header della pagina -->
-        <section class="contact-header">
+        <section class="mechanics-header">
             <div class="container">
                 <div class="row align-items-center">
                     <div class="col-lg-8">
@@ -25,7 +25,7 @@
                         <p class="subtitle">Siamo qui per aiutarti in ogni momento</p>
                     </div>
                     <div class="col-lg-4 text-lg-end">
-                        <div class="header-stats">
+                        <div class="search-stats">
                             <i class="fas fa-clock me-2"></i>
                             <strong>Lun-Ven</strong> 9:00-18:00
                         </div>
@@ -360,6 +360,8 @@
     </main>
 
     <%- include('./common/footer') %>
+    <%- include('./common/modals') %>
+    <%- include('./common/scripts') %>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/js/contatti.js"></script>

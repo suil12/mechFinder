@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/footer.css">
     <link rel="stylesheet" href="/css/servizi.css">
     <title>Servizi - MechFinder</title>
 </head>
@@ -17,20 +18,23 @@
     <%- include('./common/header') %>
 
     <main>
-        <!-- Header principale con parallax -->
-        <div class="services-header-block">
+        <!-- Header della pagina -->
+        <section class="mechanics-header">
             <div class="container">
-                <div class="row">
-                    <div class="col-md-12">
-                        <h1>Scopri Tutti i Nostri Servizi</h1>
-                        <h2>Trova il meccanico ideale per ogni esigenza della tua auto</h2>
-                        <a href="/meccanici" class="btn btn-light btn-lg">
-                            <i class="fas fa-search me-2"></i>Trova un meccanico
-                        </a>
+                <div class="row align-items-center">
+                    <div class="col-lg-8">
+                        <h1>I Nostri Servizi</h1>
+                        <p class="subtitle">Trova il meccanico ideale per ogni esigenza della tua auto</p>
+                    </div>
+                    <div class="col-lg-4 text-lg-end">
+                        <div class="search-stats">
+                            <i class="fas fa-tools me-2"></i>
+                            <strong><%= servizi ? servizi.length : 0 %></strong> servizi disponibili
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
 
         <!-- Navigazione rapida ai servizi -->
         <section class="container mb-5">

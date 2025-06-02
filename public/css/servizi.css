@@ -1,55 +1,55 @@
 /* CSS per la pagina Servizi */
-.services-header-block {
+
+/* Header della pagina */
+.mechanics-header {
     background: var(--gradient-primary), url('/media/img/bg.jpg');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
     color: white;
-    padding: 6rem 0 4rem;
-    margin-bottom: 4rem;
+    padding: 5rem 0 4rem;
+    margin-bottom: 3rem;
     position: relative;
+    overflow: hidden;
 }
 
-.services-header-block h1 {
-    font-size: 3.5rem;
+.mechanics-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M20 20c0-5.5-4.5-10-10-10s-10 4.5-10 10 4.5 10 10 10 10-4.5 10-10zm10 0c0-5.5-4.5-10-10-10s-10 4.5-10 10 4.5 10 10 10 10-4.5 10-10z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+    opacity: 0.3;
+}
+
+.mechanics-header .container {
+    position: relative;
+    z-index: 2;
+}
+
+.mechanics-header h1 {
+    font-size: 3rem;
     font-weight: 700;
     margin-bottom: 1rem;
-    animation: fadeInUp 0.8s ease;
+    text-shadow: var(--shadow-dark);
 }
 
-.services-header-block h2 {
-    font-size: 1.5rem;
-    font-weight: 400;
-    margin-bottom: 2rem;
+.mechanics-header .subtitle {
+    font-size: 1.2rem;
     opacity: 0.9;
-    animation: fadeInUp 1s ease;
-}
-
-.services-header-block .breadcrumb {
-    background-color: transparent;
-    padding: 0;
     margin-bottom: 2rem;
 }
 
-.services-header-block .breadcrumb-item,
-.services-header-block .breadcrumb-item a {
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 0.9rem;
-}
-
-.services-header-block .breadcrumb-item.active {
-    color: white;
-}
-
-.services-header-block .btn {
-    animation: fadeInUp 1.2s ease;
-    transition: all 0.3s ease;
-    box-shadow: var(--shadow-md);
-}
-
-.services-header-block .btn:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-lg);
+.search-stats {
+    background: rgba(255,255,255,0.15);
+    border-radius: 10px;
+    padding: 1rem 2rem;
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.2);
+    display: inline-block;
 }
 
 .service-section {
@@ -295,12 +295,12 @@
 
 /* Media queries */
 @media (max-width: 992px) {
-    .services-header-block h1 {
-        font-size: 2.5rem;
+    .mechanics-header {
+        padding: 3rem 0 2.5rem;
     }
     
-    .services-header-block h2 {
-        font-size: 1.2rem;
+    .mechanics-header h1 {
+        font-size: 2.5rem;
     }
     
     .service-section {
@@ -309,8 +309,17 @@
 }
 
 @media (max-width: 768px) {
-    .services-header-block {
-        padding: 4rem 0 3rem;
+    .mechanics-header {
+        padding: 2.5rem 0 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .mechanics-header h1 {
+        font-size: 2rem;
+    }
+    
+    .mechanics-header .subtitle {
+        font-size: 1rem;
     }
     
     .service-section {
@@ -319,9 +328,5 @@
     
     .service-img {
         margin-bottom: 2rem;
-    }
-    
-    .services-header-block h1 {
-        font-size: 2rem;
     }
 }

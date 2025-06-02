@@ -108,7 +108,7 @@
 }
 
 .btn-filter {
-    background: var(--gradient-primary);
+    background: var(--accent-blue-light);
     border: none;
     border-radius: 10px;
     padding: 0.75rem 2rem;
@@ -119,12 +119,13 @@
 }
 
 .btn-filter:hover {
+    background: var(--accent-blue);
     transform: translateY(-2px);
-    box-shadow: var(--shadow-blue);
+    box-shadow: var(--accent-blue);
 }
 
 .btn-reset {
-    border: 2px solid var(--border-muted);
+    border: 2px solid var(--border-light);
     border-radius: 10px;
     padding: 0.75rem 2rem;
     font-weight: 600;
@@ -226,7 +227,7 @@
 }
 
 .mechanic-specialty {
-    background: var(--gradient-secondary);
+    background: var(--accent-blue-dark);
     color: white;
     padding: 0.2rem 0.6rem;
     border-radius: 15px;
@@ -300,7 +301,7 @@
     border: none;
     border-radius: 8px;
     padding: 0.6rem 1.2rem;
-    color: white;
+    color: var(--accent-blue);
     font-weight: 600;
     text-decoration: none;
     transition: all 0.3s ease;
@@ -313,7 +314,7 @@
 .btn-profile:hover {
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
-    color: white;
+    color: var(--accent-blue);
 }
 
 .btn-quote {

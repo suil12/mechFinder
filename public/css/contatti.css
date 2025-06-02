@@ -1,5 +1,55 @@
 /* CSS moderno per la pagina Contatti */
 
+/* Header stile meccanici */
+.mechanics-header {
+    background: var(--gradient-primary), url('/media/img/bg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    color: white;
+    padding: 5rem 0 4rem;
+    margin-bottom: 3rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.mechanics-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M20 20c0-5.5-4.5-10-10-10s-10 4.5-10 10 4.5 10 10 10 10-4.5 10-10zm10 0c0-5.5-4.5-10-10-10s-10 4.5-10 10 4.5 10 10 10 10-4.5 10-10z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+    opacity: 0.3;
+}
+
+.mechanics-header .container {
+    position: relative;
+    z-index: 2;
+}
+
+.mechanics-header h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    text-shadow: var(--shadow-dark);
+}
+
+.mechanics-header .subtitle {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    margin-bottom: 2rem;
+}
+
+.search-stats {
+    background: rgba(255,255,255,0.15);
+    border-radius: 10px;
+    padding: 1rem 2rem;
+    border: 1px solid rgba(255,255,255,0.2);
+    display: inline-block;
+}
+
 /* Contact Hero Section */
 .contact-hero {
     position: relative;
@@ -134,8 +184,8 @@
 }
 
 .contact-link {
-    display: inline-block;
-    color: var(--primary-color);
+    display: block;
+    color: var(--accent-orange-light);
     font-weight: 600;
     text-decoration: none;
     font-size: 1.1rem;
@@ -155,7 +205,9 @@
     background: var(--accent-orange-bg);
     padding: 0.3rem 0.8rem;
     border-radius: 15px;
-    display: inline-block;
+    display: block;
+    width: fit-content;
+    margin: 0 auto;
 }
 
 /* Contact Section */
@@ -434,8 +486,8 @@
     background: rgba(255,255,255,0.95);
     padding: 1.5rem;
     border-radius: 15px;
-    backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
     box-shadow: var(--shadow-md);
     max-width: 300px;
 }
