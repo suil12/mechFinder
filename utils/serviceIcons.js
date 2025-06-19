@@ -1,6 +1,5 @@
-// Funzione helper per ottenere l'icona FontAwesome in base al nome del servizio
 function getServiceIcon(serviceName) {
-    // Tutte le icone utilizzano classi FontAwesome 6 standard
+    //pre le icon usiamo font awesome
     const serviceIcons = {
         'Meccanica': 'fas fa-cogs',
         'Elettronica': 'fas fa-bolt',

@@ -1,64 +1,47 @@
 "use strict";
-
-// Controlla lo stato dell'autenticazione all'avvio
 document.addEventListener('DOMContentLoaded', () => {
-    // Controlla se l'utente è autenticato
     checkAuthStatus();
-    
-    // Inizializza la ricerca
     initSearch();
     
-    // Carica i meccanici in primo piano
     if (document.getElementById('slider')) {
         loadFeaturedMechanics();
     }
     
-    // Carica le recensioni in evidenza
     if (document.querySelector('.reviews')) {
         loadFeaturedReviews();
     }
     
-    // Imposta l'anno corrente nel footer
     const yearElement = document.getElementById('currentYear');
     if (yearElement) {
         yearElement.textContent = new Date().getFullYear();
     }
     
-    // Event listener per il link di registrazione
     const registerLink = document.getElementById('registerLink');
     if (registerLink) {
         registerLink.addEventListener('click', (e) => {
             e.preventDefault();
             
-            // Chiudi il modal di login
             const loginModal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
             if (loginModal) {
                 loginModal.hide();
             }
             
-            // Apri il modal di registrazione
             setTimeout(() => {
                 const registerModal = new bootstrap.Modal(document.getElementById('registerModal'));
                 registerModal.show();
             }, 500);
         });
     }
-    
-    // Gestione delle validazioni client-side dei form di registrazione
-    // setupFormValidations(); // Rimosso - gestito in auth.js
 });
 
-// Funzione per controllare lo stato dell'autenticazione
 async function checkAuthStatus() {
     try {
         const response = await fetch('/auth/check');
         const data = await response.json();
         
         if (data.isAuthenticated) {
-            // Aggiorna l'interfaccia per un utente autenticato
             updateUIForAuthenticatedUser(data.user);
         } else {
-            // Aggiorna l'interfaccia per un utente non autenticato
             updateUIForGuestUser();
         }
     } catch (error) {
@@ -66,15 +49,12 @@ async function checkAuthStatus() {
     }
 }
 
-// Funzione per aggiornare l'interfaccia per un utente autenticato
 function updateUIForAuthenticatedUser(user) {
-    // Nascondi il pulsante di login e mostra il pulsante dashboard
     const loginButtons = document.querySelectorAll('.login-button');
     const dashboardBtn = document.getElementById('navDashboardBtn');
     
     if (loginButtons.length > 0) {
         loginButtons.forEach(btn => {
-            // Se il pulsante ha l'ID navLoginBtn, nascondilo
             if (btn.id === 'navLoginBtn') {
                 btn.classList.add('d-none');
             }
@@ -87,8 +67,6 @@ function updateUIForAuthenticatedUser(user) {
         dashboardBtn.textContent = 'Dashboard';
     }
     
-    // Aggiorna tutti gli altri elementi dell'interfaccia utente se necessario
-    // Ad esempio, se ci sono pulsanti di login nella navbar mobile
     const mobileLoginBtn = document.querySelector('.offcanvas-body .login-button');
     if (mobileLoginBtn) {
         mobileLoginBtn.href = user.tipo === 'cliente' ? '/cliente/dashboard' : '/meccanico/dashboard';
@@ -98,15 +76,12 @@ function updateUIForAuthenticatedUser(user) {
     }
 }
 
-// Funzione per aggiornare l'interfaccia per un utente ospite
 function updateUIForGuestUser() {
-    // Mostra il pulsante di login e nascondi il pulsante dashboard
     const loginButtons = document.querySelectorAll('.login-button');
     const dashboardBtn = document.getElementById('navDashboardBtn');
     
     if (loginButtons.length > 0) {
         loginButtons.forEach(btn => {
-            // Se il pulsante ha l'ID navLoginBtn, mostralo
             if (btn.id === 'navLoginBtn') {
                 btn.classList.remove('d-none');
             }
@@ -118,12 +93,6 @@ function updateUIForGuestUser() {
     }
 }
 
-// Configurazione delle validazioni client-side dei form
-// function setupFormValidations() {
-//     // Rimossa - gestita in auth.js per evitare conflitti
-// }
-
-// Inizializza la ricerca avanzata
 function initSearch() {
     const searchInput = document.getElementById('searchInput');
     const searchForm = document.getElementById('searchForm');
@@ -134,7 +103,6 @@ function initSearch() {
     let suggestionTimeout;
     let currentSuggestionIndex = -1;
     
-    // Gestione tag clickabili
     if (searchTags.length > 0) {
         searchTags.forEach(tag => {
             tag.addEventListener('click', () => {
@@ -148,7 +116,6 @@ function initSearch() {
                     searchType.value = searchTypeValue;
                 }
                 
-                // Submetti il form
                 if (searchForm) {
                     searchForm.submit();
                 }
@@ -156,7 +123,6 @@ function initSearch() {
         });
     }
     
-    // Autocompletamento
     if (searchInput && searchSuggestions) {
         searchInput.addEventListener('input', (e) => {
             const query = e.target.value.trim();
@@ -173,7 +139,6 @@ function initSearch() {
             }, 300);
         });
         
-        // Gestione navigazione con tastiera
         searchInput.addEventListener('keydown', (e) => {
             const suggestions = searchSuggestions.querySelectorAll('.suggestion-item');
             
@@ -193,15 +158,13 @@ function initSearch() {
             }
         });
         
-        // Nasconde suggerimenti quando si clicca fuori
         document.addEventListener('click', (e) => {
             if (!searchInput.contains(e.target) && !searchSuggestions.contains(e.target)) {
                 hideSuggestions();
             }
         });
-    }
+        }
     
-    // Gestione form submission
     if (searchForm) {
         searchForm.addEventListener('submit', (e) => {
             const query = searchInput ? searchInput.value.trim() : '';
@@ -213,7 +176,6 @@ function initSearch() {
         });
     }
     
-    // Funzioni di supporto
     async function fetchSuggestions(query) {
         try {
             const response = await fetch(`/api/search/suggestions?q=${encodeURIComponent(query)}`);
@@ -251,7 +213,6 @@ function initSearch() {
         searchSuggestions.classList.add('show');
         currentSuggestionIndex = -1;
         
-        // Aggiungi event listeners ai suggerimenti
         const suggestionItems = searchSuggestions.querySelectorAll('.suggestion-item');
         suggestionItems.forEach(item => {
             item.addEventListener('click', () => {
@@ -286,7 +247,6 @@ function initSearch() {
         });
     }
     
-    // Fallback per ricerca semplice (compatibilità)
     const searchButton = document.querySelector('.search-button');
     const searchInputFallback = document.querySelector('.search-input');
     
@@ -306,18 +266,15 @@ function initSearch() {
     }
 }
 
-// Carica i meccanici in primo piano
 async function loadFeaturedMechanics() {
     const sliderContainer = document.getElementById('slider');
     
     if (!sliderContainer) return;
     
     try {
-        // Ottieni i migliori meccanici
         const response = await fetch('/api/meccanici?limit=5&ordina=valutazione');
         const data = await response.json();
         
-        // Verifica se i dati sono presenti e nella struttura corretta
         if (!data.data || !data.data.meccanici || data.data.meccanici.length === 0) {
             sliderContainer.innerHTML = '<p class="text-center">Nessun meccanico disponibile al momento.</p>';
             return;
@@ -325,7 +282,6 @@ async function loadFeaturedMechanics() {
         
         const meccanici = data.data.meccanici;
         
-        // Crea le card dei meccanici
         const html = meccanici.map(mec => `
             <div class="mechanic-card" data-id="${mec.id}">
                 <img src="${mec.avatar || '/media/img/default_mechanic.png'}" alt="${mec.nome} ${mec.cognome}">
@@ -335,7 +291,6 @@ async function loadFeaturedMechanics() {
                     ${'★'.repeat(Math.floor(mec.valutazione || 0))}${'☆'.repeat(5 - Math.floor(mec.valutazione || 0))}
                     <span class="rating-text">${(mec.valutazione || 0).toFixed(1)}</span>
                 </div>
-                <!-- Rimosso bottone "Visualizza profilo" -->
             </div>
         `).join('');
         
@@ -346,19 +301,16 @@ async function loadFeaturedMechanics() {
     }
 }
 
-// Carica le recensioni in evidenza
 async function loadFeaturedReviews() {
     const reviewsContainer = document.querySelector('.reviews');
     
     if (!reviewsContainer) return;
     
     try {
-        // Ottieni le recensioni dal server
         const response = await fetch('/api/recensioni/featured');
         const data = await response.json();
         
         if (!data.success || !data.data || data.data.length === 0) {
-            // Se non ci sono dati, usa recensioni di esempio
             const recensioniEsempio = [
                 {
                     id: 1,
@@ -394,7 +346,6 @@ async function loadFeaturedReviews() {
             return;
         }
         
-        // Usa le recensioni dal server
         const recensioni = data.data;
         const html = recensioni.map(recensione => `
             <div class="review-card">
@@ -410,7 +361,6 @@ async function loadFeaturedReviews() {
     } catch (error) {
         console.error('Errore durante il caricamento delle recensioni:', error);
         
-        // In caso di errore, mostra recensioni di esempio
         const recensioniEsempio = [
             {
                 id: 1,

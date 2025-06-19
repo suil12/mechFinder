@@ -6,10 +6,8 @@ const db = require('../database/db');
 const { Cliente, Meccanico } = require('../models/utente');
 
 const adminController = {
-    // Dashboard admin
     getDashboard: async (req, res) => {
         try {
-            // Statistiche generali
             const totalClienti = await db.get('SELECT COUNT(*) as count FROM clienti');
             const totalMeccanici = await db.get('SELECT COUNT(*) as count FROM meccanici');
             const totalRiparazioni = await db.get('SELECT COUNT(*) as count FROM riparazioni');
@@ -18,12 +16,10 @@ const adminController = {
                  WHERE DATE(data_richiesta) = DATE('now')`
             );
 
-            // Meccanici in attesa di verifica
             const meccaniciInAttesa = await db.all(
                 'SELECT * FROM meccanici WHERE verificato = 0 ORDER BY data_registrazione DESC LIMIT 10'
             );
 
-            // Ultime riparazioni
             const riparazioniRecenti = await db.all(`
                 SELECT r.*, c.nome as nome_cliente, c.cognome as cognome_cliente,
                        m.nome as nome_meccanico, m.cognome as cognome_meccanico, m.nome_officina
@@ -34,7 +30,6 @@ const adminController = {
                 LIMIT 10
             `);
 
-            // Notifiche non lette per admin
             const notifiche = await db.all(`
                 SELECT * FROM notifiche 
                 WHERE id_utente = 1 AND tipo_utente = 'admin' AND letta = 0
@@ -42,14 +37,12 @@ const adminController = {
                 LIMIT 20
             `);
 
-            // Statistiche per i grafici
             const riparazioniPerStato = await db.all(`
                 SELECT stato, COUNT(*) as count 
                 FROM riparazioni 
                 GROUP BY stato
             `);
 
-            // Lista combinata utenti per la dashboard
             const clienti = await db.all(`
                 SELECT id, nome, cognome, email, telefono, 'cliente' as tipo_utente, 
                        data_registrazione
@@ -66,7 +59,6 @@ const adminController = {
                 LIMIT 10
             `);
             
-            // Combina e ordina per data di registrazione
             const utenti = [...clienti, ...meccanici]
                 .sort((a, b) => new Date(b.data_registrazione) - new Date(a.data_registrazione))
                 .slice(0, 10);
@@ -75,7 +67,7 @@ const adminController = {
                 title: 'Dashboard Admin - MechFinder',
                 active: 'dashboard',
                 user: req.user,
-                admin: req.user, // Aggiunto per compatibilità template
+                admin: req.user,
                 stats: {
                     totalClienti: totalClienti?.count || 0,
                     totalMeccanici: totalMeccanici?.count || 0,
@@ -87,7 +79,7 @@ const adminController = {
                 riparazioniRecenti,
                 notifiche,
                 riparazioniPerStato,
-                utenti, // Aggiunta lista combinata utenti
+                utenti,
                 isAdmin: true,
                 isAuthenticated: true
             });
@@ -98,7 +90,6 @@ const adminController = {
         }
     },
 
-    // Get utenti
     getUtenti: async (req, res) => {
         try {
             const clienti = await db.all('SELECT * FROM clienti ORDER BY data_registrazione DESC');
@@ -184,7 +175,6 @@ const adminController = {
         }
     },
 
-    // Verifica meccanico
     verificaMeccanico: async (req, res) => {
         try {
             const { id, azione } = req.body;
@@ -192,7 +182,6 @@ const adminController = {
             if (azione === 'approva') {
                 await db.run('UPDATE meccanici SET verificato = 1 WHERE id = ?', [id]);
                 
-                // Invia notifica di approvazione
                 await db.run(`
                     INSERT INTO notifiche (id_utente, tipo_utente, titolo, messaggio, tipo_notifica, data_creazione)
                     VALUES (?, 'meccanico', 'Verifica approvata', 'Il tuo account è stato verificato con successo!', 'verifica', datetime('now'))
@@ -221,10 +210,9 @@ const adminController = {
             
             const tabella = tipo === 'meccanico' ? 'meccanici' : 'clienti';
             
-            // Toggle sospensione
             await db.run(`
                 UPDATE ${tabella} 
-                SET sospeso = CASE WHEN sospeso = 1 THEN 0 ELSE 1 END
+                SET stato = CASE WHEN stato = 'sospeso' THEN 'attivo' ELSE 'sospeso' END
                 WHERE id = ?
             `, [id]);
             
@@ -235,7 +223,6 @@ const adminController = {
         }
     },
 
-    // Invia notifica globale
     inviaNotificaGlobale: async (req, res) => {
         try {
             const { titolo, messaggio } = req.body;
@@ -244,21 +231,19 @@ const adminController = {
                 return res.status(400).json({ error: 'Titolo e messaggio sono obbligatori' });
             }
             
-            // Ottieni tutti gli utenti
-            const clienti = await db.all('SELECT id FROM clienti WHERE sospeso = 0');
-            const meccanici = await db.all('SELECT id FROM meccanici WHERE sospeso = 0');
+            const clienti = await db.all('SELECT id FROM clienti');
+            const meccanici = await db.all('SELECT id FROM meccanici');
             
-            // Crea notifiche per tutti
             for (const cliente of clienti) {
                 await db.run(`
-                    INSERT INTO notifiche (id_destinatario, tipo_destinatario, titolo, messaggio, tipo, data_creazione)
+                    INSERT INTO notifiche (id_utente, tipo_utente, titolo, messaggio, tipo_notifica, data_creazione)
                     VALUES (?, 'cliente', ?, ?, 'sistema', datetime('now'))
                 `, [cliente.id, titolo, messaggio]);
             }
             
             for (const meccanico of meccanici) {
                 await db.run(`
-                    INSERT INTO notifiche (id_destinatario, tipo_destinatario, titolo, messaggio, tipo, data_creazione)
+                    INSERT INTO notifiche (id_utente, tipo_utente, titolo, messaggio, tipo_notifica, data_creazione)
                     VALUES (?, 'meccanico', ?, ?, 'sistema', datetime('now'))
                 `, [meccanico.id, titolo, messaggio]);
             }
@@ -270,7 +255,6 @@ const adminController = {
         }
     },
 
-    // Cancella notifica
     cancellaNotifica: async (req, res) => {
         try {
             const { id } = req.params;
@@ -284,10 +268,8 @@ const adminController = {
         }
     },
 
-    // Cancella notifiche vecchie
     cancellaNotificheVecchie: async (req, res) => {
         try {
-            // Cancella notifiche più vecchie di 30 giorni
             await db.run(`
                 DELETE FROM notifiche 
                 WHERE data_creazione < datetime('now', '-30 days')
@@ -300,7 +282,6 @@ const adminController = {
         }
     },
 
-    // Get profilo admin
     getProfilo: async (req, res) => {
         try {
             const admin = await db.get('SELECT id, nome, cognome, email FROM admin WHERE id = ?', [req.user.id]);
@@ -319,7 +300,6 @@ const adminController = {
         }
     },
 
-    // Aggiorna profilo admin
     aggiornaProfilo: async (req, res) => {
         try {
             const errors = validationResult(req);
@@ -349,7 +329,6 @@ const adminController = {
         }
     },
 
-    // Ottieni dettagli meccanico
     getMeccanico: async (req, res) => {
         try {
             const { id } = req.params;
@@ -369,7 +348,6 @@ const adminController = {
         }
     },
 
-    // Sospendi utente
     sospendiUtente: async (req, res) => {
         try {
             const { id } = req.params;
@@ -390,7 +368,6 @@ const adminController = {
         }
     },
 
-    // Riattiva utente
     riattivaUtente: async (req, res) => {
         try {
             const { id } = req.params;

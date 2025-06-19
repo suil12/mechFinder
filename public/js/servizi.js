@@ -1,6 +1,4 @@
-// JavaScript per la pagina Servizi
 document.addEventListener('DOMContentLoaded', function() {
-    // Animazioni all'entrata degli elementi nella viewport (semplificate)
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -12,21 +10,14 @@ document.addEventListener('DOMContentLoaded', function() {
         threshold: 0.15
     });
     
-    // Elementi da animare (ridotti per avere meno animazioni)
     document.querySelectorAll('.service-section').forEach(el => {
         observer.observe(el);
     });
     
-    // Rimossa l'animazione per le icone
-    
-    // Rimossa l'animazione per i singoli elementi delle feature
-    
-    // Effetto parallax sull'header (semplificato)
     window.addEventListener('scroll', function() {
         const header = document.querySelector('.services-header-block');
         if (header) {
             const scrollPosition = window.scrollY;
-            // Ridotto l'effetto parallax per un movimento più leggero e sottile
             header.style.backgroundPositionY = scrollPosition * 0.2 + 'px';
         }
     });

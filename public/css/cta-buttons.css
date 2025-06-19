@@ -1,0 +1,25 @@
+/* File per stili comuni dei bottoni CTA */
+
+.cta-buttons .btn {
+    padding: 0.8rem 2rem;
+    font-weight: 500;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    border: 2px solid transparent;
+}
+
+.cta-buttons .btn-primary {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    border-color: #007bff;
+}
+
+.cta-buttons .btn-outline-light {
+    border-color: var(--accent-orange-light);
+    color: var(--accent-blue); 
+}
+
+.cta-buttons .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}

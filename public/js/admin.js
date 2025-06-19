@@ -1,16 +1,8 @@
-/**
- * admin.js - Gestione della dashboard admin
- * Questo file gestisce le funzionalità della dashboard amministrativa,
- * inclusi grafici, tabelle e le interazioni di UI.
- */
-
 document.addEventListener('DOMContentLoaded', function() {
-    // ------- Toggle della sidebar -------
     const sidebarToggle = document.getElementById('sidebarToggle');
     const adminContainer = document.querySelector('.admin-container');
     
     if (sidebarToggle && adminContainer) {
-      // Ripristina lo stato della sidebar dal localStorage
       const sidebarState = localStorage.getItem('adminSidebarState');
       if (sidebarState === 'collapsed') {
         adminContainer.classList.add('sidebar-collapsed');
@@ -19,7 +11,6 @@ document.addEventListener('DOMContentLoaded', function() {
       sidebarToggle.addEventListener('click', function() {
         adminContainer.classList.toggle('sidebar-collapsed');
         
-        // Salva lo stato della sidebar
         if (adminContainer.classList.contains('sidebar-collapsed')) {
           localStorage.setItem('adminSidebarState', 'collapsed');
         } else {
@@ -28,22 +19,18 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     }
     
-    // Per dispositivi mobili, aggiungi overlay e gestisci l'apertura/chiusura
     if (window.innerWidth < 768) {
-      // Crea overlay se non esiste
       let overlay = document.querySelector('.sidebar-overlay');
       if (!overlay) {
         overlay = document.createElement('div');
         overlay.className = 'sidebar-overlay';
         document.body.appendChild(overlay);
         
-        // Chiudi la sidebar quando si clicca sull'overlay
         overlay.addEventListener('click', function() {
           adminContainer.classList.remove('sidebar-open');
         });
       }
       
-      // Apri la sidebar su mobile
       sidebarToggle.addEventListener('click', function() {
         adminContainer.classList.toggle('sidebar-open');
       });

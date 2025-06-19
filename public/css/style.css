@@ -287,10 +287,6 @@ ul {
 
 .hero-title {
     font-size: 3.2rem;
-    margin-bottom: 1rem;
-    font-weight: 700;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-    animation: fadeInUp 1s ease-out;
 }
 
 .hero-subtitle {
@@ -447,13 +443,6 @@ ul {
     margin-bottom: 0.5rem;
     letter-spacing: 1px;
     font-size: 0.9rem;
-}
-
-.section-title {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-    color: var(--secondary-color);
 }
 
 .section-divider {
@@ -756,8 +745,6 @@ ul {
     text-align: center;
 }
 
-/* Rimossi stili per .btn-mechanic-profile - bottone eliminato */
-
 /* Testimonials Section */
 .testimonials-section {
     background-color: white;
@@ -1018,21 +1005,6 @@ ul {
     font-weight: 400;
     margin-bottom: 1.5rem;
     opacity: 0.9;
-}
-
-/* Stili per le card dei servizi */
-.service-card {
-    background-color: white;
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-md);
-    padding: 2rem;
-    height: 100%;
-    transition: var(--transition);
-}
-
-.service-card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-lg);
 }
 
 .service-icon {

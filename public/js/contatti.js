@@ -1,8 +1,6 @@
-// JavaScript semplificato per la pagina Contatti
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Contatti page loaded');
 
-    // Animazioni semplici per gli elementi
     const elements = document.querySelectorAll('.contact-card, .contact-info-item, .faq-item');
     
     elements.forEach((el, index) => {
@@ -16,19 +14,16 @@ document.addEventListener('DOMContentLoaded', function() {
         }, index * 100);
     });
 
-    // Gestione form contatti
     const contactForm = document.getElementById('contactForm');
     if (contactForm) {
         contactForm.addEventListener('submit', handleFormSubmit);
     }
 
-    // Gestione FAQ accordion
     const faqQuestions = document.querySelectorAll('.faq-question');
     faqQuestions.forEach(question => {
         question.addEventListener('click', toggleFAQ);
     });
 
-    // Smooth scroll per link interni
     const smoothLinks = document.querySelectorAll('a[href^="#"]');
     smoothLinks.forEach(anchor => {
         anchor.addEventListener('click', function (e) {
@@ -53,10 +48,8 @@ function handleFormSubmit(e) {
     
     let isValid = true;
     
-    // Reset errori precedenti
     document.querySelectorAll('.error-message').forEach(el => el.remove());
     
-    // Validazione
     if (!nome.value.trim()) {
         showError(nome, 'Il nome è obbligatorio');
         isValid = false;
@@ -122,7 +115,6 @@ function toggleFAQ() {
     const answer = faqItem.querySelector('.faq-answer');
     const icon = this.querySelector('.faq-icon');
     
-    // Chiudi tutte le altre FAQ
     document.querySelectorAll('.faq-item').forEach(item => {
         if (item !== faqItem) {
             item.classList.remove('active');
@@ -133,7 +125,6 @@ function toggleFAQ() {
         }
     });
     
-    // Toggle FAQ corrente
     faqItem.classList.toggle('active');
     if (faqItem.classList.contains('active')) {
         answer.style.display = 'block';

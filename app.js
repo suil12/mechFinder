@@ -12,7 +12,7 @@ const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 const bcrypt = require('bcrypt');
 
-// Importazione dei modelli
+// importo modelli
 const { Cliente, Meccanico, Admin } = require('./models/utente');
 
 // Importazione delle routes
@@ -195,7 +195,7 @@ app.use('/meccanico', meccanicoRoutes);
 app.use('/admin', adminRoutes);
 app.use('/api', apiRoutes);
 app.use('/api/chatbot', chatbotRoutes);
-// Gestione degli errori 404
+// errori 404
 app.use((req, res) => {
     res.status(404).render('errors/404', {
         title: 'Pagina non trovata - MechFinder',
@@ -203,7 +203,7 @@ app.use((req, res) => {
     });
 });
 
-// Gestione degli errori del server
+//  errori del server
 app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).render('errors/500', {
@@ -213,7 +213,7 @@ app.use((err, req, res, next) => {
     });
 });
 
-// Avvio del server
+// avvio server
 app.listen(PORT, () => {
     console.log(`Server attivo su http://localhost:${PORT}`);
 });

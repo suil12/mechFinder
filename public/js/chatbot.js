@@ -1,12 +1,6 @@
 "use strict";
 
-/**
- * chatbot.js - Gestione del chatbot lato client
- * Questo file gestisce l'interfaccia e le interazioni del chatbot lato frontend.
- */
-
 document.addEventListener('DOMContentLoaded', function() {
-    // Riferimenti DOM
     const chatbotButton = document.getElementById('chatbotButton');
     const chatbotContainer = document.getElementById('chatbotContainer');
     const chatbotMessages = document.getElementById('chatbotMessages');
@@ -14,16 +8,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const chatbotInput = document.getElementById('chatbotInput');
     const chatbotCloseButton = document.getElementById('chatbotClose');
     
-    // Se il chatbot non è stato inizializzato nella pagina, esci
     if (!chatbotButton || !chatbotContainer) return;
     
-    // Verifica se il chatbot era già aperto (sessione precedente)
     const isChatbotOpen = localStorage.getItem('chatbotOpen') === 'true';
     if (isChatbotOpen) {
         chatbotContainer.classList.add('chatbot-open');
     }
     
-    // Apri/chiudi il chatbot quando si clicca sul pulsante
     chatbotButton.addEventListener('click', function() {
         chatbotContainer.classList.toggle('chatbot-open');
         

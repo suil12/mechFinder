@@ -1,30 +1,20 @@
-/**
- * profile.js - Gestione del profilo cliente
- * Questo file gestisce tutte le funzionalità della pagina del profilo cliente,
- * inclusa la modifica del profilo, il caricamento dell'immagine e la gestione delle tab.
- */
-
 document.addEventListener('DOMContentLoaded', function() {
-    // ------- Gestione della modifica del profilo -------
     const editProfileBtn = document.getElementById('editProfileBtn');
     const cancelEditBtn = document.getElementById('cancelEditBtn');
     const profileDataView = document.getElementById('profileDataView');
     const profileEditForm = document.getElementById('profileEditForm');
   
     if (editProfileBtn && cancelEditBtn && profileDataView && profileEditForm) {
-      // Mostra il form di modifica
       editProfileBtn.addEventListener('click', function() {
         profileDataView.classList.add('d-none');
         profileEditForm.classList.remove('d-none');
       });
   
-      // Nasconde il form di modifica
       cancelEditBtn.addEventListener('click', function() {
         profileDataView.classList.remove('d-none');
         profileEditForm.classList.add('d-none');
       });
   
-      // Validazione form di modifica
       profileEditForm.addEventListener('submit', function(event) {
         const password = document.getElementById('password');
         const passwordConfirm = document.getElementById('password_confirm');
@@ -45,7 +35,6 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     }
   
-    // ------- Gestione del caricamento immagine profilo -------
     const avatarUpload = document.getElementById('avatarUpload');
     if (avatarUpload) {
       avatarUpload.addEventListener('change', function() {

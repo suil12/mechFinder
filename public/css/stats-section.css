@@ -83,21 +83,7 @@
     margin-bottom: 0;
 }
 
-/* Animazione per i contatori */
-@keyframes countUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
 
-.counter {
-    animation: countUp 1s ease-out forwards;
-}
 
 /* Media queries */
 @media (max-width: 768px) {

@@ -1,30 +1,19 @@
-/**
- * auth.js - Gestione dei form di autenticazione
- * Questo file gestisce la validazione client-side dei form di login e registrazione.
- */
-
 document.addEventListener('DOMContentLoaded', function() {
-    // Modals di autenticazione
     const loginModal = document.getElementById('loginModal');
     const registerModal = document.getElementById('registerModal');
     const registerMeccanicoModal = document.getElementById('registerMeccanicoModal');
     
-    // Form di login
     const loginForm = document.getElementById('loginForm');
     const loginMeccanicoForm = document.getElementById('loginMeccanicoForm');
     
-    // Form di registrazione
     const registerForm = document.getElementById('registerForm');
     const registerMeccanicoForm = document.getElementById('registerMeccanicoForm');
     
-    // Link tra modali
     const registerLink = document.getElementById('registerLink');
     
-    // Messaggio di flash
     const flashError = document.querySelector('.flash-error');
     const flashSuccess = document.querySelector('.flash-success');
     
-    // Se c'è un messaggio flash, mostralo per 5 secondi
     if (flashError || flashSuccess) {
         setTimeout(() => {
             if (flashError) flashError.style.display = 'none';
@@ -32,7 +21,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 5000);
     }
     
-    // Gestione della registrazione cliente
     if (registerForm) {
         registerForm.addEventListener('submit', function(e) {
             const password = document.getElementById('regPassword').value;

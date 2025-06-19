@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const { validationResult } = require('express-validator');
 const { Cliente, Meccanico } = require('../models/utente');
-const { sendPasswordResetEmail } = require('../utils/emailService');
+
 
 // Controlla se un'email è già registrata
 exports.checkEmailExists = async (email) => {
@@ -199,9 +199,7 @@ exports.requestPasswordReset = async (req, res) => {
             await Meccanico.updateResetToken(user.id, resetToken, resetExpires);
         }
         
-        // gestione mail con link  reset per successiva implementazione
-        const resetUrl = `${req.protocol}://${req.get('host')}/auth/reset-password/${resetToken}`;
-        await sendPasswordResetEmail(user.email, user.nome, resetUrl);
+
         
         req.flash('success', 'Email di reset password inviata. Controlla la tua casella di posta.');
         res.redirect('/auth/reset-password');

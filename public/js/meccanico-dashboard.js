@@ -1,14 +1,7 @@
-/**
- * meccanico-dashboard.js - Gestione dashboard meccanico
- * Funzioni JavaScript per i modal e le interazioni della dashboard meccanico
- */
-
 document.addEventListener('DOMContentLoaded', function() {
     
-    // Inizializza gli event listener per i form dei modal
     initializeModalForms();
     
-    // Gestione sidebar toggle
     const sidebarToggle = document.getElementById('sidebarToggle');
     const dashboardContainer = document.querySelector('.dashboard-container');
     
@@ -18,7 +11,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Mostra/nascondi campi per completamento
     const statoSelect = document.querySelector('#modalAggiornaStato select[name="stato"]');
     if (statoSelect) {
         statoSelect.addEventListener('change', function() {
@@ -31,13 +23,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Calcolo totale preventivo
     initializePreventivocalculator();
 });
 
-// Inizializza gli event listener per i form dei modal
 function initializeModalForms() {
-    // Form submit preventivo
     const formNuovoPreventivo = document.getElementById('formNuovoPreventivo');
     if (formNuovoPreventivo) {
         formNuovoPreventivo.addEventListener('submit', function(e) {
@@ -61,7 +50,6 @@ function initializeModalForms() {
         });
     }
 
-    // Form submit aggiorna stato
     const formAggiornaStato = document.getElementById('formAggiornaStato');
     if (formAggiornaStato) {
         formAggiornaStato.addEventListener('submit', function(e) {
@@ -85,7 +73,6 @@ function initializeModalForms() {
         });
     }
 
-    // Form submit completa riparazione
     const formCompletaRiparazione = document.getElementById('formCompletaRiparazione');
     if (formCompletaRiparazione) {
         formCompletaRiparazione.addEventListener('submit', function(e) {

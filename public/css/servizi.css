@@ -1,57 +1,5 @@
 /* CSS per la pagina Servizi */
 
-/* Header della pagina */
-.mechanics-header {
-    background: var(--gradient-primary), url('/media/img/bg2.webp');
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    color: white;
-    padding: 5rem 0 4rem;
-    margin-bottom: 3rem;
-    position: relative;
-    overflow: hidden;
-}
-
-.mechanics-header::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M20 20c0-5.5-4.5-10-10-10s-10 4.5-10 10 4.5 10 10 10 10-4.5 10-10zm10 0c0-5.5-4.5-10-10-10s-10 4.5-10 10 4.5 10 10 10 10-4.5 10-10z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
-    opacity: 0.3;
-}
-
-.mechanics-header .container {
-    position: relative;
-    z-index: 2;
-}
-
-.mechanics-header h1 {
-    font-size: 3rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-    text-shadow: var(--shadow-dark);
-}
-
-.mechanics-header .subtitle {
-    font-size: 1.2rem;
-    opacity: 0.9;
-    margin-bottom: 2rem;
-}
-
-.search-stats {
-    background: rgba(255,255,255,0.15);
-    border-radius: 10px;
-    padding: 1rem 2rem;
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,0.2);
-    display: inline-block;
-}
-
 .service-section {
     padding: 6rem 0;
     overflow: hidden;
@@ -233,65 +181,7 @@
     box-shadow: 0 8px 25px rgba(255, 255, 255, 0.3);
 }
 
-/* Animazioni */
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-@keyframes slideInRight {
-    from {
-        opacity: 0;
-        transform: translateX(50px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-@keyframes slideInLeft {
-    from {
-        opacity: 0;
-        transform: translateX(-50px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-/* Classi per animazioni */
-.fadeInUp {
-    animation: fadeInUp 0.8s ease;
-}
-
-.fadeIn {
-    animation: fadeIn 1s ease;
-}
-
-.slideInRight {
-    animation: slideInRight 0.8s ease;
-}
-
-.slideInLeft {
-    animation: slideInLeft 0.8s ease;
-}
 
 /* Media queries */
 @media (max-width: 992px) {
