@@ -1,0 +1,45 @@
+<div class="dashboard-sidebar">
+    <div class="sidebar-header">
+        <a href="/" class="sidebar-logo">
+            <img src="/media/img/logo.png" alt="MechFinder">
+            <span>MechFinder</span>
+        </a>
+        <button id="sidebarToggle" class="sidebar-toggle">
+            <i class="fas fa-bars"></i>
+        </button>
+    </div>
+    
+    <nav class="sidebar-nav">
+        <ul>
+            <li class="<%= active === 'dashboard' ? 'active' : '' %>">
+                <a href="/cliente/dashboard">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="<%= active === 'veicoli' ? 'active' : '' %>">
+                <a href="/cliente/veicoli">
+                    <i class="fas fa-car"></i>
+                    <span>I Miei Veicoli</span>
+                </a>
+            </li>
+            <li class="<%= active === 'profilo' ? 'active' : '' %>">
+                <a href="/cliente/profilo">
+                    <i class="fas fa-user"></i>
+                    <span>Profilo</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    
+    <div class="sidebar-footer">
+        <a href="/auth/logout" class="logout-btn">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+        </a>
+        <div class="user-info">
+            <p class="mb-1"><%= user.nome %> <%= user.cognome %></p>
+            <small class="text-muted">MechFinder v1.0</small>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,271 @@
+<%- include('../common/head', { title: 'Dashboard Meccanico - MechFinder' }) %>
+<body>
+    <%- include('../common/navbar', { user }) %>
+    
+    <div class="dashboard-container">
+        <%- include('../common/sidebar-meccanico', { 
+            active: 'dashboard',
+            user: user
+        }) %>
+        
+        <main class="main-content">
+            <div class="dashboard-header">
+                <h1>Dashboard Meccanico</h1>
+                <p>Benvenuto, <%= user.nome %> <%= user.cognome %></p>
+            </div>
+
+            <!-- Statistiche Rapide -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-hourglass-half"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3><%= riparazioniInAttesa?.length || 0 %></h3>
+                        <p>Richieste in Attesa</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3><%= riparazioniAccettate?.length || 0 %></h3>
+                        <p>Riparazioni Accettate</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3><%= riparazioniInCorso?.length || 0 %></h3>
+                        <p>In Lavorazione</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3><%= riparazioniCompletate?.length || 0 %></h3>
+                        <p>Completate</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistiche Mensili -->
+            <div class="monthly-stats">
+                <h2>Statistiche del Mese</h2>
+                <div class="stats-row">
+                    <div class="monthly-stat">
+                        <span class="stat-label">Riparazioni Completate:</span>
+                        <span class="stat-value"><%= statsCorrente.completate %></span>
+                    </div>
+                    <div class="monthly-stat">
+                        <span class="stat-label">Guadagno Totale:</span>
+                        <span class="stat-value">€<%= statsCorrente.guadagno.toFixed(2) %></span>
+                    </div>
+                    <div class="monthly-stat">
+                        <span class="stat-label">Media Recensioni:</span>
+                        <span class="stat-value"><%= statsCorrente.mediaRecensioni > 0 ? statsCorrente.mediaRecensioni.toFixed(1) : 'N/A' %></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Richieste in Attesa -->
+            <div class="section">
+                <h2>Richieste in Attesa</h2>
+                <% if (riparazioniInAttesa && riparazioniInAttesa.length > 0) { %>
+                    <div class="riparazioni-grid">
+                        <% riparazioniInAttesa.forEach(function(riparazione) { %>
+                            <div class="riparazione-card">
+                                <div class="card-header">
+                                    <h3>Riparazione #<%= riparazione.id %></h3>
+                                    <span class="status-badge status-in-attesa">In Attesa</span>
+                                </div>
+                                <div class="card-content">
+                                    <p><strong>Cliente:</strong> <%= riparazione.cliente_nome %> <%= riparazione.cliente_cognome %></p>
+                                    <p><strong>Veicolo:</strong> <%= riparazione.veicolo_marca %> <%= riparazione.veicolo_modello %></p>
+                                    <p><strong>Tipo:</strong> <%= riparazione.tipo_servizio %></p>
+                                    <p><strong>Descrizione:</strong> <%= riparazione.descrizione %></p>
+                                    <p><strong>Data Richiesta:</strong> <%= new Date(riparazione.data_richiesta).toLocaleDateString('it-IT') %></p>
+                                </div>
+                                <div class="card-actions">
+                                    <button class="btn btn-success" onclick="accettaRichiesta(<%= riparazione.id %>)">
+                                        <i class="fas fa-check"></i> Accetta
+                                    </button>
+                                    <button class="btn btn-danger" onclick="rifiutaRichiesta(<%= riparazione.id %>)">
+                                        <i class="fas fa-times"></i> Rifiuta
+                                    </button>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+                <% } else { %>
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <p>Nessuna richiesta in attesa</p>
+                    </div>
+                <% } %>
+            </div>
+
+            <!-- Riparazioni Accettate -->
+            <div class="section">
+                <h2>Riparazioni Accettate</h2>
+                <% if (riparazioniAccettate && riparazioniAccettate.length > 0) { %>
+                    <div class="riparazioni-grid">
+                        <% riparazioniAccettate.forEach(function(riparazione) { %>
+                            <div class="riparazione-card">
+                                <div class="card-header">
+                                    <h3>Riparazione #<%= riparazione.id %></h3>
+                                    <span class="status-badge status-accettata">Accettata</span>
+                                </div>
+                                <div class="card-content">
+                                    <p><strong>Cliente:</strong> <%= riparazione.cliente_nome %> <%= riparazione.cliente_cognome %></p>
+                                    <p><strong>Veicolo:</strong> <%= riparazione.veicolo_marca %> <%= riparazione.veicolo_modello %></p>
+                                    <p><strong>Tipo:</strong> <%= riparazione.tipo_servizio %></p>
+                                    <p><strong>Prezzo:</strong> €<%= riparazione.prezzo %></p>
+                                </div>
+                                <div class="card-actions">
+                                    <button class="btn btn-primary" onclick="avviaLavorazione(<%= riparazione.id %>)">
+                                        <i class="fas fa-play"></i> Avvia Lavorazione
+                                    </button>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+                <% } else { %>
+                    <div class="empty-state">
+                        <i class="fas fa-check-circle"></i>
+                        <p>Nessuna riparazione accettata</p>
+                    </div>
+                <% } %>
+            </div>
+
+            <!-- Riparazioni in Corso -->
+            <div class="section">
+                <h2>Riparazioni in Corso</h2>
+                <% if (riparazioniInCorso && riparazioniInCorso.length > 0) { %>
+                    <div class="riparazioni-grid">
+                        <% riparazioniInCorso.forEach(function(riparazione) { %>
+                            <div class="riparazione-card">
+                                <div class="card-header">
+                                    <h3>Riparazione #<%= riparazione.id %></h3>
+                                    <span class="status-badge status-in-corso">In Corso</span>
+                                </div>
+                                <div class="card-content">
+                                    <p><strong>Cliente:</strong> <%= riparazione.cliente_nome %> <%= riparazione.cliente_cognome %></p>
+                                    <p><strong>Veicolo:</strong> <%= riparazione.veicolo_marca %> <%= riparazione.veicolo_modello %></p>
+                                    <p><strong>Tipo:</strong> <%= riparazione.tipo_servizio %></p>
+                                    <p><strong>Prezzo:</strong> €<%= riparazione.prezzo %></p>
+                                </div>
+                                <div class="card-actions">
+                                    <button class="btn btn-success" onclick="completaRiparazione(<%= riparazione.id %>)">
+                                        <i class="fas fa-check-double"></i> Completa
+                                    </button>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+                <% } else { %>
+                    <div class="empty-state">
+                        <i class="fas fa-tools"></i>
+                        <p>Nessuna riparazione in corso</p>
+                    </div>
+                <% } %>
+            </div>
+
+            <!-- Riparazioni Completate Recenti -->
+            <div class="section">
+                <h2>Riparazioni Completate Recenti</h2>
+                <% if (riparazioniCompletate && riparazioniCompletate.length > 0) { %>
+                    <div class="riparazioni-grid">
+                        <% riparazioniCompletate.slice(0, 6).forEach(function(riparazione) { %>
+                            <div class="riparazione-card">
+                                <div class="card-header">
+                                    <h3>Riparazione #<%= riparazione.id %></h3>
+                                    <span class="status-badge status-completata">Completata</span>
+                                </div>
+                                <div class="card-content">
+                                    <p><strong>Cliente:</strong> <%= riparazione.cliente_nome %> <%= riparazione.cliente_cognome %></p>
+                                    <p><strong>Veicolo:</strong> <%= riparazione.veicolo_marca %> <%= riparazione.veicolo_modello %></p>
+                                    <p><strong>Tipo:</strong> <%= riparazione.tipo_servizio %></p>
+                                    <p><strong>Prezzo:</strong> €<%= riparazione.prezzo %></p>
+                                    <p><strong>Data Completamento:</strong> <%= new Date(riparazione.data_completamento).toLocaleDateString('it-IT') %></p>
+                                    <% if (riparazione.rating) { %>
+                                        <p><strong>Valutazione:</strong> 
+                                            <% for(let i = 1; i <= 5; i++) { %>
+                                                <i class="fas fa-star <%= i <= riparazione.rating ? 'text-warning' : 'text-muted' %>"></i>
+                                            <% } %>
+                                        </p>
+                                    <% } %>
+                                </div>
+                                <div class="card-actions">
+                                    <button class="btn btn-info" onclick="scaricaPDF(<%= riparazione.id %>)">
+                                        <i class="fas fa-download"></i> Scarica PDF
+                                    </button>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+                <% } else { %>
+                    <div class="empty-state">
+                        <i class="fas fa-trophy"></i>
+                        <p>Nessuna riparazione completata</p>
+                    </div>
+                <% } %>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal per completamento riparazione -->
+    <div class="modal fade" id="completaRiparazioneModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Completa Riparazione</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="completaRiparazioneForm">
+                    <div class=modal-body">
+                        <input type="hidden" id="riparazioneId" name="riparazioneId">
+                        <div class="mb-3">
+                            <label for="noteCompletamento" class="form-label">Note di Completamento</label>
+                            <textarea class="form-control" id="noteCompletamento" name="noteCompletamento" rows="4" placeholder="Inserisci eventuali note sul lavoro svolto..."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="costoEffettivo" class="form-label">Costo Effettivo (€)</label>
+                            <input type="number" class="form-control" id="costoEffettivo" name="costoEffettivo" step="0.01" min="0">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                        <button type="submit" class="btn btn-success">Completa Riparazione</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal per visualizzazione recensioni -->
+    <div class="modal fade" id="recensioniModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Le Tue Recensioni</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="recensioniContent">
+                        <!-- Contenuto caricato dinamicamente -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../common/scripts') %>
+    <script src="/js/meccanico-dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,739 @@
+<%- include('../common/head') %>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<link href="/css/style.css" rel="stylesheet">
+
+<style>
+body {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    font-family: 'Poppins', sans-serif;
+}
+
+.dashboard-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.dashboard-header {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    color: white;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 2rem;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.stat-number {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    font-size: 1.2rem;
+    opacity: 0.8;
+}
+
+.action-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.action-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 2rem;
+    color: white;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.action-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    color: white;
+}
+
+.action-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.btn-custom {
+    background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+    border: none;
+    border-radius: 50px;
+    padding: 12px 30px;
+    color: white;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-custom:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    color: white;
+}
+
+.modal-content {
+    border-radius: 20px;
+    border: none;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    color: white;
+    border-radius: 20px 20px 0 0;
+    border: none;
+}
+
+.table-responsive {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 1rem;
+}
+
+.badge-custom {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+}
+
+.navbar {
+    background: rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.navbar-brand {
+    color: white !important;
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+
+.nav-link {
+    color: white !important;
+    font-weight: 500;
+}
+</style>
+
+<body>
+    <%- include('../common/header') %>
+
+    <div class="dashboard-container">
+        <!-- Header -->
+        <div class="dashboard-header">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="mb-0"><i class="fas fa-shield-alt me-3"></i>Dashboard Amministratore</h1>
+                    <p class="mb-0 mt-2">Benvenuto, <%= admin.nome %> <%= admin.cognome %>!</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <button class="btn btn-custom" data-bs-toggle="modal" data-bs-target="#profiloModal">
+                        <i class="fas fa-user me-2"></i>Il Mio Profilo
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistiche -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number"><%= stats.totaleUtenti || 0 %></div>
+                <div class="stat-label"><i class="fas fa-users me-2"></i>Utenti Totali</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number"><%= stats.totaleMeccanici || 0 %></div>
+                <div class="stat-label"><i class="fas fa-wrench me-2"></i>Meccanici Registrati</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number"><%= stats.totaleClienti || 0 %></div>
+                <div class="stat-label"><i class="fas fa-car me-2"></i>Clienti Registrati</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number"><%= stats.totaleRiparazioni || 0 %></div>
+                <div class="stat-label"><i class="fas fa-tools me-2"></i>Riparazioni Totali</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number"><%= stats.meccanicoDelMese?.nome || 'N/A' %></div>
+                <div class="stat-label"><i class="fas fa-trophy me-2"></i>Meccanico del Mese</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">€<%= stats.fatturatoTotale || 0 %></div>
+                <div class="stat-label"><i class="fas fa-euro-sign me-2"></i>Fatturato Totale</div>
+            </div>
+        </div>
+
+        <!-- Azioni Rapide -->
+        <div class="action-grid">
+            <div class="action-card" data-bs-toggle="modal" data-bs-target="#utentiModal">
+                <i class="fas fa-users action-icon"></i>
+                <h4>Gestione Utenti</h4>
+                <p>Visualizza e gestisci tutti gli utenti registrati</p>
+            </div>
+            <div class="action-card" data-bs-toggle="modal" data-bs-target="#meccanicoVerificaModal">
+                <i class="fas fa-user-check action-icon"></i>
+                <h4>Verifica Meccanici</h4>
+                <p>Approva o rifiuta richieste di registrazione</p>
+            </div>
+            <div class="action-card" data-bs-toggle="modal" data-bs-target="#riparazioniModal">
+                <i class="fas fa-chart-line action-icon"></i>
+                <h4>Statistiche Riparazioni</h4>
+                <p>Monitora le riparazioni e performance</p>
+            </div>
+            <div class="action-card" data-bs-toggle="modal" data-bs-target="#notificheModal">
+                <i class="fas fa-bell action-icon"></i>
+                <h4>Centro Notifiche</h4>
+                <p>Gestisci le notifiche di sistema</p>
+                <% if (notifiche && notifiche.length > 0) { %>
+                    <span class="badge bg-danger position-absolute top-0 end-0 m-2"><%= notifiche.length %></span>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Profilo -->
+    <div class="modal fade" id="profiloModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-user me-2"></i>Il Mio Profilo</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formProfilo">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Nome</label>
+                                    <input type="text" class="form-control" name="nome" value="<%= admin.nome %>" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Cognome</label>
+                                    <input type="text" class="form-control" name="cognome" value="<%= admin.cognome %>" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" name="email" value="<%= admin.email %>" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Nuova Password (opzionale)</label>
+                            <input type="password" class="form-control" name="password" placeholder="Lascia vuoto per non modificare">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+                    <button type="button" class="btn btn-custom" onclick="aggiornareProfilo()">Salva Modifiche</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Gestione Utenti -->
+    <div class="modal fade" id="utentiModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-users me-2"></i>Gestione Utenti</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <ul class="nav nav-tabs mb-3" id="utentiTabs">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-bs-toggle="tab" href="#meccaniciTab">Meccanici</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#clientiTab">Clienti</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="meccaniciTab">
+                            <div class="table-responsive">
+                                <table class="table table-dark table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Nome</th>
+                                            <th>Email</th>
+                                            <th>Specializzazione</th>
+                                            <th>Stato</th>
+                                            <th>Azioni</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="meccaniciTableBody">
+                                        <!-- Popolato via JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="clientiTab">
+                            <div class="table-responsive">
+                                <table class="table table-dark table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Nome</th>
+                                            <th>Email</th>
+                                            <th>Telefono</th>
+                                            <th>Riparazioni</th>
+                                            <th>Azioni</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="clientiTableBody">
+                                        <!-- Popolato via JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Verifica Meccanici -->
+    <div class="modal fade" id="meccanicoVerificaModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-user-check me-2"></i>Richieste di Verifica Meccanici</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="richiesteVerificaContainer">
+                        <!-- Popolato via JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Statistiche Riparazioni -->
+    <div class="modal fade" id="riparazioniModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-chart-line me-2"></i>Statistiche Riparazioni</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <div class="card bg-primary text-white">
+                                <div class="card-body text-center">
+                                    <h3><%= stats.riparazioniInCorso || 0 %></h3>
+                                    <p>In Corso</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-success text-white">
+                                <div class="card-body text-center">
+                                    <h3><%= stats.riparazioniCompletate || 0 %></h3>
+                                    <p>Completate</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-warning text-white">
+                                <div class="card-body text-center">
+                                    <h3><%= stats.riparazioniInAttesa || 0 %></h3>
+                                    <p>In Attesa</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-danger text-white">
+                                <div class="card-body text-center">
+                                    <h3><%= stats.riparazioniCancellate || 0 %></h3>
+                                    <p>Cancellate</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-dark table-striped">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Cliente</th>
+                                    <th>Meccanico</th>
+                                    <th>Tipo</th>
+                                    <th>Stato</th>
+                                    <th>Costo</th>
+                                    <th>Data</th>
+                                </tr>
+                            </thead>
+                            <tbody id="riparazioniTableBody">
+                                <!-- Popolato via JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Notifiche -->
+    <div class="modal fade" id="notificheModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-bell me-2"></i>Centro Notifiche</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <button class="btn btn-custom me-2" onclick="inviaNotificaGlobale()">
+                            <i class="fas fa-bullhorn me-2"></i>Notifica Globale
+                        </button>
+                        <button class="btn btn-outline-light" onclick="cancellaNotificheVecchie()">
+                            <i class="fas fa-trash me-2"></i>Pulisci Vecchie
+                        </button>
+                    </div>
+                    <div id="notificheContainer">
+                        <% if (notifiche && notifiche.length > 0) { %>
+                            <% notifiche.forEach(function(notifica) { %>
+                                <div class="alert alert-info" role="alert">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h6 class="alert-heading"><%= notifica.titolo %></h6>
+                                            <p class="mb-1"><%= notifica.messaggio %></p>
+                                            <small class="text-muted">
+                                                <%= new Date(notifica.data_creazione).toLocaleDateString('it-IT') %>
+                                            </small>
+                                        </div>
+                                        <button type="button" class="btn-close" onclick="cancellaNotifica(<%= notifica.id %>)"></button>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        <% } else { %>
+                            <div class="text-center text-muted">
+                                <i class="fas fa-bell-slash fa-3x mb-3"></i>
+                                <p>Nessuna notifica presente</p>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Funzioni JavaScript per la gestione del dashboard
+        async function caricaMeccanici() {
+            try {
+                const response = await fetch('/admin/api/meccanici');
+                const meccanici = await response.json();
+                const tbody = document.getElementById('meccaniciTableBody');
+                
+                tbody.innerHTML = meccanici.map(meccanico => `
+                    <tr>
+                        <td>${meccanico.nome} ${meccanico.cognome}</td>
+                        <td>${meccanico.email}</td>
+                        <td>${meccanico.specializzazione || 'Non specificata'}</td>
+                        <td>
+                            <span class="badge badge-custom ${meccanico.verificato ? 'bg-success' : 'bg-warning'}">
+                                ${meccanico.verificato ? 'Verificato' : 'In Attesa'}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-light" onclick="toggleSospensioneUtente(${meccanico.id}, 'meccanico')">
+                                ${meccanico.sospeso ? 'Riattiva' : 'Sospendi'}
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error('Errore nel caricamento meccanici:', error);
+            }
+        }
+
+        async function caricaClienti() {
+            try {
+                const response = await fetch('/admin/api/clienti');
+                const clienti = await response.json();
+                const tbody = document.getElementById('clientiTableBody');
+                
+                tbody.innerHTML = clienti.map(cliente => `
+                    <tr>
+                        <td>${cliente.nome} ${cliente.cognome}</td>
+                        <td>${cliente.email}</td>
+                        <td>${cliente.telefono || 'Non specificato'}</td>
+                        <td>${cliente.numero_riparazioni || 0}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-light" onclick="toggleSospensioneUtente(${cliente.id}, 'cliente')">
+                                ${cliente.sospeso ? 'Riattiva' : 'Sospendi'}
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error('Errore nel caricamento clienti:', error);
+            }
+        }
+
+        async function caricaRichiesteVerifica() {
+            try {
+                const response = await fetch('/admin/api/richieste-verifica');
+                const richieste = await response.json();
+                const container = document.getElementById('richiesteVerificaContainer');
+                
+                if (richieste.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center text-muted">
+                            <i class="fas fa-check-circle fa-3x mb-3"></i>
+                            <p>Nessuna richiesta di verifica in sospeso</p>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = richieste.map(richiesta => `
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">${richiesta.nome} ${richiesta.cognome}</h5>
+                                <p class="card-text">
+                                    <strong>Email:</strong> ${richiesta.email}<br>
+                                    <strong>Specializzazione:</strong> ${richiesta.specializzazione}<br>
+                                    <strong>Esperienza:</strong> ${richiesta.anni_esperienza} anni
+                                </p>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-success" onclick="verificaMeccanico(${richiesta.id}, true)">
+                                        <i class="fas fa-check me-2"></i>Approva
+                                    </button>
+                                    <button class="btn btn-danger" onclick="verificaMeccanico(${richiesta.id}, false)">
+                                        <i class="fas fa-times me-2"></i>Rifiuta
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Errore nel caricamento richieste verifica:', error);
+            }
+        }
+
+        async function caricaRiparazioni() {
+            try {
+                const response = await fetch('/admin/api/riparazioni');
+                const riparazioni = await response.json();
+                const tbody = document.getElementById('riparazioniTableBody');
+                
+                tbody.innerHTML = riparazioni.map(riparazione => `
+                    <tr>
+                        <td>#${riparazione.id}</td>
+                        <td>${riparazione.cliente_nome}</td>
+                        <td>${riparazione.meccanico_nome || 'Non assegnato'}</td>
+                        <td>${riparazione.tipo_riparazione}</td>
+                        <td>
+                            <span class="badge badge-custom ${getStatoBadgeClass(riparazione.stato)}">
+                                ${riparazione.stato}
+                            </span>
+                        </td>
+                        <td>€${riparazione.costo_finale || riparazione.costo_stimato || 0}</td>
+                        <td>${new Date(riparazione.data_creazione).toLocaleDateString('it-IT')}</td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error('Errore nel caricamento riparazioni:', error);
+            }
+        }
+
+        function getStatoBadgeClass(stato) {
+            switch (stato) {
+                case 'completata': return 'bg-success';
+                case 'in_corso': return 'bg-primary';
+                case 'in_attesa': return 'bg-warning';
+                case 'cancellata': return 'bg-danger';
+                default: return 'bg-secondary';
+            }
+        }
+
+        async function aggiornareProfilo() {
+            const form = document.getElementById('formProfilo');
+            const formData = new FormData(form);
+            
+            try {
+                const response = await fetch('/admin/aggiorna-profilo', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (response.ok) {
+                    alert('Profilo aggiornato con successo!');
+                    location.reload();
+                } else {
+                    alert('Errore nell\'aggiornamento del profilo');
+                }
+            } catch (error) {
+                console.error('Errore:', error);
+                alert('Errore di connessione');
+            }
+        }
+
+        async function toggleSospensioneUtente(id, tipo) {
+            try {
+                const response = await fetch('/admin/toggle-sospensione', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ id, tipo })
+                });
+                
+                if (response.ok) {
+                    if (tipo === 'meccanico') {
+                        caricaMeccanici();
+                    } else {
+                        caricaClienti();
+                    }
+                } else {
+                    alert('Errore nell\'operazione');
+                }
+            } catch (error) {
+                console.error('Errore:', error);
+                alert('Errore di connessione');
+            }
+        }
+
+        async function verificaMeccanico(id, approvato) {
+            try {
+                const response = await fetch('/admin/verifica-meccanico', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ id, approvato })
+                });
+                
+                if (response.ok) {
+                    alert(approvato ? 'Meccanico approvato con successo!' : 'Richiesta rifiutata');
+                    caricaRichiesteVerifica();
+                    caricaMeccanici();
+                } else {
+                    alert('Errore nell\'operazione');
+                }
+            } catch (error) {
+                console.error('Errore:', error);
+                alert('Errore di connessione');
+            }
+        }
+
+        async function inviaNotificaGlobale() {
+            const titolo = prompt('Inserisci il titolo della notifica:');
+            const messaggio = prompt('Inserisci il messaggio:');
+            
+            if (titolo && messaggio) {
+                try {
+                    const response = await fetch('/admin/notifica-globale', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ titolo, messaggio })
+                    });
+                    
+                    if (response.ok) {
+                        alert('Notifica inviata con successo!');
+                        location.reload();
+                    } else {
+                        alert('Errore nell\'invio della notifica');
+                    }
+                } catch (error) {
+                    console.error('Errore:', error);
+                    alert('Errore di connessione');
+                }
+            }
+        }
+
+        async function cancellaNotifica(id) {
+            try {
+                const response = await fetch(`/admin/cancella-notifica/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert('Errore nella cancellazione');
+                }
+            } catch (error) {
+                console.error('Errore:', error);
+            }
+        }
+
+        async function cancellaNotificheVecchie() {
+            if (confirm('Vuoi cancellare tutte le notifiche più vecchie di 30 giorni?')) {
+                try {
+                    const response = await fetch('/admin/cancella-notifiche-vecchie', {
+                        method: 'DELETE'
+                    });
+                    
+                    if (response.ok) {
+                        alert('Notifiche vecchie cancellate con successo!');
+                        location.reload();
+                    } else {
+                        alert('Errore nella cancellazione');
+                    }
+                } catch (error) {
+                    console.error('Errore:', error);
+                    alert('Errore di connessione');
+                }
+            }
+        }
+
+        // Event listeners per caricare i dati quando i modali vengono aperti
+        document.getElementById('utentiModal').addEventListener('shown.bs.modal', function () {
+            caricaMeccanici();
+            caricaClienti();
+        });
+
+        document.getElementById('meccanicoVerificaModal').addEventListener('shown.bs.modal', function () {
+            caricaRichiesteVerifica();
+        });
+
+        document.getElementById('riparazioniModal').addEventListener('shown.bs.modal', function () {
+            caricaRiparazioni();
+        });
+    </script>
+
+    <%- include('../common/scripts') %>
+</body>
+</html>

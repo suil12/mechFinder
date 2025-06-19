@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Le mie recensioni - MechFinder">
+    <meta name="keywords" content="recensioni, valutazioni, meccanici">
+    <meta name="author" content="MechFinder">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <title>Le mie recensioni - MechFinder</title>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="dashboard-sidebar">
+            <div class="sidebar-header">
+                <a href="/" class="sidebar-logo">
+                    <img src="/media/img/logo.png" alt="MechFinder">
+                    <span>MechFinder</span>
+                </a>
+                <button id="sidebarToggle" class="sidebar-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <ul>
+                    <li>
+                        <a href="/cliente/dashboard">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/cliente/profilo">
+                            <i class="fas fa-user"></i>
+                            <span>Profilo</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/cliente/riparazioni">
+                            <i class="fas fa-tools"></i>
+                            <span>Riparazioni</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/cliente/veicoli">
+                            <i class="fas fa-car"></i>
+                            <span>I miei veicoli</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/meccanici">
+                            <i class="fas fa-user-cog"></i>
+                            <span>Trova meccanici</span>
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="/cliente/recensioni">
+                            <i class="fas fa-star"></i>
+                            <span>Le mie recensioni</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/cliente/messaggi">
+                            <i class="fas fa-envelope"></i>
+                            <span>Messaggi</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <a href="/auth/logout" class="btn btn-outline-danger w-100 mb-2">
+                    <i class="fas fa-sign-out-alt me-2"></i>
+                    <span>Logout</span>
+                </a>
+                <div class="user-info text-center">
+                    <small class="d-block text-muted mb-1"><%= user.nome %> <%= user.cognome %></small>
+                    <small class="d-block text-muted">MechFinder v1.0</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="dashboard-main">
+            <div class="dashboard-header">
+                <div class="header-title">
+                    <h2>Le mie recensioni</h2>
+                    <p class="text-muted mb-0">Gestisci le tue valutazioni e recensioni</p>
+                </div>
+            </div>
+            
+            <div class="dashboard-content">
+                <!-- Statistiche -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow h-100">
+                            <div class="card-body text-center">
+                                <div class="text-primary mb-2">
+                                    <i class="fas fa-star fa-2x"></i>
+                                </div>
+                                <h4 class="mb-0"><%= recensioni ? recensioni.length : 0 %></h4>
+                                <small class="text-muted">Recensioni totali</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow h-100">
+                            <div class="card-body text-center">
+                                <div class="text-warning mb-2">
+                                    <i class="fas fa-star-half-alt fa-2x"></i>
+                                </div>
+                                <h4 class="mb-0">
+                                    <% if (recensioni && recensioni.length > 0) { %>
+                                        <%= (recensioni.reduce((sum, r) => sum + parseFloat(r.valutazione), 0) / recensioni.length).toFixed(1) %>
+                                    <% } else { %>
+                                        0.0
+                                    <% } %>
+                                </h4>
+                                <small class="text-muted">Media valutazioni</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow h-100">
+                            <div class="card-body text-center">
+                                <div class="text-success mb-2">
+                                    <i class="fas fa-thumbs-up fa-2x"></i>
+                                </div>
+                                <h4 class="mb-0"><%= recensioni ? recensioni.filter(r => parseFloat(r.valutazione) >= 4).length : 0 %></h4>
+                                <small class="text-muted">Positive (4+ stelle)</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow h-100">
+                            <div class="card-body text-center">
+                                <div class="text-info mb-2">
+                                    <i class="fas fa-calendar fa-2x"></i>
+                                </div>
+                                <h4 class="mb-0">
+                                    <% if (recensioni && recensioni.length > 0) { %>
+                                        <%= new Date(Math.max(...recensioni.map(r => new Date(r.data_recensione)))).toLocaleDateString('it-IT', {month: 'short'}) %>
+                                    <% } else { %>
+                                        -
+                                    <% } %>
+                                </h4>
+                                <small class="text-muted">Ultima recensione</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Filtri -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row align-items-end">
+                                    <div class="col-md-3">
+                                        <label class="form-label">Valutazione</label>
+                                        <select class="form-select" id="filtroValutazione">
+                                            <option value="">Tutte le valutazioni</option>
+                                            <option value="5">5 stelle</option>
+                                            <option value="4">4 stelle</option>
+                                            <option value="3">3 stelle</option>
+                                            <option value="2">2 stelle</option>
+                                            <option value="1">1 stella</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Data da</label>
+                                        <input type="date" class="form-control" id="dataDa">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Data a</label>
+                                        <input type="date" class="form-control" id="dataA">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <button class="btn btn-outline-secondary w-100" onclick="resetFiltri()">
+                                            <i class="fas fa-times me-2"></i>Reset
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lista recensioni -->
+                <div class="card">
+                    <div class="card-header bg-white py-3">
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <h5 class="mb-0">Le tue recensioni</h5>
+                            </div>
+                            <div class="col-auto">
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-outline-primary active" data-view="grid" onclick="cambiaVista('grid')">
+                                        <i class="fas fa-th"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-outline-primary" data-view="list" onclick="cambiaVista('list')">
+                                        <i class="fas fa-list"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <% if (recensioni && recensioni.length > 0) { %>
+                            <!-- Vista Grid -->
+                            <div id="gridView" class="row">
+                                <% recensioni.forEach(recensione => { %>
+                                    <div class="col-md-6 col-lg-4 mb-4 recensione-item" data-valutazione="<%= recensione.valutazione %>" data-data="<%= recensione.data_recensione %>">
+                                        <div class="card h-100 border-0 shadow-sm">
+                                            <div class="card-body">
+                                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                                    <div class="d-flex align-items-center">
+                                                        <img src="/media/img/default_mechanic.png" alt="Meccanico" class="rounded-circle me-3" width="50" height="50">
+                                                        <div>
+                                                            <h6 class="mb-0"><%= recensione.nome_meccanico %> <%= recensione.cognome_meccanico %></h6>
+                                                            <small class="text-muted"><%= recensione.nome_officina || 'Officina' %></small>
+                                                        </div>
+                                                    </div>
+                                                    <div class="text-end">
+                                                        <div class="rating mb-1">
+                                                            <% for (let i = 1; i <= 5; i++) { %>
+                                                                <i class="fas fa-star <%= i <= recensione.valutazione ? 'text-warning' : 'text-muted' %>"></i>
+                                                            <% } %>
+                                                        </div>
+                                                        <small class="text-muted"><%= new Date(recensione.data_recensione).toLocaleDateString('it-IT') %></small>
+                                                    </div>
+                                                </div>
+                                                
+                                                <% if (recensione.testo) { %>
+                                                    <p class="card-text text-muted"><%= recensione.testo %></p>
+                                                <% } %>
+                                                
+                                                <div class="border-top pt-3 mt-3">
+                                                    <small class="text-muted">
+                                                        <i class="fas fa-tools me-1"></i>
+                                                        Riparazione #<%= recensione.id_riparazione %>
+                                                    </small>
+                                                </div>
+                                            </div>
+                                            <div class="card-footer bg-transparent border-top-0">
+                                                <div class="btn-group w-100" role="group">
+                                                    <button class="btn btn-sm btn-outline-primary" onclick="modificaRecensione(<%= recensione.id %>)">
+                                                        <i class="fas fa-edit"></i> Modifica
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline-danger" onclick="eliminaRecensione(<%= recensione.id %>)">
+                                                        <i class="fas fa-trash"></i> Elimina
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <% }) %>
+                            </div>
+                            
+                            <!-- Vista Lista -->
+                            <div id="listView" class="d-none">
+                                <% recensioni.forEach(recensione => { %>
+                                    <div class="card mb-3 recensione-item" data-valutazione="<%= recensione.valutazione %>" data-data="<%= recensione.data_recensione %>">
+                                        <div class="card-body">
+                                            <div class="row align-items-center">
+                                                <div class="col-md-2 text-center">
+                                                    <img src="/media/img/default_mechanic.png" alt="Meccanico" class="rounded-circle" width="60" height="60">
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <h6 class="mb-1"><%= recensione.nome_meccanico %> <%= recensione.cognome_meccanico %></h6>
+                                                    <p class="text-muted mb-1"><%= recensione.nome_officina || 'Officina' %></p>
+                                                    <% if (recensione.testo) { %>
+                                                        <p class="mb-0 text-muted small"><%= recensione.testo %></p>
+                                                    <% } %>
+                                                </div>
+                                                <div class="col-md-2 text-center">
+                                                    <div class="rating mb-2">
+                                                        <% for (let i = 1; i <= 5; i++) { %>
+                                                            <i class="fas fa-star <%= i <= recensione.valutazione ? 'text-warning' : 'text-muted' %>"></i>
+                                                        <% } %>
+                                                    </div>
+                                                    <small class="text-muted"><%= new Date(recensione.data_recensione).toLocaleDateString('it-IT') %></small>
+                                                </div>
+                                                <div class="col-md-2 text-center">
+                                                    <div class="btn-group" role="group">
+                                                        <button class="btn btn-sm btn-outline-primary" onclick="modificaRecensione(<%= recensione.id %>)" title="Modifica">
+                                                            <i class="fas fa-edit"></i>
+                                                        </button>
+                                                        <button class="btn btn-sm btn-outline-danger" onclick="eliminaRecensione(<%= recensione.id %>)" title="Elimina">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <% }) %>
+                            </div>
+                        <% } else { %>
+                            <div class="text-center py-5">
+                                <i class="fas fa-star fa-3x text-muted mb-3"></i>
+                                <h5>Nessuna recensione trovata</h5>
+                                <p class="text-muted">Non hai ancora lasciato nessuna recensione</p>
+                                <a href="/cliente/riparazioni" class="btn btn-primary">
+                                    <i class="fas fa-tools me-2"></i>
+                                    Visualizza riparazioni
+                                </a>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Modifica Recensione -->
+    <div class="modal fade" id="modificaRecensioneModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Modifica Recensione</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="modificaRecensioneForm">
+                    <div class="modal-body">
+                        <input type="hidden" id="recensioneId" name="recensioneId">
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Valutazione</label>
+                            <div class="rating-input d-flex gap-1">
+                                <span class="star" data-rating="1" style="cursor: pointer; font-size: 1.5rem;"><i class="far fa-star text-warning"></i></span>
+                                <span class="star" data-rating="2" style="cursor: pointer; font-size: 1.5rem;"><i class="far fa-star text-warning"></i></span>
+                                <span class="star" data-rating="3" style="cursor: pointer; font-size: 1.5rem;"><i class="far fa-star text-warning"></i></span>
+                                <span class="star" data-rating="4" style="cursor: pointer; font-size: 1.5rem;"><i class="far fa-star text-warning"></i></span>
+                                <span class="star" data-rating="5" style="cursor: pointer; font-size: 1.5rem;"><i class="far fa-star text-warning"></i></span>
+                            </div>
+                            <input type="hidden" id="nuovaValutazione" name="valutazione" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="nuovoTesto" class="form-label">Recensione</label>
+                            <textarea class="form-control" id="nuovoTesto" name="testo" rows="4" placeholder="Descrivi la tua esperienza..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                        <button type="submit" class="btn btn-primary">Salva Modifiche</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Gestione filtri
+        document.getElementById('filtroValutazione').addEventListener('change', applicaFiltri);
+        document.getElementById('dataDa').addEventListener('change', applicaFiltri);
+        document.getElementById('dataA').addEventListener('change', applicaFiltri);
+
+        function applicaFiltri() {
+            const valutazione = document.getElementById('filtroValutazione').value;
+            const dataDa = document.getElementById('dataDa').value;
+            const dataA = document.getElementById('dataA').value;
+            
+            const items = document.querySelectorAll('.recensione-item');
+            
+            items.forEach(item => {
+                let mostra = true;
+                
+                // Filtro valutazione
+                if (valutazione && item.dataset.valutazione !== valutazione) {
+                    mostra = false;
+                }
+                
+                // Filtro data
+                const dataRecensione = new Date(item.dataset.data);
+                if (dataDa && dataRecensione < new Date(dataDa)) {
+                    mostra = false;
+                }
+                if (dataA && dataRecensione > new Date(dataA)) {
+                    mostra = false;
+                }
+                
+                item.style.display = mostra ? '' : 'none';
+            });
+        }
+
+        function resetFiltri() {
+            document.getElementById('filtroValutazione').value = '';
+            document.getElementById('dataDa').value = '';
+            document.getElementById('dataA').value = '';
+            applicaFiltri();
+        }
+
+        // Cambio vista
+        function cambiaVista(vista) {
+            const gridView = document.getElementById('gridView');
+            const listView = document.getElementById('listView');
+            const buttons = document.querySelectorAll('[data-view]');
+            
+            buttons.forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`[data-view="${vista}"]`).classList.add('active');
+            
+            if (vista === 'grid') {
+                gridView.classList.remove('d-none');
+                listView.classList.add('d-none');
+            } else {
+                gridView.classList.add('d-none');
+                listView.classList.remove('d-none');
+            }
+        }
+
+        // Modifica recensione
+        function modificaRecensione(id) {
+            fetch(`/api/recensioni/${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('recensioneId').value = id;
+                    document.getElementById('nuovaValutazione').value = data.valutazione;
+                    document.getElementById('nuovoTesto').value = data.testo || '';
+                    
+                    // Aggiorna stelle
+                    updateStars(parseInt(data.valutazione));
+                    
+                    new bootstrap.Modal(document.getElementById('modificaRecensioneModal')).show();
+                })
+                .catch(error => {
+                    console.error('Errore:', error);
+                    alert('Errore nel caricamento della recensione');
+                });
+        }
+
+        // Elimina recensione
+        function eliminaRecensione(id) {
+            if (confirm('Sei sicuro di voler eliminare questa recensione?')) {
+                fetch(`/api/recensioni/${id}`, {
+                    method: 'DELETE'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Recensione eliminata con successo!');
+                        location.reload();
+                    } else {
+                        alert('Errore nell\'eliminazione della recensione');
+                    }
+                })
+                .catch(error => {
+                    console.error('Errore:', error);
+                    alert('Errore nell\'eliminazione della recensione');
+                });
+            }
+        }
+
+        // Gestione rating stelle
+        function updateStars(rating) {
+            document.querySelectorAll('.star').forEach((star, index) => {
+                if (index < rating) {
+                    star.innerHTML = '<i class="fas fa-star text-warning"></i>';
+                } else {
+                    star.innerHTML = '<i class="far fa-star text-warning"></i>';
+                }
+            });
+        }
+
+        document.querySelectorAll('.star').forEach(star => {
+            star.addEventListener('click', function() {
+                const rating = parseInt(this.dataset.rating);
+                document.getElementById('nuovaValutazione').value = rating;
+                updateStars(rating);
+            });
+            
+            star.addEventListener('mouseenter', function() {
+                const rating = parseInt(this.dataset.rating);
+                updateStars(rating);
+            });
+        });
+
+        document.querySelector('.rating-input').addEventListener('mouseleave', function() {
+            const currentRating = parseInt(document.getElementById('nuovaValutazione').value) || 0;
+            updateStars(currentRating);
+        });
+
+        // Submit modifica recensione
+        document.getElementById('modificaRecensioneForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const valutazione = document.getElementById('nuovaValutazione').value;
+            if (!valutazione) {
+                alert('Seleziona una valutazione');
+                return;
+            }
+            
+            const formData = new FormData(this);
+            
+            fetch('/api/recensioni/modifica', {
+                method: 'PUT',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Recensione modificata con successo!');
+                    bootstrap.Modal.getInstance(document.getElementById('modificaRecensioneModal')).hide();
+                    location.reload();
+                } else {
+                    alert('Errore nella modifica della recensione');
+                }
+            })
+            .catch(error => {
+                console.error('Errore:', error);
+                alert('Errore nella modifica della recensione');
+            });
+        });
+
+        // Sidebar toggle
+        document.getElementById('sidebarToggle').addEventListener('click', function() {
+            document.querySelector('.dashboard-container').classList.toggle('sidebar-collapsed');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Dashboard Cliente - MechFinder">
+    <title><%= title %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+    <%- include('../common/header') %>
+    
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Main Content -->
+            <main class="col-md-12 ms-sm-auto px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2"><i class="fas fa-user me-2"></i>Dashboard Cliente</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="btn-group me-2">
+                            <button type="button" class="btn btn-primary" onclick="showCreaRiparazioneModal()">
+                                <i class="fas fa-plus"></i> Nuova Riparazione
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary" onclick="showAggiungiVeicoloModal()">
+                                <i class="fas fa-car"></i> Aggiungi Veicolo
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alert Messages -->
+                <% if (typeof success !== 'undefined' && success.length > 0) { %>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <%= success %>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                <% } %>
+
+                <% if (typeof error !== 'undefined' && error.length > 0) { %>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <%= error %>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                <% } %>
+
+                <!-- Statistiche Cards -->
+                <div class="row mb-4">
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-primary shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                            Totale Riparazioni</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                            <%= stats.totalRiparazioni %>
+                                        </div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-tools fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-success shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                            Riparazioni Attive</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                            <%= riparazioniAttive ? riparazioniAttive.length : 0 %>
+                                        </div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-cog fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-info shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                            I Miei Veicoli</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                            <%= veicoli ? veicoli.length : 0 %>
+                                        </div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-car fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-warning shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                            Spesa Totale</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                            €<%= parseFloat(stats.spesaTotale || 0).toFixed(2) %>
+                                        </div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-euro-sign fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Content Row -->
+                <div class="row">
+                    <div class="col-lg-8">
+                        <!-- Riparazioni Attive -->
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                <h6 class="m-0 font-weight-bold text-primary">Riparazioni Attive</h6>
+                                <button class="btn btn-sm btn-outline-primary" onclick="showStoricoRiparazioniModal()">
+                                    <i class="fas fa-history"></i> Storico Completo
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <% if (riparazioniAttive && riparazioniAttive.length > 0) { %>
+                                    <% riparazioniAttive.forEach(function(riparazione) { %>
+                                        <div class="card mb-3 border-left-<%= riparazione.stato === 'in_attesa' ? 'warning' : riparazione.stato === 'accettata' ? 'info' : riparazione.stato === 'in_corso' ? 'primary' : 'success' %>">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-md-8">
+                                                        <h6 class="card-title">
+                                                            <span class="badge bg-<%= riparazione.stato === 'in_attesa' ? 'warning' : riparazione.stato === 'accettata' ? 'info' : riparazione.stato === 'in_corso' ? 'primary' : 'success' %>">
+                                                                <%= riparazione.stato.charAt(0).toUpperCase() + riparazione.stato.slice(1).replace('_', ' ') %>
+                                                            </span>
+                                                        </h6>
+                                                        <p class="card-text mb-1">
+                                                            <strong>Veicolo:</strong> <%= riparazione.marca %> <%= riparazione.modello %>
+                                                            <% if (riparazione.targa) { %> (<%= riparazione.targa %>)<% } %>
+                                                        </p>
+                                                        <% if (riparazione.nome_meccanico) { %>
+                                                            <p class="card-text mb-1">
+                                                                <strong>Meccanico:</strong> <%= riparazione.nome_meccanico %> <%= riparazione.cognome_meccanico %>
+                                                                <% if (riparazione.nome_officina) { %> - <%= riparazione.nome_officina %><% } %>
+                                                            </p>
+                                                        <% } %>
+                                                        <p class="card-text mb-1">
+                                                            <strong>Tipo:</strong> <%= riparazione.tipo_riparazione || 'Non specificato' %>
+                                                        </p>
+                                                        <p class="card-text">
+                                                            <small class="text-muted">
+                                                                <i class="fas fa-calendar"></i> 
+                                                                <%= new Date(riparazione.data_richiesta).toLocaleDateString('it-IT') %>
+                                                                <% if (riparazione.costo) { %>
+                                                                    | Costo: €<%= parseFloat(riparazione.costo).toFixed(2) %>
+                                                                <% } %>
+                                                            </small>
+                                                        </p>
+                                                    </div>
+                                                    <div class="col-md-4 d-flex align-items-center justify-content-end">
+                                                        <% if (riparazione.stato === 'accettata') { %>
+                                                            <button class="btn btn-success btn-sm me-1" onclick="confermaRiparazione(<%= riparazione.id %>)">
+                                                                <i class="fas fa-check"></i> Conferma
+                                                            </button>
+                                                        <% } %>
+                                                        <button class="btn btn-outline-info btn-sm" onclick="visualizzaDettagli(<%= riparazione.id %>)">
+                                                            <i class="fas fa-eye"></i> Dettagli
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <% }); %>
+                                <% } else { %>
+                                    <div class="text-center py-5">
+                                        <i class="fas fa-tools fa-3x text-muted mb-3"></i>
+                                        <p class="text-muted">Nessuna riparazione attiva al momento.</p>
+                                        <button class="btn btn-primary" onclick="showCreaRiparazioneModal()">
+                                            <i class="fas fa-plus"></i> Crea la tua prima richiesta
+                                        </button>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <!-- I Miei Veicoli -->
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                <h6 class="m-0 font-weight-bold text-primary">I Miei Veicoli</h6>
+                                <button class="btn btn-sm btn-outline-primary" onclick="showAggiungiVeicoloModal()">
+                                    <i class="fas fa-plus"></i> Aggiungi
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <% if (veicoli && veicoli.length > 0) { %>
+                                    <% veicoli.slice(0, 3).forEach(function(veicolo) { %>
+                                        <div class="card mb-2">
+                                            <div class="card-body p-3">
+                                                <h6 class="card-title mb-1">
+                                                    <i class="fas fa-car text-primary"></i> 
+                                                    <%= veicolo.marca %> <%= veicolo.modello %>
+                                                </h6>
+                                                <p class="card-text mb-0">
+                                                    <small class="text-muted">
+                                                        <% if (veicolo.anno) { %>Anno: <%= veicolo.anno %><% } %>
+                                                        <% if (veicolo.targa) { %> | Targa: <%= veicolo.targa %><% } %>
+                                                    </small>
+                                                </p>
+                                                <div class="mt-2">
+                                                    <button class="btn btn-sm btn-outline-warning me-1" onclick="modificaVeicolo(<%= veicolo.id %>)">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline-danger" onclick="eliminaVeicolo(<%= veicolo.id %>)">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <% }); %>
+                                    <% if (veicoli.length > 3) { %>
+                                        <div class="text-center">
+                                            <button class="btn btn-sm btn-link" onclick="showVeicoliModal()">
+                                                Visualizza tutti (<%= veicoli.length %>)
+                                            </button>
+                                        </div>
+                                    <% } %>
+                                <% } else { %>
+                                    <div class="text-center py-3">
+                                        <i class="fas fa-car fa-2x text-muted mb-2"></i>
+                                        <p class="text-muted mb-2">Nessun veicolo registrato.</p>
+                                        <button class="btn btn-sm btn-primary" onclick="showAggiungiVeicoloModal()">
+                                            <i class="fas fa-plus"></i> Aggiungi Veicolo
+                                        </button>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+
+                        <!-- Notifiche -->
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">Notifiche Recenti</h6>
+                            </div>
+                            <div class="card-body">
+                                <% if (notifiche && notifiche.length > 0) { %>
+                                    <% notifiche.slice(0, 5).forEach(function(notifica) { %>
+                                        <div class="alert alert-info alert-sm">
+                                            <strong><%= notifica.titolo %></strong><br>
+                                            <small><%= notifica.messaggio %></small><br>
+                                            <small class="text-muted">
+                                                <%= new Date(notifica.data_creazione).toLocaleDateString('it-IT') %>
+                                            </small>
+                                        </div>
+                                    <% }); %>
+                                <% } else { %>
+                                    <p class="text-muted">Nessuna notifica recente.</p>
+                                <% } %>
+                            </div>
+                        </div>
+
+                        <!-- Azioni Rapide -->
+                        <div class="card shadow">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">Azioni Rapide</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-outline-success" onclick="showStoricoRiparazioniModal()">
+                                        <i class="fas fa-history"></i> Storico Riparazioni
+                                    </button>
+                                    <% if (meccaniciPreferiti && meccaniciPreferiti.length > 0) { %>
+                                        <button class="btn btn-outline-info" onclick="showMeccaniciPreferitiModal()">
+                                            <i class="fas fa-star"></i> Meccanici Preferiti
+                                        </button>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal Crea Riparazione -->
+    <div class="modal fade" id="creaRiparazioneModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Nuova Richiesta di Riparazione</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="creaRiparazioneForm">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="id_veicolo" class="form-label">Seleziona Veicolo</label>
+                            <select class="form-select" id="id_veicolo" name="id_veicolo" required>
+                                <option value="">Seleziona un veicolo...</option>
+                                <% if (veicoli && veicoli.length > 0) { %>
+                                    <% veicoli.forEach(function(veicolo) { %>
+                                        <option value="<%= veicolo.id %>">
+                                            <%= veicolo.marca %> <%= veicolo.modello %> 
+                                            <% if (veicolo.targa) { %>(<%= veicolo.targa %>)<% } %>
+                                        </option>
+                                    <% }); %>
+                                <% } %>
+                            </select>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="tipo_riparazione" class="form-label">Tipo di Riparazione</label>
+                                <select class="form-select" id="tipo_riparazione" name="tipo_riparazione">
+                                    <option value="">Seleziona tipo...</option>
+                                    <option value="Tagliando">Tagliando</option>
+                                    <option value="Freni">Freni</option>
+                                    <option value="Pneumatici">Pneumatici</option>
+                                    <option value="Carrozzeria">Carrozzeria</option>
+                                    <option value="Elettronica">Elettronica</option>
+                                    <option value="Motore">Motore</option>
+                                    <option value="Altro">Altro</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="urgenza" class="form-label">Urgenza</label>
+                                <select class="form-select" id="urgenza" name="urgenza">
+                                    <option value="bassa">Bassa</option>
+                                    <option value="normale" selected>Normale</option>
+                                    <option value="alta">Alta</option>
+                                    <option value="urgente">Urgente</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="descrizione" class="form-label">Descrizione del Problema</label>
+                            <textarea class="form-control" id="descrizione" name="descrizione" rows="4" placeholder="Descrivi il problema o il tipo di intervento richiesto..." required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="budget_max" class="form-label">Budget Massimo (€) - Opzionale</label>
+                            <input type="number" class="form-control" id="budget_max" name="budget_max" step="0.01" min="0" placeholder="Inserisci il budget massimo se desideri">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                        <button type="submit" class="btn btn-primary">Crea Richiesta</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Aggiungi Veicolo -->
+    <div class="modal fade" id="aggiungiVeicoloModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Aggiungi Nuovo Veicolo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="aggiungiVeicoloForm">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="marca" class="form-label">Marca</label>
+                                <input type="text" class="form-control" id="marca" name="marca" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="modello" class="form-label">Modello</label>
+                                <input type="text" class="form-control" id="modello" name="modello" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="anno" class="form-label">Anno</label>
+                                <input type="number" class="form-control" id="anno" name="anno" min="1950" max="2025">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="targa" class="form-label">Targa</label>
+                                <input type="text" class="form-control" id="targa" name="targa">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="tipo" class="form-label">Tipo Veicolo</label>
+                            <select class="form-select" id="tipo" name="tipo" required>
+                                <option value="">Seleziona tipo...</option>
+                                <option value="Auto">Auto</option>
+                                <option value="Moto">Moto</option>
+                                <option value="Furgone">Furgone</option>
+                                <option value="Camion">Camion</option>
+                                <option value="Altro">Altro</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                        <button type="submit" class="btn btn-primary">Aggiungi Veicolo</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Dettagli Riparazione -->
+    <div class="modal fade" id="dettagliRiparazioneModal" tabindex="-1" aria-labelledby="dettagliRiparazioneModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="dettagliRiparazioneModalLabel">Dettagli Riparazione</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="dettagliRiparazioneContent">
+                    <!-- Contenuto caricato dinamicamente -->
+                    <div class="text-center">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Caricamento...</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" id="dettagliRiparazioneFooter">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Recensione -->
+    <div class="modal fade" id="recensioneModal" tabindex="-1" aria-labelledby="recensioneModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="recensioneModalLabel">Lascia una Recensione</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="recensioneForm">
+                    <div class="modal-body">
+                        <input type="hidden" id="riparazioneIdRecensione" name="riparazione_id">
+                        <div class="mb-3">
+                            <label class="form-label">Valutazione</label>
+                            <div class="rating-stars">
+                                <input type="radio" name="valutazione" value="5" id="star5" required>
+                                <label for="star5" class="star">★</label>
+                                <input type="radio" name="valutazione" value="4" id="star4">
+                                <label for="star4" class="star">★</label>
+                                <input type="radio" name="valutazione" value="3" id="star3">
+                                <label for="star3" class="star">★</label>
+                                <input type="radio" name="valutazione" value="2" id="star2">
+                                <label for="star2" class="star">★</label>
+                                <input type="radio" name="valutazione" value="1" id="star1">
+                                <label for="star1" class="star">★</label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="commento" class="form-label">Commento (opzionale)</label>
+                            <textarea class="form-control" id="commento" name="commento" rows="3" placeholder="Condividi la tua esperienza..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                        <button type="submit" class="btn btn-primary">Invia Recensione</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Storico Riparazioni -->
+    <div class="modal fade" id="storicoRiparazioniModal" tabindex="-1" aria-labelledby="storicoRiparazioniModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="storicoRiparazioniModalLabel">
+                        <i class="fas fa-history me-2"></i>Storico Completo Riparazioni
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Data</th>
+                                    <th>Veicolo</th>
+                                    <th>Tipo</th>
+                                    <th>Meccanico</th>
+                                    <th>Stato</th>
+                                    <th>Costo</th>
+                                    <th>Azioni</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (typeof tutteRiparazioni !== 'undefined' && tutteRiparazioni && tutteRiparazioni.length > 0) { %>
+                                    <% tutteRiparazioni.forEach(function(riparazione) { %>
+                                        <tr>
+                                            <td>#<%= riparazione.id %></td>
+                                            <td><%= new Date(riparazione.data_richiesta).toLocaleDateString('it-IT') %></td>
+                                            <td>
+                                                <% if (riparazione.veicolo_marca && riparazione.veicolo_modello) { %>
+                                                    <%= riparazione.veicolo_marca %> <%= riparazione.veicolo_modello %>
+                                                    <% if (riparazione.veicolo_anno) { %> (<%= riparazione.veicolo_anno %>)<% } %>
+                                                <% } else { %>
+                                                    <span class="text-muted">N/A</span>
+                                                <% } %>
+                                            </td>
+                                            <td><%= riparazione.tipo_riparazione || 'Generale' %></td>
+                                            <td>
+                                                <% if (riparazione.meccanico_nome) { %>
+                                                    <%= riparazione.meccanico_nome %> <%= riparazione.meccanico_cognome %>
+                                                    <% if (riparazione.nome_officina) { %>
+                                                        <br><small class="text-muted"><%= riparazione.nome_officina %></small>
+                                                    <% } %>
+                                                <% } else { %>
+                                                    <span class="text-muted">Non assegnato</span>
+                                                <% } %>
+                                            </td>
+                                            <td>
+                                                <% 
+                                                    var badgeClass = 'secondary';
+                                                    if (riparazione.stato === 'in_attesa') badgeClass = 'warning';
+                                                    else if (riparazione.stato === 'accettata') badgeClass = 'info';
+                                                    else if (riparazione.stato === 'in_corso') badgeClass = 'primary';
+                                                    else if (riparazione.stato === 'completata') badgeClass = 'success';
+                                                %>
+                                                <span class="badge bg-<%= badgeClass %>">
+                                                    <%= riparazione.stato.charAt(0).toUpperCase() + riparazione.stato.slice(1).replace('_', ' ') %>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <% if (riparazione.costo) { %>
+                                                    €<%= parseFloat(riparazione.costo).toFixed(2) %>
+                                                <% } else { %>
+                                                    <span class="text-muted">-</span>
+                                                <% } %>
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-info" onclick="visualizzaDettagli(<%= riparazione.id %>)" title="Visualizza dettagli">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <% if (riparazione.stato === 'completata') { %>
+                                                    <button class="btn btn-sm btn-outline-success ms-1" onclick="visualizzaPDF(<%= riparazione.id %>)" title="Scarica certificato">
+                                                        <i class="fas fa-download"></i>
+                                                    </button>
+                                                    <% if (!riparazione.rating) { %>
+                                                        <button class="btn btn-sm btn-outline-warning ms-1" onclick="showRecensioneModal(<%= riparazione.id %>)" title="Lascia recensione">
+                                                            <i class="fas fa-star"></i>
+                                                        </button>
+                                                    <% } %>
+                                                <% } %>
+                                                <% if (riparazione.stato === 'accettata') { %>
+                                                    <button class="btn btn-sm btn-outline-primary ms-1" onclick="confermaRiparazione(<%= riparazione.id %>)" title="Conferma riparazione">
+                                                        <i class="fas fa-check"></i>
+                                                    </button>
+                                                <% } %>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="8" class="text-center text-muted py-4">
+                                            <i class="fas fa-tools fa-3x mb-3"></i>
+                                            <br>Nessuna riparazione trovata
+                                        </td>
+                                    </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Funzioni JavaScript per gestire le azioni
+        function showCreaRiparazioneModal() {
+            new bootstrap.Modal(document.getElementById('creaRiparazioneModal')).show();
+        }
+
+        function showAggiungiVeicoloModal() {
+            new bootstrap.Modal(document.getElementById('aggiungiVeicoloModal')).show();
+        }
+
+        function visualizzaPDF(riparazioneId) {
+            // Scarica il certificato PDF
+            window.open(`/cliente/download-ricevuta/${riparazioneId}`, '_blank');
+        }
+
+        function confermaRiparazione(riparazioneId) {
+            if (confirm('Sei sicuro di voler confermare questa riparazione? Il meccanico potrà iniziare i lavori.')) {
+                fetch('/cliente/conferma-riparazione', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ riparazione_id: riparazioneId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Chiudi il modal e ricarica la pagina
+                        bootstrap.Modal.getInstance(document.getElementById('dettagliRiparazioneModal')).hide();
+                        location.reload();
+                    } else {
+                        alert('Errore: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Errore durante l\'operazione');
+                });
+            }
+        }
+
+        function eliminaVeicolo(veicoloId) {
+            if (confirm('Sei sicuro di voler eliminare questo veicolo?')) {
+                fetch(`/cliente/elimina-veicolo/${veicoloId}`, {
+                    method: 'DELETE'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Errore: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Errore durante l\'operazione');
+                });
+            }
+        }
+
+        function modificaVeicolo(veicoloId) {
+            // Per ora reindirizza alla pagina veicoli dove c'è la gestione completa
+            window.location.href = '/cliente/veicoli';
+        }
+
+        function visualizzaDettagli(riparazioneId) {
+            const modal = new bootstrap.Modal(document.getElementById('dettagliRiparazioneModal'));
+            const contentDiv = document.getElementById('dettagliRiparazioneContent');
+            const footerDiv = document.getElementById('dettagliRiparazioneFooter');
+
+            // Mostra il loader
+            contentDiv.innerHTML = `
+                <div class="text-center">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Caricamento...</span>
+                    </div>
+                </div>
+            `;
+            footerDiv.innerHTML = '';
+
+            fetch(`/cliente/riparazione/${riparazioneId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const riparazione = data.riparazione;
+                        
+                        let contentHTML = `
+                            <div class="mb-3">
+                                <h5>Dettagli Richiesta #${riparazione.id}</h5>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p><strong>Veicolo:</strong> ${riparazione.marca || 'N/A'} ${riparazione.modello || 'N/A'}</p>
+                                        <p><strong>Targa:</strong> ${riparazione.targa || 'N/A'}</p>
+                                        <p><strong>Tipo:</strong> ${riparazione.tipo_riparazione || 'Non specificato'}</p>
+                                        <p><strong>Urgenza:</strong> ${riparazione.urgenza || 'Normale'}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p><strong>Stato:</strong> <span class="badge bg-${riparazione.stato === 'completata' ? 'success' : riparazione.stato === 'in_corso' ? 'primary' : riparazione.stato === 'accettata' ? 'info' : 'warning'}">${riparazione.stato.charAt(0).toUpperCase() + riparazione.stato.slice(1).replace('_', ' ')}</span></p>
+                                        <p><strong>Data Richiesta:</strong> ${new Date(riparazione.data_richiesta).toLocaleDateString('it-IT')}</p>
+                                        ${riparazione.data_completamento ? `<p><strong>Data Completamento:</strong> ${new Date(riparazione.data_completamento).toLocaleDateString('it-IT')}</p>` : ''}
+                                        ${riparazione.costo ? `<p><strong>Costo:</strong> €${parseFloat(riparazione.costo).toFixed(2)}</p>` : ''}
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <strong>Descrizione:</strong>
+                                    <p class="mt-1">${riparazione.descrizione || 'Nessuna descrizione'}</p>
+                                </div>
+                        `;
+
+                        if (riparazione.nome_meccanico) {
+                            contentHTML += `
+                                <div class="mb-3">
+                                    <h6>Meccanico Assegnato</h6>
+                                    <p><strong>Nome:</strong> ${riparazione.nome_meccanico} ${riparazione.cognome_meccanico}</p>
+                                    <p><strong>Officina:</strong> ${riparazione.nome_officina || 'N/A'}</p>
+                                    ${riparazione.meccanico_telefono ? `<p><strong>Telefono:</strong> ${riparazione.meccanico_telefono}</p>` : ''}
+                                </div>
+                            `;
+                        }
+
+                        if (riparazione.note_completamento) {
+                            contentHTML += `
+                                <div class="mb-3">
+                                    <h6>Note di Completamento</h6>
+                                    <p>${riparazione.note_completamento}</p>
+                                </div>
+                            `;
+                        }
+
+                        // Se la riparazione è completata, mostra il PDF
+                        if (riparazione.stato === 'completata') {
+                            contentHTML += `
+                                <div class="mb-3">
+                                    <h6>Certificato di Riparazione</h6>
+                                    <div class="d-flex justify-content-center mb-3">
+                                        <button class="btn btn-info" onclick="visualizzaPDF(${riparazione.id})">
+                                            <i class="fas fa-file-pdf"></i> Visualizza Certificato PDF
+                                        </button>
+                                    </div>
+                                    <iframe id="pdfViewer${riparazione.id}" style="display: none;" class="pdf-viewer" frameborder="0"></iframe>
+                                </div>
+                            `;
+                        }
+
+                        contentHTML += '</div>';
+                        contentDiv.innerHTML = contentHTML;
+
+                        // Configura i pulsanti del footer
+                        if (riparazione.stato === 'completata') {
+                            footerDiv.innerHTML = `
+                                <button class="btn btn-success me-2" onclick="visualizzaPDF(${riparazione.id})">
+                                    <i class="fas fa-download"></i> Scarica Certificato
+                                </button>
+                                <button class="btn btn-primary me-2" onclick="showRecensioneModal(${riparazione.id})">
+                                    <i class="fas fa-star"></i> Lascia Recensione
+                                </button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+                            `;
+                        } else if (riparazione.stato === 'accettata') {
+                            footerDiv.innerHTML = `
+                                <button class="btn btn-success me-2" onclick="confermaRiparazione(${riparazione.id})">
+                                    <i class="fas fa-check"></i> Conferma Riparazione
+                                </button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+                            `;
+                        } else {
+                            footerDiv.innerHTML = `
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+                            `;
+                        }
+                    } else {
+                        contentDiv.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    contentDiv.innerHTML = `<div class="alert alert-danger">Errore durante il caricamento dei dettagli.</div>`;
+                });
+
+            modal.show();
+        }
+
+        function showStoricoRiparazioniModal() {
+            new bootstrap.Modal(document.getElementById('storicoRiparazioniModal')).show();
+        }
+
+        function showRecensioneModal(riparazioneId) {
+            // Chiudi prima il modal dello storico riparazioni se è aperto
+            const storicoModal = bootstrap.Modal.getInstance(document.getElementById('storicoRiparazioniModal'));
+            if (storicoModal) {
+                storicoModal.hide();
+            }
+            
+            // Chiudi anche il modal dei dettagli se è aperto
+            const dettagliModal = bootstrap.Modal.getInstance(document.getElementById('dettagliRiparazioneModal'));
+            if (dettagliModal) {
+                dettagliModal.hide();
+            }
+            
+            // Aspetta un momento prima di aprire il nuovo modal
+            setTimeout(() => {
+                const modal = new bootstrap.Modal(document.getElementById('recensioneModal'));
+                document.getElementById('riparazioneIdRecensione').value = riparazioneId;
+                modal.show();
+            }, 300);
+        }
+
+        // Form submissions
+        document.getElementById('creaRiparazioneForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            
+            fetch('/cliente/crea-riparazione', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Errore: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Errore durante l\'operazione');
+            });
+        });
+
+        document.getElementById('aggiungiVeicoloForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            
+            fetch('/cliente/aggiungi-veicolo', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Errore: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Errore durante l\'operazione');
+            });
+        });
+
+        // Gestore form recensione
+        document.getElementById('recensioneForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            
+            if (!data.valutazione) {
+                alert('Seleziona una valutazione');
+                return;
+            }
+            
+            fetch('/cliente/lascia-recensione', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Chiudi tutti i modal aperti
+                    const recensioneModal = bootstrap.Modal.getInstance(document.getElementById('recensioneModal'));
+                    if (recensioneModal) recensioneModal.hide();
+                    
+                    const dettagliModal = bootstrap.Modal.getInstance(document.getElementById('dettagliRiparazioneModal'));
+                    if (dettagliModal) dettagliModal.hide();
+                    
+                    const storicoModal = bootstrap.Modal.getInstance(document.getElementById('storicoRiparazioniModal'));
+                    if (storicoModal) storicoModal.hide();
+                    
+                    alert('Recensione inviata con successo!');
+                    location.reload();
+                } else {
+                    alert('Errore: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Errore durante l\'invio della recensione');
+            });
+        });
+    </script>
+    <style>
+        .rating-stars {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+        }
+        .rating-stars input[type="radio"] {
+            display: none;
+        }
+        .rating-stars label {
+            color: #ccc;
+            font-size: 2rem;
+            cursor: pointer;
+            padding: 0 0.1rem;
+        }
+        .rating-stars input[type="radio"]:checked ~ label,
+        .rating-stars label:hover,
+        .rating-stars label:hover ~ label {
+            color: #ffc107;
+        }
+        .pdf-viewer {
+            width: 100%;
+            height: 600px;
+            border: none;
+        }
+        /* Assicura che il modal delle recensioni sia sopra tutti gli altri */
+        #recensioneModal {
+            z-index: 1060;
+        }
+        #recensioneModal .modal-backdrop {
+            z-index: 1059;
+        }
+    </style>
+</body>
+</html>

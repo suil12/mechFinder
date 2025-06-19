@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="I miei veicoli - MechFinder">
+    <meta name="keywords" content="veicoli, auto, gestione">
+    <meta name="author" content="MechFinder">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <title>I miei veicoli - MechFinder</title>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="dashboard-sidebar">
+            <div class="sidebar-header">
+                <a href="/" class="sidebar-logo">
+                    <img src="/media/img/logo.png" alt="MechFinder">
+                    <span>MechFinder</span>
+                </a>
+                <button id="sidebarToggle" class="sidebar-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <ul>
+                    <li>
+                        <a href="/cliente/dashboard">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/cliente/profilo">
+                            <i class="fas fa-user"></i>
+                            <span>Profilo</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/cliente/riparazioni">
+                            <i class="fas fa-tools"></i>
+                            <span>Riparazioni</span>
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="/cliente/veicoli">
+                            <i class="fas fa-car"></i>
+                            <span>I miei veicoli</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/meccanici">
+                            <i class="fas fa-user-cog"></i>
+                            <span>Trova meccanici</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/cliente/recensioni">
+                            <i class="fas fa-star"></i>
+                            <span>Le mie recensioni</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/cliente/messaggi">
+                            <i class="fas fa-envelope"></i>
+                            <span>Messaggi</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <a href="/auth/logout" class="btn btn-outline-danger w-100 mb-2">
+                    <i class="fas fa-sign-out-alt me-2"></i>
+                    <span>Logout</span>
+                </a>
+                <div class="user-info text-center">
+                    <small class="d-block text-muted mb-1"><%= user.nome %> <%= user.cognome %></small>
+                    <small class="d-block text-muted">MechFinder v1.0</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="dashboard-main">
+            <div class="dashboard-header">
+                <div class="header-title">
+                    <h2>I miei veicoli</h2>
+                    <p class="text-muted mb-0">Gestisci i tuoi veicoli</p>
+                </div>
+                
+                <div class="header-actions">
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#veicoloModal">
+                        <i class="fas fa-plus me-2"></i>
+                        Aggiungi veicolo
+                    </button>
+                </div>
+            </div>
+            
+            <div class="dashboard-content">
+                <!-- Alert messaggi -->
+                <% if (typeof success_msg !== 'undefined' && success_msg) { %>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <%= success_msg %>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                <% } %>
+                
+                <% if (typeof error_msg !== 'undefined' && error_msg) { %>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <%= error_msg %>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                <% } %>
+                
+                <!-- Statistiche veicoli -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow h-100">
+                            <div class="card-body text-center">
+                                <div class="text-primary mb-2">
+                                    <i class="fas fa-car fa-2x"></i>
+                                </div>
+                                <h4 class="mb-0"><%= veicoli ? veicoli.length : 0 %></h4>
+                                <small class="text-muted">Veicoli Totali</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow h-100">
+                            <div class="card-body text-center">
+                                <div class="text-success mb-2">
+                                    <i class="fas fa-check-circle fa-2x"></i>
+                                </div>
+                                <h4 class="mb-0"><%= veicoli ? veicoli.filter(v => v.stato === 'attivo').length : 0 %></h4>
+                                <small class="text-muted">Attivi</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow h-100">
+                            <div class="card-body text-center">
+                                <div class="text-warning mb-2">
+                                    <i class="fas fa-calendar-alt fa-2x"></i>
+                                </div>
+                                <h4 class="mb-0"><%= veicoli ? veicoli.filter(v => v.prossima_revisione && new Date(v.prossima_revisione) <= new Date(Date.now() + 30*24*60*60*1000)).length : 0 %></h4>
+                                <small class="text-muted">Revisione entro 30gg</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow h-100">
+                            <div class="card-body text-center">
+                                <div class="text-info mb-2">
+                                    <i class="fas fa-tools fa-2x"></i>
+                                </div>
+                                <h4 class="mb-0">0</h4>
+                                <small class="text-muted">In riparazione</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lista veicoli -->
+                <div class="card border-0 shadow">
+                    <div class="card-header bg-white py-3">
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <h5 class="mb-0">I tuoi veicoli</h5>
+                            </div>
+                            <div class="col-auto">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Cerca veicolo..." id="searchInput">
+                                    <button class="btn btn-outline-secondary" type="button">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <% if (veicoli && veicoli.length > 0) { %>
+                            <div class="row">
+                                <% veicoli.forEach(veicolo => { %>
+                                    <div class="col-lg-6 col-xl-4 mb-4" id="veicolo-<%= veicolo.id %>">
+                                        <div class="card h-100 vehicle-card">
+                                            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                                <div class="d-flex align-items-center">
+                                                    <% 
+                                                        let vehicleIcon = '';
+                                                        let vehicleColor = '';
+                                                        switch(veicolo.tipo) {
+                                                            case 'auto':
+                                                                vehicleIcon = 'fa-car';
+                                                                vehicleColor = 'text-primary';
+                                                                break;
+                                                            case 'moto':
+                                                                vehicleIcon = 'fa-motorcycle';
+                                                                vehicleColor = 'text-danger';
+                                                                break;
+                                                            case 'furgone':
+                                                                vehicleIcon = 'fa-truck';
+                                                                vehicleColor = 'text-warning';
+                                                                break;
+                                                            default:
+                                                                vehicleIcon = 'fa-car-side';
+                                                                vehicleColor = 'text-secondary';
+                                                        }
+                                                    %>
+                                                    <i class="fas <%= vehicleIcon %> <%= vehicleColor %> me-2"></i>
+                                                    <h6 class="mb-0"><%= veicolo.marca %> <%= veicolo.modello %></h6>
+                                                </div>
+                                                <div class="dropdown">
+                                                    <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="dropdown">
+                                                        <i class="fas fa-ellipsis-v"></i>
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        <li><a class="dropdown-item" href="#" onclick="editVeicolo(<%= veicolo.id %>)"><i class="fas fa-edit me-2"></i>Modifica</a></li>
+                                                        <li><a class="dropdown-item" href="#" onclick="viewManutenzioni(<%= veicolo.id %>)"><i class="fas fa-history me-2"></i>Storico</a></li>
+                                                        <li><hr class="dropdown-divider"></li>
+                                                        <li><a class="dropdown-item text-danger" href="#" onclick="deleteVeicolo(<%= veicolo.id %>)"><i class="fas fa-trash me-2"></i>Elimina</a></li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <small class="text-muted">Anno</small>
+                                                        <p class="mb-2"><%= veicolo.anno %></p>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <small class="text-muted">Targa</small>
+                                                        <p class="mb-2"><strong><%= veicolo.targa %></strong></p>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <small class="text-muted">Alimentazione</small>
+                                                        <p class="mb-2">
+                                                            <% 
+                                                                let fuelBadge = '';
+                                                                switch(veicolo.alimentazione) {
+                                                                    case 'benzina': fuelBadge = 'bg-primary'; break;
+                                                                    case 'diesel': fuelBadge = 'bg-dark'; break;
+                                                                    case 'elettrica': fuelBadge = 'bg-success'; break;
+                                                                    case 'ibrida': fuelBadge = 'bg-info'; break;
+                                                                    case 'gpl': fuelBadge = 'bg-warning'; break;
+                                                                    case 'metano': fuelBadge = 'bg-secondary'; break;
+                                                                    default: fuelBadge = 'bg-light text-dark';
+                                                                }
+                                                            %>
+                                                            <span class="badge <%= fuelBadge %>"><%= veicolo.alimentazione %></span>
+                                                        </p>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <small class="text-muted">Chilometraggio</small>
+                                                        <p class="mb-2"><%= veicolo.chilometraggio ? veicolo.chilometraggio.toLocaleString() + ' km' : 'N/A' %></p>
+                                                    </div>
+                                                </div>
+                                                
+                                                <% if (veicolo.prossima_revisione) { %>
+                                                    <div class="mt-3 p-2 rounded" style="background-color: #f8f9fa;">
+                                                        <small class="text-muted">Prossima revisione</small>
+                                                        <p class="mb-0">
+                                                            <% 
+                                                                const revisioneData = new Date(veicolo.prossima_revisione);
+                                                                const oggi = new Date();
+                                                                const giorni = Math.ceil((revisioneData - oggi) / (1000 * 60 * 60 * 24));
+                                                            %>
+                                                            <%= revisioneData.toLocaleDateString('it-IT') %>
+                                                            <% if (giorni <= 30 && giorni > 0) { %>
+                                                                <span class="badge bg-warning ms-2">Tra <%= giorni %> giorni</span>
+                                                            <% } else if (giorni <= 0) { %>
+                                                                <span class="badge bg-danger ms-2">Scaduta</span>
+                                                            <% } %>
+                                                        </p>
+                                                    </div>
+                                                <% } %>
+                                            </div>
+                                            <div class="card-footer bg-white">
+                                                <div class="d-flex justify-content-between">
+                                                    <button class="btn btn-primary btn-sm" onclick="prenota Riparazione(<%= veicolo.id %>)">
+                                                        <i class="fas fa-tools me-1"></i>
+                                                        Prenota riparazione
+                                                    </button>
+                                                    <button class="btn btn-outline-info btn-sm" onclick="viewDettagli(<%= veicolo.id %>)">
+                                                        <i class="fas fa-eye me-1"></i>
+                                                        Dettagli
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <% }) %>
+                            </div>
+                        <% } else { %>
+                            <div class="text-center py-5">
+                                <i class="fas fa-car fa-3x text-muted mb-3"></i>
+                                <h5>Nessun veicolo registrato</h5>
+                                <p class="text-muted">Aggiungi il tuo primo veicolo per iniziare a gestire le riparazioni</p>
+                                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#veicoloModal">
+                                    <i class="fas fa-plus me-2"></i>
+                                    Aggiungi veicolo
+                                </button>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Aggiungi/Modifica Veicolo -->
+    <div class="modal fade" id="veicoloModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="veicoloModalLabel">Aggiungi Veicolo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="veicoloForm" action="/cliente/veicoli" method="POST">
+                    <div class="modal-body">
+                        <input type="hidden" id="veicoloId" name="id">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="marca" class="form-label">Marca *</label>
+                                    <input type="text" class="form-control" id="marca" name="marca" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="modello" class="form-label">Modello *</label>
+                                    <input type="text" class="form-control" id="modello" name="modello" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="anno" class="form-label">Anno *</label>
+                                    <input type="number" class="form-control" id="anno" name="anno" min="1950" max="2025" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="targa" class="form-label">Targa *</label>
+                                    <input type="text" class="form-control" id="targa" name="targa" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="tipo" class="form-label">Tipo veicolo</label>
+                                    <select class="form-control" id="tipo" name="tipo">
+                                        <option value="auto">Auto</option>
+                                        <option value="moto">Moto</option>
+                                        <option value="furgone">Furgone</option>
+                                        <option value="altro">Altro</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="alimentazione" class="form-label">Alimentazione</label>
+                                    <select class="form-control" id="alimentazione" name="alimentazione">
+                                        <option value="benzina">Benzina</option>
+                                        <option value="diesel">Diesel</option>
+                                        <option value="gpl">GPL</option>
+                                        <option value="metano">Metano</option>
+                                        <option value="elettrica">Elettrica</option>
+                                        <option value="ibrida">Ibrida</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="chilometraggio" class="form-label">Chilometraggio</label>
+                                    <input type="number" class="form-control" id="chilometraggio" name="chilometraggio" min="0">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="colore" class="form-label">Colore</label>
+                                    <input type="text" class="form-control" id="colore" name="colore">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="prossima_revisione" class="form-label">Prossima revisione</label>
+                                    <input type="date" class="form-control" id="prossima_revisione" name="prossima_revisione">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="note" class="form-label">Note aggiuntive</label>
+                            <textarea class="form-control" id="note" name="note" rows="3" placeholder="Eventuali note sul veicolo..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                        <button type="submit" class="btn btn-primary" id="saveVeicoloBtn">Aggiungi Veicolo</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Dettagli Veicolo -->
+    <div class="modal fade" id="dettagliModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Dettagli Veicolo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="dettagliModalBody">
+                    <!-- Contenuto caricato dinamicamente -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Toggle sidebar
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const dashboardContainer = document.querySelector('.dashboard-container');
+            
+            const sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+            if (sidebarCollapsed) {
+                dashboardContainer.classList.add('sidebar-collapsed');
+            }
+            
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', function() {
+                    dashboardContainer.classList.toggle('sidebar-collapsed');
+                    const isCollapsed = dashboardContainer.classList.contains('sidebar-collapsed');
+                    localStorage.setItem('sidebarCollapsed', isCollapsed);
+                });
+            }
+        });
+        
+        // Funzioni veicoli
+        function editVeicolo(id) {
+            fetch(`/cliente/veicoli/${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const veicolo = data.veicolo;
+                        document.getElementById('veicoloModalLabel').textContent = 'Modifica Veicolo';
+                        document.getElementById('saveVeicoloBtn').textContent = 'Salva Modifiche';
+                        document.getElementById('veicoloForm').action = `/cliente/veicoli/${id}?_method=PUT`;
+                        
+                        // Popoloa i campi
+                        document.getElementById('veicoloId').value = veicolo.id;
+                        document.getElementById('marca').value = veicolo.marca;
+                        document.getElementById('modello').value = veicolo.modello;
+                        document.getElementById('anno').value = veicolo.anno;
+                        document.getElementById('targa').value = veicolo.targa;
+                        document.getElementById('tipo').value = veicolo.tipo || 'auto';
+                        document.getElementById('alimentazione').value = veicolo.alimentazione || 'benzina';
+                        document.getElementById('chilometraggio').value = veicolo.chilometraggio || '';
+                        document.getElementById('colore').value = veicolo.colore || '';
+                        document.getElementById('prossima_revisione').value = veicolo.prossima_revisione ? veicolo.prossima_revisione.split('T')[0] : '';
+                        document.getElementById('note').value = veicolo.note || '';
+                        
+                        new bootstrap.Modal(document.getElementById('veicoloModal')).show();
+                    }
+                })
+                .catch(error => {
+                    console.error('Errore:', error);
+                    alert('Errore nel caricamento dei dati del veicolo');
+                });
+        }
+        
+        function deleteVeicolo(id) {
+            if (confirm('Sei sicuro di voler eliminare questo veicolo?')) {
+                fetch(`/cliente/veicoli/${id}`, {
+                    method: 'DELETE'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Errore nell\'eliminazione del veicolo');
+                    }
+                })
+                .catch(error => {
+                    console.error('Errore:', error);
+                    alert('Errore nell\'eliminazione del veicolo');
+                });
+            }
+        }
+        
+        function viewDettagli(id) {
+            fetch(`/cliente/veicoli/${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const veicolo = data.veicolo;
+                        document.getElementById('dettagliModalBody').innerHTML = `
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Informazioni Base</h6>
+                                    <table class="table table-borderless">
+                                        <tr><td><strong>Marca:</strong></td><td>${veicolo.marca}</td></tr>
+                                        <tr><td><strong>Modello:</strong></td><td>${veicolo.modello}</td></tr>
+                                        <tr><td><strong>Anno:</strong></td><td>${veicolo.anno}</td></tr>
+                                        <tr><td><strong>Targa:</strong></td><td>${veicolo.targa}</td></tr>
+                                        <tr><td><strong>Tipo:</strong></td><td>${veicolo.tipo || 'N/A'}</td></tr>
+                                        <tr><td><strong>Colore:</strong></td><td>${veicolo.colore || 'N/A'}</td></tr>
+                                    </table>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Dati Tecnici</h6>
+                                    <table class="table table-borderless">
+                                        <tr><td><strong>Alimentazione:</strong></td><td>${veicolo.alimentazione || 'N/A'}</td></tr>
+                                        <tr><td><strong>Chilometraggio:</strong></td><td>${veicolo.chilometraggio ? veicolo.chilometraggio.toLocaleString() + ' km' : 'N/A'}</td></tr>
+                                        <tr><td><strong>Prossima revisione:</strong></td><td>${veicolo.prossima_revisione ? new Date(veicolo.prossima_revisione).toLocaleDateString('it-IT') : 'N/A'}</td></tr>
+                                        <tr><td><strong>Registrato il:</strong></td><td>${new Date(veicolo.created_at).toLocaleDateString('it-IT')}</td></tr>
+                                    </table>
+                                </div>
+                            </div>
+                            ${veicolo.note ? `
+                                <div class="row mt-3">
+                                    <div class="col-12">
+                                        <h6>Note</h6>
+                                        <div class="bg-light p-3 rounded">
+                                            ${veicolo.note}
+                                        </div>
+                                    </div>
+                                </div>
+                            ` : ''}
+                        `;
+                        new bootstrap.Modal(document.getElementById('dettagliModal')).show();
+                    }
+                })
+                .catch(error => {
+                    console.error('Errore:', error);
+                    alert('Errore nel caricamento dei dettagli');
+                });
+        }
+        
+        function prenotaRiparazione(veicoloId) {
+            window.location.href = `/meccanici?veicolo=${veicoloId}`;
+        }
+        
+        function viewManutenzioni(id) {
+            window.location.href = `/cliente/riparazioni?veicolo=${id}`;
+        }
+        
+        // Reset form quando si apre il modal per aggiungere
+        document.getElementById('veicoloModal').addEventListener('hidden.bs.modal', function () {
+            document.getElementById('veicoloModalLabel').textContent = 'Aggiungi Veicolo';
+            document.getElementById('saveVeicoloBtn').textContent = 'Aggiungi Veicolo';
+            document.getElementById('veicoloForm').action = '/cliente/veicoli';
+            document.getElementById('veicoloForm').reset();
+            document.getElementById('veicoloId').value = '';
+        });
+        
+        // Ricerca veicoli
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const vehicleCards = document.querySelectorAll('[id^="veicolo-"]');
+            
+            vehicleCards.forEach(card => {
+                const text = card.textContent.toLowerCase();
+                card.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+    </script>
+</body>
+</html>

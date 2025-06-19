@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Gestione Meccanici - MechFinder Admin">
+  <meta name="keywords" content="admin, meccanici, verifica, approvazione">
+  <meta name="author" content="MechFinder">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/admin.css">
+  <title>Gestione Meccanici - MechFinder Admin</title>
+</head>
+<body class="admin-body">
+  <div class="admin-container">
+    <!-- Sidebar -->
+    <div class="admin-sidebar">
+      <div class="sidebar-header">
+        <img src="/media/img/logo.png" alt="MechFinder" class="sidebar-logo">
+        <h3>MechFinder</h3>
+        <span class="badge bg-primary">Admin</span>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <ul>
+          <li>
+            <a href="/admin/dashboard">
+              <i class="fas fa-tachometer-alt"></i>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li>
+            <a href="/admin/utenti">
+              <i class="fas fa-users"></i>
+              <span>Utenti</span>
+            </a>
+          </li>
+          <li class="active">
+            <a href="/admin/meccanici">
+              <i class="fas fa-user-cog"></i>
+              <span>Meccanici</span>
+            </a>
+          </li>
+          <li>
+            <a href="/admin/riparazioni">
+              <i class="fas fa-tools"></i>
+              <span>Riparazioni</span>
+            </a>
+          </li>
+          <li>
+            <a href="/admin/profilo">
+              <i class="fas fa-user"></i>
+              <span>Profilo</span>
+            </a>
+          </li>
+          <li class="sidebar-divider"></li>
+          <li>
+            <a href="/auth/logout">
+              <i class="fas fa-sign-out-alt"></i>
+              <span>Logout</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+      
+      <div class="sidebar-footer">
+        <p class="version">v1.0.0</p>
+        <p class="user-info"><%= user.nome %> <%= user.cognome %></p>
+      </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="admin-content">
+      <div class="admin-topbar">
+        <button id="sidebarToggle" class="sidebar-toggle">
+          <i class="fas fa-bars"></i>
+        </button>
+        
+        <div class="topbar-title">
+          <h2>Gestione Meccanici</h2>
+          <p class="breadcrumb">
+            <a href="/admin/dashboard">Dashboard</a> / Meccanici
+          </p>
+        </div>
+        
+        <div class="topbar-actions">
+          <button class="btn btn-outline-primary" onclick="refreshData()">
+            <i class="fas fa-sync-alt"></i> Aggiorna
+          </button>
+        </div>
+      </div>
+      
+      <div class="admin-main">
+        <!-- Filtri -->
+        <div class="card mb-4">
+          <div class="card-body">
+            <div class="row g-3">
+              <div class="col-md-3">
+                <label class="form-label">Stato Verifica</label>
+                <select id="filterVerifica" class="form-select">
+                  <option value="">Tutti</option>
+                  <option value="true">Verificati</option>
+                  <option value="false">Non Verificati</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Stato Account</label>
+                <select id="filterStato" class="form-select">
+                  <option value="">Tutti</option>
+                  <option value="attivo">Attivi</option>
+                  <option value="sospeso">Sospesi</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Cerca</label>
+                <input type="text" id="searchInput" class="form-control" placeholder="Nome, officina, specializzazioni...">
+              </div>
+              <div class="col-md-2 d-flex align-items-end">
+                <button class="btn btn-primary w-100" onclick="applyFilters()">
+                  <i class="fas fa-search"></i> Filtra
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Statistiche meccanici -->
+        <div class="row mb-4">
+          <div class="col-md-3">
+            <div class="stat-card">
+              <div class="stat-icon bg-primary">
+                <i class="fas fa-user-cog"></i>
+              </div>
+              <div class="stat-content">
+                <h3><%= meccanici.length %></h3>
+                <p>Totale Meccanici</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="stat-card">
+              <div class="stat-icon bg-success">
+                <i class="fas fa-check-circle"></i>
+              </div>
+              <div class="stat-content">
+                <h3><%= meccanici.filter(m => m.verificato).length %></h3>
+                <p>Verificati</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="stat-card">
+              <div class="stat-icon bg-warning">
+                <i class="fas fa-clock"></i>
+              </div>
+              <div class="stat-content">
+                <h3><%= meccanici.filter(m => !m.verificato).length %></h3>
+                <p>In Attesa</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="stat-card">
+              <div class="stat-icon bg-danger">
+                <i class="fas fa-user-times"></i>
+              </div>
+              <div class="stat-content">
+                <h3><%= meccanici.filter(m => m.stato === 'sospeso').length %></h3>
+                <p>Sospesi</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Tabs -->
+        <ul class="nav nav-tabs mb-4" id="meccaniciTabs">
+          <li class="nav-item">
+            <a class="nav-link active" data-bs-toggle="tab" href="#tutti">
+              <i class="fas fa-list"></i> Tutti (<%= meccanici.length %>)
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#daVerificare">
+              <i class="fas fa-clock"></i> Da Verificare (<%= meccanici.filter(m => !m.verificato).length %>)
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#verificati">
+              <i class="fas fa-check"></i> Verificati (<%= meccanici.filter(m => m.verificato).length %>)
+            </a>
+          </li>
+        </ul>
+        
+        <!-- Tab Content -->
+        <div class="tab-content">
+          <!-- Tutti i meccanici -->
+          <div class="tab-pane fade show active" id="tutti">
+            <div class="card">
+              <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Lista Completa Meccanici</h5>
+                <button class="btn btn-sm btn-outline-secondary" onclick="exportData()">
+                  <i class="fas fa-download"></i> Esporta
+                </button>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table table-hover" id="tuttiMeccaniciTable">
+                    <thead>
+                      <tr>
+                        <th>Meccanico</th>
+                        <th>Officina</th>
+                        <th>Specializzazioni</th>
+                        <th>Verifica</th>
+                        <th>Stato</th>
+                        <th>Registrazione</th>
+                        <th>Azioni</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% meccanici.forEach(meccanico => { %>
+                      <tr data-verificato="<%= meccanico.verificato %>" data-stato="<%= meccanico.stato || 'attivo' %>">
+                        <td>
+                          <div class="d-flex align-items-center">
+                            <div class="user-avatar me-2">
+                              <i class="fas fa-user-cog text-warning"></i>
+                            </div>
+                            <div>
+                              <div class="fw-bold"><%= meccanico.nome %> <%= meccanico.cognome %></div>
+                              <small class="text-muted"><%= meccanico.email %></small>
+                            </div>
+                          </div>
+                        </td>
+                        <td>
+                          <div>
+                            <div class="fw-bold"><%= meccanico.officina || 'N/A' %></div>
+                            <small class="text-muted"><%= meccanico.indirizzo || 'Indirizzo non specificato' %></small>
+                          </div>
+                        </td>
+                        <td>
+                          <% if (meccanico.specializzazioni) { %>
+                            <% meccanico.specializzazioni.split(',').slice(0, 2).forEach(spec => { %>
+                              <span class="badge bg-light text-dark me-1"><%= spec.trim() %></span>
+                            <% }) %>
+                            <% if (meccanico.specializzazioni.split(',').length > 2) { %>
+                              <small class="text-muted">+<%= meccanico.specializzazioni.split(',').length - 2 %></small>
+                            <% } %>
+                          <% } else { %>
+                            <span class="text-muted">Nessuna</span>
+                          <% } %>
+                        </td>
+                        <td>
+                          <% if (meccanico.verificato) { %>
+                            <span class="badge bg-success">
+                              <i class="fas fa-check"></i> Verificato
+                            </span>
+                          <% } else { %>
+                            <span class="badge bg-warning">
+                              <i class="fas fa-clock"></i> In Attesa
+                            </span>
+                          <% } %>
+                        </td>
+                        <td>
+                          <% if (meccanico.stato === 'sospeso') { %>
+                            <span class="badge bg-danger">Sospeso</span>
+                          <% } else { %>
+                            <span class="badge bg-success">Attivo</span>
+                          <% } %>
+                        </td>
+                        <td><%= new Date(meccanico.created_at).toLocaleDateString('it-IT') %></td>
+                        <td>
+                          <div class="btn-group">
+                            <button class="btn btn-sm btn-outline-primary" onclick="viewMeccanico(<%= meccanico.id %>)" title="Visualizza">
+                              <i class="fas fa-eye"></i>
+                            </button>
+                            <% if (!meccanico.verificato) { %>
+                              <button class="btn btn-sm btn-outline-success" onclick="verificaMeccanico(<%= meccanico.id %>)" title="Verifica">
+                                <i class="fas fa-check"></i>
+                              </button>
+                            <% } %>
+                            <% if (meccanico.stato === 'sospeso') { %>
+                              <button class="btn btn-sm btn-outline-success" onclick="riattivaUtente(<%= meccanico.id %>, 'meccanico')" title="Riattiva">
+                                <i class="fas fa-user-check"></i>
+                              </button>
+                            <% } else { %>
+                              <button class="btn btn-sm btn-outline-danger" onclick="sospendiUtente(<%= meccanico.id %>, 'meccanico')" title="Sospendi">
+                                <i class="fas fa-user-times"></i>
+                              </button>
+                            <% } %>
+                          </div>
+                        </td>
+                      </tr>
+                      <% }) %>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Meccanici da verificare -->
+          <div class="tab-pane fade" id="daVerificare">
+            <div class="card">
+              <div class="card-header">
+                <h5 class="mb-0">Meccanici in Attesa di Verifica</h5>
+              </div>
+              <div class="card-body">
+                <% const meccaniciDaVerificare = meccanici.filter(m => !m.verificato); %>
+                <% if (meccaniciDaVerificare.length === 0) { %>
+                  <div class="text-center py-5">
+                    <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                    <h5>Nessun meccanico in attesa di verifica</h5>
+                    <p class="text-muted">Tutti i meccanici sono stati verificati!</p>
+                  </div>
+                <% } else { %>
+                  <div class="row">
+                    <% meccaniciDaVerificare.forEach(meccanico => { %>
+                    <div class="col-md-6 mb-4">
+                      <div class="card border-warning">
+                        <div class="card-body">
+                          <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                              <h6 class="card-title mb-1"><%= meccanico.nome %> <%= meccanico.cognome %></h6>
+                              <p class="text-muted small mb-0"><%= meccanico.email %></p>
+                            </div>
+                            <span class="badge bg-warning">In Attesa</span>
+                          </div>
+                          
+                          <div class="mb-3">
+                            <p class="small mb-1"><strong>Officina:</strong> <%= meccanico.officina || 'N/A' %></p>
+                            <p class="small mb-1"><strong>Telefono:</strong> <%= meccanico.telefono || 'N/A' %></p>
+                            <p class="small mb-1"><strong>Indirizzo:</strong> <%= meccanico.indirizzo || 'N/A' %></p>
+                            <p class="small mb-1"><strong>Registrato:</strong> <%= new Date(meccanico.created_at).toLocaleDateString('it-IT') %></p>
+                          </div>
+                          
+                          <div class="mb-3">
+                            <small class="text-muted d-block mb-1">Specializzazioni:</small>
+                            <% if (meccanico.specializzazioni) { %>
+                              <% meccanico.specializzazioni.split(',').forEach(spec => { %>
+                                <span class="badge bg-light text-dark me-1"><%= spec.trim() %></span>
+                              <% }) %>
+                            <% } else { %>
+                              <span class="text-muted small">Nessuna specializzazione indicata</span>
+                            <% } %>
+                          </div>
+                          
+                          <div class="d-flex gap-2">
+                            <button class="btn btn-success btn-sm flex-fill" onclick="verificaMeccanico(<%= meccanico.id %>)">
+                              <i class="fas fa-check me-1"></i>
+                              Verifica
+                            </button>
+                            <button class="btn btn-outline-primary btn-sm" onclick="viewMeccanico(<%= meccanico.id %>)">
+                              <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-outline-danger btn-sm" onclick="rifiutaVerifica(<%= meccanico.id %>)">
+                              <i class="fas fa-times"></i>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <% }) %>
+                  </div>
+                <% } %>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Meccanici verificati -->
+          <div class="tab-pane fade" id="verificati">
+            <div class="card">
+              <div class="card-header">
+                <h5 class="mb-0">Meccanici Verificati</h5>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <% meccanici.filter(m => m.verificato).forEach(meccanico => { %>
+                  <div class="col-md-4 mb-3">
+                    <div class="card border-success">
+                      <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                          <h6 class="card-title mb-0"><%= meccanico.nome %> <%= meccanico.cognome %></h6>
+                          <span class="badge bg-success">
+                            <i class="fas fa-check"></i>
+                          </span>
+                        </div>
+                        <p class="text-muted small mb-2"><%= meccanico.officina || 'Officina non specificata' %></p>
+                        <p class="small text-muted mb-3">Verificato il <%= new Date(meccanico.data_verifica || meccanico.created_at).toLocaleDateString('it-IT') %></p>
+                        
+                        <div class="d-flex gap-2">
+                          <button class="btn btn-outline-primary btn-sm flex-fill" onclick="viewMeccanico(<%= meccanico.id %>)">
+                            <i class="fas fa-eye me-1"></i>
+                            Dettagli
+                          </button>
+                          <% if (meccanico.stato === 'sospeso') { %>
+                            <button class="btn btn-outline-success btn-sm" onclick="riattivaUtente(<%= meccanico.id %>, 'meccanico')" title="Riattiva">
+                              <i class="fas fa-user-check"></i>
+                            </button>
+                          <% } else { %>
+                            <button class="btn btn-outline-danger btn-sm" onclick="sospendiUtente(<%= meccanico.id %>, 'meccanico')" title="Sospendi">
+                              <i class="fas fa-user-times"></i>
+                            </button>
+                          <% } %>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <% }) %>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Dettagli Meccanico -->
+  <div class="modal fade" id="meccanicoModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Dettagli Meccanico</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="meccanicoModalBody">
+          <!-- Contenuto caricato dinamicamente -->
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Toggle sidebar
+    document.getElementById('sidebarToggle').addEventListener('click', function() {
+      document.querySelector('.admin-sidebar').classList.toggle('collapsed');
+    });
+    
+    function verificaMeccanico(id) {
+      if (confirm('Sei sicuro di voler verificare questo meccanico?')) {
+        fetch(`/admin/meccanici/${id}/verifica`, {
+          method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            location.reload();
+          } else {
+            alert('Errore durante la verifica');
+          }
+        })
+        .catch(error => {
+          console.error('Errore:', error);
+          alert('Errore durante la verifica');
+        });
+      }
+    }
+    
+    function rifiutaVerifica(id) {
+      const motivo = prompt('Inserisci il motivo del rifiuto (opzionale):');
+      if (motivo !== null) {
+        fetch(`/admin/meccanici/${id}/rifiuta`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ motivo: motivo })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            location.reload();
+          } else {
+            alert('Errore durante il rifiuto');
+          }
+        })
+        .catch(error => {
+          console.error('Errore:', error);
+          alert('Errore durante il rifiuto');
+        });
+      }
+    }
+    
+    function sospendiUtente(id, tipo) {
+      if (confirm('Sei sicuro di voler sospendere questo meccanico?')) {
+        fetch(`/admin/utenti/${id}/sospendi`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ tipo: tipo })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            location.reload();
+          } else {
+            alert('Errore durante la sospensione');
+          }
+        })
+        .catch(error => {
+          console.error('Errore:', error);
+          alert('Errore durante la sospensione');
+        });
+      }
+    }
+    
+    function riattivaUtente(id, tipo) {
+      if (confirm('Sei sicuro di voler riattivare questo meccanico?')) {
+        fetch(`/admin/utenti/${id}/riattiva`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ tipo: tipo })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            location.reload();
+          } else {
+            alert('Errore durante la riattivazione');
+          }
+        })
+        .catch(error => {
+          console.error('Errore:', error);
+          alert('Errore durante la riattivazione');
+        });
+      }
+    }
+    
+    function viewMeccanico(id) {
+      fetch(`/admin/meccanici/${id}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            const meccanico = data.meccanico;
+            let modalContent = `
+              <div class="row">
+                <div class="col-md-6">
+                  <h6>Informazioni Personali</h6>
+                  <p><strong>Nome:</strong> ${meccanico.nome} ${meccanico.cognome}</p>
+                  <p><strong>Email:</strong> ${meccanico.email}</p>
+                  <p><strong>Telefono:</strong> ${meccanico.telefono || 'N/A'}</p>
+                  <p><strong>Data Registrazione:</strong> ${new Date(meccanico.created_at).toLocaleString('it-IT')}</p>
+                  <p><strong>Stato:</strong> ${meccanico.stato || 'attivo'}</p>
+                  <p><strong>Verificato:</strong> ${meccanico.verificato ? 'Sì' : 'No'}</p>
+                </div>
+                <div class="col-md-6">
+                  <h6>Informazioni Officina</h6>
+                  <p><strong>Nome Officina:</strong> ${meccanico.officina || 'N/A'}</p>
+                  <p><strong>Indirizzo:</strong> ${meccanico.indirizzo || 'N/A'}</p>
+                  <p><strong>Città:</strong> ${meccanico.citta || 'N/A'}</p>
+                  <p><strong>CAP:</strong> ${meccanico.cap || 'N/A'}</p>
+                  <p><strong>Partita IVA:</strong> ${meccanico.partita_iva || 'N/A'}</p>
+                </div>
+              </div>
+              <div class="row mt-3">
+                <div class="col-12">
+                  <h6>Specializzazioni</h6>
+                  <div class="mb-3">
+            `;
+            
+            if (meccanico.specializzazioni) {
+              meccanico.specializzazioni.split(',').forEach(spec => {
+                modalContent += `<span class="badge bg-primary me-2 mb-1">${spec.trim()}</span>`;
+              });
+            } else {
+              modalContent += '<span class="text-muted">Nessuna specializzazione indicata</span>';
+            }
+            
+            modalContent += `
+                  </div>
+                  <h6>Descrizione</h6>
+                  <div class="bg-light p-3 rounded">
+                    ${meccanico.descrizione || 'Nessuna descrizione fornita'}
+                  </div>
+                </div>
+              </div>
+            `;
+            
+            document.getElementById('meccanicoModalBody').innerHTML = modalContent;
+            new bootstrap.Modal(document.getElementById('meccanicoModal')).show();
+          }
+        })
+        .catch(error => {
+          console.error('Errore:', error);
+          alert('Errore nel caricamento dei dati meccanico');
+        });
+    }
+    
+    function applyFilters() {
+      const filterVerifica = document.getElementById('filterVerifica').value;
+      const filterStato = document.getElementById('filterStato').value;
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      
+      const rows = document.querySelectorAll('#tuttiMeccaniciTable tbody tr');
+      
+      rows.forEach(row => {
+        const verificato = row.dataset.verificato;
+        const stato = row.dataset.stato;
+        const text = row.textContent.toLowerCase();
+        
+        let show = true;
+        
+        if (filterVerifica && verificato !== filterVerifica) show = false;
+        if (filterStato && stato !== filterStato) show = false;
+        if (searchTerm && !text.includes(searchTerm)) show = false;
+        
+        row.style.display = show ? '' : 'none';
+      });
+    }
+    
+    function refreshData() {
+      location.reload();
+    }
+    
+    function exportData() {
+      window.open('/admin/meccanici/export', '_blank');
+    }
+  </script>
+</body>
+</html>

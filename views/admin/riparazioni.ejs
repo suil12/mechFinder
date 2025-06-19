@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Gestione Riparazioni - MechFinder Admin">
+  <meta name="keywords" content="admin, riparazioni, meccanici, clienti">
+  <meta name="author" content="MechFinder">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/admin.css">
+  <title>Gestione Riparazioni - MechFinder Admin</title>
+</head>
+<body class="admin-body">
+  <div class="admin-container">
+    <!-- Sidebar -->
+    <div class="admin-sidebar">
+      <div class="sidebar-header">
+        <img src="/media/img/logo.png" alt="MechFinder" class="sidebar-logo">
+        <h3>MechFinder</h3>
+        <span class="badge bg-primary">Admin</span>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <ul>
+          <li>
+            <a href="/admin/dashboard">
+              <i class="fas fa-tachometer-alt"></i>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li>
+            <a href="/admin/utenti">
+              <i class="fas fa-users"></i>
+              <span>Utenti</span>
+            </a>
+          </li>
+          <li>
+            <a href="/admin/meccanici">
+              <i class="fas fa-user-cog"></i>
+              <span>Meccanici</span>
+            </a>
+          </li>
+          <li class="active">
+            <a href="/admin/riparazioni">
+              <i class="fas fa-tools"></i>
+              <span>Riparazioni</span>
+            </a>
+          </li>
+          <li>
+            <a href="/admin/profilo">
+              <i class="fas fa-user"></i>
+              <span>Profilo</span>
+            </a>
+          </li>
+          <li class="sidebar-divider"></li>
+          <li>
+            <a href="/auth/logout">
+              <i class="fas fa-sign-out-alt"></i>
+              <span>Logout</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+      
+      <div class="sidebar-footer">
+        <p class="version">v1.0.0</p>
+        <p class="user-info"><%= user.nome %> <%= user.cognome %></p>
+      </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="admin-content">
+      <div class="admin-topbar">
+        <button id="sidebarToggle" class="sidebar-toggle">
+          <i class="fas fa-bars"></i>
+        </button>
+        
+        <div class="topbar-title">
+          <h2>Gestione Riparazioni</h2>
+          <p class="breadcrumb">
+            <a href="/admin/dashboard">Dashboard</a> / Riparazioni
+          </p>
+        </div>
+        
+        <div class="topbar-actions">
+          <button class="btn btn-outline-primary" onclick="refreshData()">
+            <i class="fas fa-sync-alt"></i> Aggiorna
+          </button>
+        </div>
+      </div>
+      
+      <div class="admin-main">
+        <!-- Filtri -->
+        <div class="card mb-4">
+          <div class="card-body">
+            <div class="row g-3">
+              <div class="col-md-3">
+                <label class="form-label">Stato</label>
+                <select id="filterStato" class="form-select">
+                  <option value="">Tutti</option>
+                  <option value="richiesta">Richiesta</option>
+                  <option value="accettata">Accettata</option>
+                  <option value="in_corso">In Corso</option>
+                  <option value="completata">Completata</option>
+                  <option value="annullata">Annullata</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Data Da</label>
+                <input type="date" id="filterDataDa" class="form-control">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Data A</label>
+                <input type="date" id="filterDataA" class="form-control">
+              </div>
+              <div class="col-md-2">
+                <label class="form-label">Prezzo Min</label>
+                <input type="number" id="filterPrezzoMin" class="form-control" placeholder="€">
+              </div>
+              <div class="col-md-1 d-flex align-items-end">
+                <button class="btn btn-primary w-100" onclick="applyFilters()">
+                  <i class="fas fa-search"></i>
+                </button>
+              </div>
+            </div>
+            <div class="row g-3 mt-2">
+              <div class="col-md-6">
+                <input type="text" id="searchInput" class="form-control" placeholder="Cerca cliente, meccanico, descrizione...">
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Statistiche riparazioni -->
+        <div class="row mb-4">
+          <div class="col-md-2">
+            <div class="stat-card">
+              <div class="stat-icon bg-primary">
+                <i class="fas fa-tools"></i>
+              </div>
+              <div class="stat-content">
+                <h3><%= riparazioni.length %></h3>
+                <p>Totale</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="stat-card">
+              <div class="stat-icon bg-warning">
+                <i class="fas fa-clock"></i>
+              </div>
+              <div class="stat-content">
+                <h3><%= riparazioni.filter(r => r.stato === 'richiesta').length %></h3>
+                <p>Richieste</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="stat-card">
+              <div class="stat-icon bg-info">
+                <i class="fas fa-play"></i>
+              </div>
+              <div class="stat-content">
+                <h3><%= riparazioni.filter(r => r.stato === 'in_corso').length %></h3>
+                <p>In Corso</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="stat-card">
+              <div class="stat-icon bg-success">
+                <i class="fas fa-check"></i>
+              </div>
+              <div class="stat-content">
+                <h3><%= riparazioni.filter(r => r.stato === 'completata').length %></h3>
+                <p>Completate</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="stat-card">
+              <div class="stat-icon bg-danger">
+                <i class="fas fa-times"></i>
+              </div>
+              <div class="stat-content">
+                <h3><%= riparazioni.filter(r => r.stato === 'annullata').length %></h3>
+                <p>Annullate</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="stat-card">
+              <div class="stat-icon bg-dark">
+                <i class="fas fa-euro-sign"></i>
+              </div>
+              <div class="stat-content">
+                <h3>€<%= riparazioni.filter(r => r.prezzo).reduce((sum, r) => sum + parseFloat(r.prezzo || 0), 0).toFixed(0) %></h3>
+                <p>Fatturato</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Tabella riparazioni -->
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Lista Riparazioni</h5>
+            <div>
+              <button class="btn btn-sm btn-outline-secondary" onclick="exportData()">
+                <i class="fas fa-download"></i> Esporta
+              </button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-hover" id="riparazioniTable">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Cliente</th>
+                    <th>Meccanico</th>
+                    <th>Veicolo</th>
+                    <th>Descrizione</th>
+                    <th>Stato</th>
+                    <th>Prezzo</th>
+                    <th>Data</th>
+                    <th>Azioni</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% riparazioni.forEach(riparazione => { %>
+                  <tr data-stato="<%= riparazione.stato %>" data-prezzo="<%= riparazione.prezzo || 0 %>" data-data="<%= riparazione.data_richiesta %>">
+                    <td><strong>#<%= riparazione.id %></strong></td>
+                    <td>
+                      <div>
+                        <div class="fw-bold"><%= riparazione.nome_cliente %> <%= riparazione.cognome_cliente %></div>
+                        <small class="text-muted"><%= riparazione.email_cliente %></small>
+                      </div>
+                    </td>
+                    <td>
+                      <% if (riparazione.nome_meccanico) { %>
+                        <div>
+                          <div class="fw-bold"><%= riparazione.nome_meccanico %> <%= riparazione.cognome_meccanico %></div>
+                          <small class="text-muted"><%= riparazione.officina || 'N/A' %></small>
+                        </div>
+                      <% } else { %>
+                        <span class="text-muted">Non assegnato</span>
+                      <% } %>
+                    </td>
+                    <td>
+                      <div>
+                        <div class="fw-bold"><%= riparazione.marca %> <%= riparazione.modello %></div>
+                        <small class="text-muted"><%= riparazione.anno %> - <%= riparazione.targa %></small>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="description-cell" title="<%= riparazione.descrizione %>">
+                        <%= riparazione.descrizione.length > 50 ? riparazione.descrizione.substring(0, 50) + '...' : riparazione.descrizione %>
+                      </div>
+                    </td>
+                    <td>
+                      <% 
+                        let badgeClass = 'bg-secondary';
+                        let statoText = riparazione.stato;
+                        switch(riparazione.stato) {
+                          case 'richiesta': badgeClass = 'bg-warning'; statoText = 'Richiesta'; break;
+                          case 'accettata': badgeClass = 'bg-info'; statoText = 'Accettata'; break;
+                          case 'in_corso': badgeClass = 'bg-primary'; statoText = 'In Corso'; break;
+                          case 'completata': badgeClass = 'bg-success'; statoText = 'Completata'; break;
+                          case 'annullata': badgeClass = 'bg-danger'; statoText = 'Annullata'; break;
+                        }
+                      %>
+                      <span class="badge <%= badgeClass %>"><%= statoText %></span>
+                    </td>
+                    <td>
+                      <% if (riparazione.prezzo) { %>
+                        <strong>€<%= parseFloat(riparazione.prezzo).toFixed(2) %></strong>
+                      <% } else { %>
+                        <span class="text-muted">N/A</span>
+                      <% } %>
+                    </td>
+                    <td>
+                      <div>
+                        <div><%= new Date(riparazione.data_richiesta).toLocaleDateString('it-IT') %></div>
+                        <small class="text-muted"><%= new Date(riparazione.data_richiesta).toLocaleTimeString('it-IT', {hour: '2-digit', minute: '2-digit'}) %></small>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="btn-group">
+                        <button class="btn btn-sm btn-outline-primary" onclick="viewRiparazione(<%= riparazione.id %>)" title="Visualizza dettagli">
+                          <i class="fas fa-eye"></i>
+                        </button>
+                        <% if (riparazione.stato !== 'completata' && riparazione.stato !== 'annullata') { %>
+                          <button class="btn btn-sm btn-outline-warning" onclick="editRiparazione(<%= riparazione.id %>)" title="Modifica">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                        <% } %>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteRiparazione(<%= riparazione.id %>)" title="Elimina">
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Dettagli Riparazione -->
+  <div class="modal fade" id="riparazioneModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Dettagli Riparazione</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="riparazioneModalBody">
+          <!-- Contenuto caricato dinamicamente -->
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Toggle sidebar
+    document.getElementById('sidebarToggle').addEventListener('click', function() {
+      document.querySelector('.admin-sidebar').classList.toggle('collapsed');
+    });
+    
+    function viewRiparazione(id) {
+      fetch(`/admin/riparazioni/${id}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            const r = data.riparazione;
+            let modalContent = `
+              <div class="row">
+                <div class="col-md-6">
+                  <h6>Informazioni Cliente</h6>
+                  <p><strong>Nome:</strong> ${r.nome_cliente} ${r.cognome_cliente}</p>
+                  <p><strong>Email:</strong> ${r.email_cliente}</p>
+                  <p><strong>Telefono:</strong> ${r.telefono_cliente || 'N/A'}</p>
+                  
+                  <h6 class="mt-4">Informazioni Veicolo</h6>
+                  <p><strong>Veicolo:</strong> ${r.marca} ${r.modello} (${r.anno})</p>
+                  <p><strong>Targa:</strong> ${r.targa}</p>
+                  <p><strong>Chilometraggio:</strong> ${r.chilometraggio || 'N/A'} km</p>
+                </div>
+                <div class="col-md-6">
+                  <h6>Informazioni Meccanico</h6>
+                  ${r.nome_meccanico ? `
+                    <p><strong>Nome:</strong> ${r.nome_meccanico} ${r.cognome_meccanico}</p>
+                    <p><strong>Officina:</strong> ${r.officina || 'N/A'}</p>
+                    <p><strong>Email:</strong> ${r.email_meccanico}</p>
+                  ` : '<p class="text-muted">Meccanico non ancora assegnato</p>'}
+                  
+                  <h6 class="mt-4">Dettagli Riparazione</h6>
+                  <p><strong>Stato:</strong> <span class="badge bg-primary">${r.stato}</span></p>
+                  <p><strong>Prezzo:</strong> ${r.prezzo ? '€' + parseFloat(r.prezzo).toFixed(2) : 'N/A'}</p>
+                  <p><strong>Data Richiesta:</strong> ${new Date(r.data_richiesta).toLocaleString('it-IT')}</p>
+                  ${r.data_completamento ? `<p><strong>Data Completamento:</strong> ${new Date(r.data_completamento).toLocaleString('it-IT')}</p>` : ''}
+                </div>
+              </div>
+              <div class="row mt-4">
+                <div class="col-12">
+                  <h6>Descrizione Problema</h6>
+                  <div class="bg-light p-3 rounded">
+                    ${r.descrizione}
+                  </div>
+                </div>
+                ${r.note_meccanico ? `
+                  <div class="col-12 mt-3">
+                    <h6>Note Meccanico</h6>
+                    <div class="bg-light p-3 rounded">
+                      ${r.note_meccanico}
+                    </div>
+                  </div>
+                ` : ''}
+              </div>
+            `;
+            
+            document.getElementById('riparazioneModalBody').innerHTML = modalContent;
+            new bootstrap.Modal(document.getElementById('riparazioneModal')).show();
+          }
+        })
+        .catch(error => {
+          console.error('Errore:', error);
+          alert('Errore nel caricamento dei dati riparazione');
+        });
+    }
+    
+    function editRiparazione(id) {
+      // Implementa la modifica riparazione
+      alert('Funzione di modifica in sviluppo');
+    }
+    
+    function deleteRiparazione(id) {
+      if (confirm('Sei sicuro di voler eliminare questa riparazione?')) {
+        fetch(`/admin/riparazioni/${id}`, {
+          method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            location.reload();
+          } else {
+            alert('Errore durante l\'eliminazione');
+          }
+        })
+        .catch(error => {
+          console.error('Errore:', error);
+          alert('Errore durante l\'eliminazione');
+        });
+      }
+    }
+    
+    function applyFilters() {
+      const filterStato = document.getElementById('filterStato').value;
+      const filterDataDa = document.getElementById('filterDataDa').value;
+      const filterDataA = document.getElementById('filterDataA').value;
+      const filterPrezzoMin = document.getElementById('filterPrezzoMin').value;
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      
+      const rows = document.querySelectorAll('#riparazioniTable tbody tr');
+      
+      rows.forEach(row => {
+        const stato = row.dataset.stato;
+        const prezzo = parseFloat(row.dataset.prezzo);
+        const data = new Date(row.dataset.data);
+        const text = row.textContent.toLowerCase();
+        
+        let show = true;
+        
+        if (filterStato && stato !== filterStato) show = false;
+        if (filterDataDa && data < new Date(filterDataDa)) show = false;
+        if (filterDataA && data > new Date(filterDataA)) show = false;
+        if (filterPrezzoMin && prezzo < parseFloat(filterPrezzoMin)) show = false;
+        if (searchTerm && !text.includes(searchTerm)) show = false;
+        
+        row.style.display = show ? '' : 'none';
+      });
+    }
+    
+    function refreshData() {
+      location.reload();
+    }
+    
+    function exportData() {
+      window.open('/admin/riparazioni/export', '_blank');
+    }
+  </script>
+</body>
+</html>

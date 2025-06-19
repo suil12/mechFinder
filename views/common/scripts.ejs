@@ -1,0 +1,42 @@
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Custom JS -->
+<script src="/js/main.js"></script>
+<% if (active === 'index') { %>
+<script src="/js/home-animations.js"></script>
+<% } %>
+<% if (active === 'servizi') { %>
+<script src="/js/servizi.js"></script>
+<% } %>
+<% if (active === 'meccanici') { %>
+<script src="/js/meccanici.js"></script>
+<% } %>
+<% if (active === 'auth') { %>
+<script src="/js/auth.js"></script>
+<% } %>
+<% if (active === 'admin') { %>
+<script src="/js/admin.js"></script>
+<% } %>
+<% if (active === 'chi-siamo') { %>
+<script src="/js/chi-siamo.js"></script>
+<% } %>
+<% if (active === 'contatti') { %>
+<script src="/js/contatti.js"></script>
+<% } %>
+<script src="/js/chatbot.js"></script>
+<script>
+    //  anno corrente nel footer
+    document.getElementById('currentYear').textContent = new Date().getFullYear();
+    
+    // Se ci sono messaggi flash, impostali per scomparire dopo 5 secondi
+    setTimeout(() => {
+        const flashMessages = document.querySelectorAll('.flash-message');
+        flashMessages.forEach(message => {
+            message.classList.add('fade');
+            setTimeout(() => message.remove(), 500);
+        });
+    }, 5000);
+</script>

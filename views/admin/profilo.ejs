@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Profilo Admin - MechFinder">
+  <meta name="keywords" content="admin, profilo, impostazioni">
+  <meta name="author" content="MechFinder">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/admin.css">
+  <title>Profilo Admin - MechFinder</title>
+</head>
+<body class="admin-body">
+  <div class="admin-container">
+    <!-- Sidebar -->
+    <div class="admin-sidebar">
+      <div class="sidebar-header">
+        <img src="/media/img/logo.png" alt="MechFinder" class="sidebar-logo">
+        <h3>MechFinder</h3>
+        <span class="badge bg-primary">Admin</span>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <ul>
+          <li>
+            <a href="/admin/dashboard">
+              <i class="fas fa-tachometer-alt"></i>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li>
+            <a href="/admin/utenti">
+              <i class="fas fa-users"></i>
+              <span>Utenti</span>
+            </a>
+          </li>
+          <li>
+            <a href="/admin/meccanici">
+              <i class="fas fa-user-cog"></i>
+              <span>Meccanici</span>
+            </a>
+          </li>
+          <li>
+            <a href="/admin/riparazioni">
+              <i class="fas fa-tools"></i>
+              <span>Riparazioni</span>
+            </a>
+          </li>
+          <li class="active">
+            <a href="/admin/profilo">
+              <i class="fas fa-user"></i>
+              <span>Profilo</span>
+            </a>
+          </li>
+          <li class="sidebar-divider"></li>
+          <li>
+            <a href="/auth/logout">
+              <i class="fas fa-sign-out-alt"></i>
+              <span>Logout</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+      
+      <div class="sidebar-footer">
+        <p class="version">v1.0.0</p>
+        <p class="user-info"><%= user.nome %> <%= user.cognome %></p>
+      </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="admin-content">
+      <div class="admin-topbar">
+        <button id="sidebarToggle" class="sidebar-toggle">
+          <i class="fas fa-bars"></i>
+        </button>
+        
+        <div class="topbar-title">
+          <h2>Profilo Admin</h2>
+          <p class="breadcrumb">
+            <a href="/admin/dashboard">Dashboard</a> / Profilo
+          </p>
+        </div>
+      </div>
+      
+      <div class="admin-main">
+        <div class="row">
+          <!-- Informazioni Profilo -->
+          <div class="col-md-4">
+            <div class="card">
+              <div class="card-body text-center">
+                <div class="profile-avatar mb-3">
+                  <i class="fas fa-user-shield fa-5x text-primary"></i>
+                </div>
+                <h5><%= user.nome %> <%= user.cognome %></h5>
+                <p class="text-muted">Amministratore</p>
+                <div class="profile-stats">
+                  <div class="row text-center">
+                    <div class="col-4">
+                      <div class="stat-number text-primary">
+                        <i class="fas fa-calendar"></i>
+                      </div>
+                      <small class="text-muted">Membro da</small>
+                      <div><%= new Date(user.created_at).toLocaleDateString('it-IT') %></div>
+                    </div>
+                    <div class="col-4">
+                      <div class="stat-number text-success">
+                        <i class="fas fa-check-circle"></i>
+                      </div>
+                      <small class="text-muted">Stato</small>
+                      <div>Attivo</div>
+                    </div>
+                    <div class="col-4">
+                      <div class="stat-number text-warning">
+                        <i class="fas fa-shield-alt"></i>
+                      </div>
+                      <small class="text-muted">Livello</small>
+                      <div>Super Admin</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Attività Recenti -->
+            <div class="card mt-4">
+              <div class="card-header">
+                <h6 class="mb-0">
+                  <i class="fas fa-history me-2"></i>
+                  Ultime Attività
+                </h6>
+              </div>
+              <div class="card-body">
+                <div class="activity-item">
+                  <div class="activity-icon bg-primary">
+                    <i class="fas fa-sign-in-alt"></i>
+                  </div>
+                  <div class="activity-content">
+                    <div class="activity-title">Login effettuato</div>
+                    <div class="activity-time">Oggi alle <%= new Date().toLocaleTimeString('it-IT', {hour: '2-digit', minute: '2-digit'}) %></div>
+                  </div>
+                </div>
+                <div class="activity-item">
+                  <div class="activity-icon bg-success">
+                    <i class="fas fa-user-check"></i>
+                  </div>
+                  <div class="activity-content">
+                    <div class="activity-title">Meccanico verificato</div>
+                    <div class="activity-time">Ieri alle 14:30</div>
+                  </div>
+                </div>
+                <div class="activity-item">
+                  <div class="activity-icon bg-info">
+                    <i class="fas fa-edit"></i>
+                  </div>
+                  <div class="activity-content">
+                    <div class="activity-title">Profilo aggiornato</div>
+                    <div class="activity-time">2 giorni fa</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Form Modifica Profilo -->
+          <div class="col-md-8">
+            <div class="card">
+              <div class="card-header">
+                <h6 class="mb-0">
+                  <i class="fas fa-edit me-2"></i>
+                  Modifica Informazioni Profilo
+                </h6>
+              </div>
+              <div class="card-body">
+                <!-- Alert per messaggi -->
+                <% if (typeof success_msg !== 'undefined' && success_msg.length > 0) { %>
+                  <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <%= success_msg %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                  </div>
+                <% } %>
+                
+                <% if (typeof error_msg !== 'undefined' && error_msg.length > 0) { %>
+                  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <%= error_msg %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                  </div>
+                <% } %>
+                
+                <form action="/admin/profilo" method="POST" id="profileForm">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="mb-3">
+                        <label class="form-label">Nome</label>
+                        <input type="text" class="form-control" name="nome" value="<%= user.nome %>" required>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="mb-3">
+                        <label class="form-label">Cognome</label>
+                        <input type="text" class="form-control" name="cognome" value="<%= user.cognome %>" required>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" name="email" value="<%= user.email %>" required>
+                  </div>
+                  
+                  <div class="mb-3">
+                    <label class="form-label">Telefono</label>
+                    <input type="tel" class="form-control" name="telefono" value="<%= user.telefono || '' %>" placeholder="Es: +39 333 123 4567">
+                  </div>
+                  
+                  <div class="mb-4">
+                    <button type="submit" class="btn btn-primary">
+                      <i class="fas fa-save me-2"></i>
+                      Salva Modifiche
+                    </button>
+                    <button type="reset" class="btn btn-outline-secondary ms-2">
+                      <i class="fas fa-undo me-2"></i>
+                      Reset
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+            
+            <!-- Cambio Password -->
+            <div class="card mt-4">
+              <div class="card-header">
+                <h6 class="mb-0">
+                  <i class="fas fa-lock me-2"></i>
+                  Cambia Password
+                </h6>
+              </div>
+              <div class="card-body">
+                <form action="/admin/profilo/password" method="POST" id="passwordForm">
+                  <div class="mb-3">
+                    <label class="form-label">Password Attuale</label>
+                    <input type="password" class="form-control" name="currentPassword" required>
+                  </div>
+                  
+                  <div class="mb-3">
+                    <label class="form-label">Nuova Password</label>
+                    <input type="password" class="form-control" name="newPassword" id="newPassword" required minlength="6">
+                    <div class="form-text">La password deve essere di almeno 6 caratteri</div>
+                  </div>
+                  
+                  <div class="mb-3">
+                    <label class="form-label">Conferma Nuova Password</label>
+                    <input type="password" class="form-control" name="confirmPassword" id="confirmPassword" required>
+                  </div>
+                  
+                  <button type="submit" class="btn btn-warning">
+                    <i class="fas fa-key me-2"></i>
+                    Cambia Password
+                  </button>
+                </form>
+              </div>
+            </div>
+            
+            <!-- Impostazioni Account -->
+            <div class="card mt-4">
+              <div class="card-header">
+                <h6 class="mb-0">
+                  <i class="fas fa-cog me-2"></i>
+                  Impostazioni Account
+                </h6>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="setting-item">
+                      <div class="setting-label">
+                        <strong>Notifiche Email</strong>
+                        <div class="form-text">Ricevi notifiche via email per eventi importanti</div>
+                      </div>
+                      <div class="setting-control">
+                        <div class="form-check form-switch">
+                          <input class="form-check-input" type="checkbox" id="emailNotifications" checked>
+                          <label class="form-check-label" for="emailNotifications"></label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="col-md-6">
+                    <div class="setting-item">
+                      <div class="setting-label">
+                        <strong>Autenticazione a Due Fattori</strong>
+                        <div class="form-text">Migliora la sicurezza del tuo account</div>
+                      </div>
+                      <div class="setting-control">
+                        <button class="btn btn-sm btn-outline-primary">Attiva 2FA</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <hr>
+                
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="setting-item">
+                      <div class="setting-label">
+                        <strong>Modalità Manutenzione</strong>
+                        <div class="form-text">Metti il sito in modalità manutenzione</div>
+                      </div>
+                      <div class="setting-control">
+                        <div class="form-check form-switch">
+                          <input class="form-check-input" type="checkbox" id="maintenanceMode">
+                          <label class="form-check-label" for="maintenanceMode"></label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="col-md-6">
+                    <div class="setting-item">
+                      <div class="setting-label">
+                        <strong>Log di Sistema</strong>
+                        <div class="form-text">Scarica i log dell'applicazione</div>
+                      </div>
+                      <div class="setting-control">
+                        <button class="btn btn-sm btn-outline-info" onclick="downloadLogs()">
+                          <i class="fas fa-download me-1"></i>
+                          Download
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Toggle sidebar
+    document.getElementById('sidebarToggle').addEventListener('click', function() {
+      document.querySelector('.admin-sidebar').classList.toggle('collapsed');
+    });
+    
+    // Validazione form password
+    document.getElementById('passwordForm').addEventListener('submit', function(e) {
+      const newPassword = document.getElementById('newPassword').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      
+      if (newPassword !== confirmPassword) {
+        e.preventDefault();
+        alert('Le password non coincidono');
+        return false;
+      }
+    });
+    
+    // Validazione form profilo
+    document.getElementById('profileForm').addEventListener('submit', function(e) {
+      const email = document.querySelector('input[name="email"]').value;
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      
+      if (!emailRegex.test(email)) {
+        e.preventDefault();
+        alert('Inserisci un indirizzo email valido');
+        return false;
+      }
+    });
+    
+    // Funzioni per le impostazioni
+    document.getElementById('emailNotifications').addEventListener('change', function() {
+      const enabled = this.checked;
+      // Salva la preferenza
+      fetch('/admin/settings/notifications', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ enabled: enabled })
+      });
+    });
+    
+    document.getElementById('maintenanceMode').addEventListener('change', function() {
+      const enabled = this.checked;
+      if (enabled && !confirm('Sei sicuro di voler attivare la modalità manutenzione? Gli utenti non potranno accedere al sito.')) {
+        this.checked = false;
+        return;
+      }
+      
+      // Salva la preferenza
+      fetch('/admin/settings/maintenance', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ enabled: enabled })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          if (enabled) {
+            alert('Modalità manutenzione attivata');
+          } else {
+            alert('Modalità manutenzione disattivata');
+          }
+        }
+      });
+    });
+    
+    function downloadLogs() {
+      window.open('/admin/logs/download', '_blank');
+    }
+  </script>
+</body>
+</html>

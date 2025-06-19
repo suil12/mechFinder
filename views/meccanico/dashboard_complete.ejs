@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Dashboard Meccanico - MechFinder">
+    <title><%= title %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+    <%- include('../common/header') %>
+    
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Main Content -->
+            <main class="col-md-12 ms-sm-auto px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2"><i class="fas fa-tools me-2"></i>Dashboard Meccanico</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="btn-group me-2">
+                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="window.location.reload()">
+                                <i class="fas fa-sync-alt"></i> Aggiorna
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alert Messages -->
+                <% if (typeof success !== 'undefined' && success.length > 0) { %>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <%= success %>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                <% } %>
+
+                <% if (typeof error !== 'undefined' && error.length > 0) { %>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <%= error %>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                <% } %>
+
+                <!-- Statistiche Cards -->
+                <div class="row mb-4">
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-primary shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                            Richieste Pendenti</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                            <%= richiestePendenti ? richiestePendenti.length : 0 %>
+                                        </div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-clock fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-success shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                            In Corso</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                            <%= riparazioniInCorso ? riparazioniInCorso.length : 0 %>
+                                        </div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-tools fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-info shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                            Completate (Mese)</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                            <%= statisticheMensili.completate %>
+                                        </div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-warning shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                            Guadagno Totale</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                            €<%= parseFloat(statisticheMensili.guadagno_totale || 0).toFixed(2) %>
+                                        </div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-euro-sign fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notifiche e Azioni Rapide -->
+                <div class="row mb-4">
+                    <div class="col-lg-8">
+                        <!-- Richieste in Attesa -->
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                <h6 class="m-0 font-weight-bold text-primary">Richieste in Attesa</h6>
+                                <button class="btn btn-sm btn-primary" onclick="location.reload()">
+                                    <i class="fas fa-sync-alt"></i> Aggiorna
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <% if (richiestePendenti && richiestePendenti.length > 0) { %>
+                                    <% richiestePendenti.forEach(function(richiesta) { %>
+                                        <div class="card mb-3 border-left-warning">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-md-8">
+                                                        <h6 class="card-title">
+                                                            <i class="fas fa-user"></i> <%= richiesta.nome %> <%= richiesta.cognome %>
+                                                        </h6>
+                                                        <p class="card-text mb-1">
+                                                            <strong>Veicolo:</strong> <%= richiesta.marca %> <%= richiesta.modello %> (<%= richiesta.targa %>)
+                                                        </p>
+                                                        <p class="card-text mb-1">
+                                                            <strong>Tipo:</strong> <%= richiesta.tipo_riparazione || 'Non specificato' %>
+                                                        </p>
+                                                        <p class="card-text mb-1">
+                                                            <strong>Descrizione:</strong> <%= richiesta.descrizione %>
+                                                        </p>
+                                                        <p class="card-text">
+                                                            <small class="text-muted">
+                                                                <i class="fas fa-calendar"></i> 
+                                                                <%= new Date(richiesta.data_richiesta).toLocaleDateString('it-IT') %>
+                                                                <% if (richiesta.budget_max) { %>
+                                                                    | Budget max: €<%= parseFloat(richiesta.budget_max).toFixed(2) %>
+                                                                <% } %>
+                                                            </small>
+                                                        </p>
+                                                    </div>
+                                                    <div class="col-md-4 d-flex align-items-center justify-content-end">
+                                                        <button class="btn btn-success me-2" onclick="accettaRichiesta(<%= richiesta.id %>)">
+                                                            <i class="fas fa-check"></i> Accetta
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <% }); %>
+                                <% } else { %>
+                                    <div class="text-center py-5">
+                                        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                                        <p class="text-muted">Nessuna richiesta in attesa al momento.</p>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <!-- Notifiche -->
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">Notifiche Recenti</h6>
+                            </div>
+                            <div class="card-body">
+                                <% if (notifiche && notifiche.length > 0) { %>
+                                    <% notifiche.slice(0, 5).forEach(function(notifica) { %>
+                                        <div class="alert alert-info alert-sm">
+                                            <strong><%= notifica.titolo %></strong><br>
+                                            <small><%= notifica.messaggio %></small><br>
+                                            <small class="text-muted">
+                                                <%= new Date(notifica.data_creazione).toLocaleDateString('it-IT') %>
+                                            </small>
+                                        </div>
+                                    <% }); %>
+                                <% } else { %>
+                                    <p class="text-muted">Nessuna notifica recente.</p>
+                                <% } %>
+                            </div>
+                        </div>
+
+                        <!-- Azioni Rapide -->
+                        <div class="card shadow">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">Azioni Rapide</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-outline-primary" onclick="showProfiloModal()">
+                                        <i class="fas fa-user-edit"></i> Modifica Profilo
+                                    </button>
+                                    <button class="btn btn-outline-success" onclick="showRiparazioniModal()">
+                                        <i class="fas fa-list"></i> Tutte le Riparazioni
+                                    </button>
+                                    <button class="btn btn-outline-info" onclick="showRecensioniModal()">
+                                        <i class="fas fa-star"></i> Le Mie Recensioni
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Riparazioni in Corso -->
+                <% if (riparazioniInCorso && riparazioniInCorso.length > 0) { %>
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Riparazioni in Corso</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <% riparazioniInCorso.forEach(function(riparazione) { %>
+                                <div class="col-md-6 mb-3">
+                                    <div class="card border-left-success">
+                                        <div class="card-body">
+                                            <h6 class="card-title">
+                                                <i class="fas fa-user"></i> <%= riparazione.nome %> <%= riparazione.cognome %>
+                                            </h6>
+                                            <p class="card-text mb-1">
+                                                <strong>Veicolo:</strong> <%= riparazione.marca %> <%= riparazione.modello %>
+                                            </p>
+                                            <p class="card-text mb-2">
+                                                <strong>Costo:</strong> €<%= parseFloat(riparazione.costo || 0).toFixed(2) %>
+                                            </p>
+                                            <button class="btn btn-warning btn-sm" onclick="completaRiparazione(<%= riparazione.id %>)">
+                                                <i class="fas fa-check-circle"></i> Completa
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal Accetta Richiesta -->
+    <div class="modal fade" id="accettaRichiestaModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Accetta Richiesta di Riparazione</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="accettaRichiestaForm">
+                    <div class="modal-body">
+                        <input type="hidden" id="richiesta_id" name="riparazione_id">
+                        <div class="mb-3">
+                            <label for="descrizione_preventivo" class="form-label">Descrizione del lavoro</label>
+                            <textarea class="form-control" id="descrizione_preventivo" name="descrizione_preventivo" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="costo_preventivo" class="form-label">Costo preventivato (€)</label>
+                            <input type="number" class="form-control" id="costo_preventivo" name="costo_preventivo" step="0.01" min="0" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                        <button type="submit" class="btn btn-success">Accetta Richiesta</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Completa Riparazione -->
+    <div class="modal fade" id="completaRiparazioneModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Completa Riparazione</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="completaRiparazioneForm">
+                    <div class="modal-body">
+                        <input type="hidden" id="riparazione_completa_id" name="riparazione_id">
+                        <div class="mb-3">
+                            <label for="note_completamento" class="form-label">Note di completamento</label>
+                            <textarea class="form-control" id="note_completamento" name="note_completamento" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="costo_finale" class="form-label">Costo finale (€)</label>
+                            <input type="number" class="form-control" id="costo_finale" name="costo_finale" step="0.01" min="0" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                        <button type="submit" class="btn btn-success">Completa Riparazione</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Profilo -->
+    <div class="modal fade" id="profiloModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Modifica Profilo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="profiloForm">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="nome" class="form-label">Nome</label>
+                                <input type="text" class="form-control" id="nome" name="nome" value="<%= user.nome %>" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="cognome" class="form-label">Cognome</label>
+                                <input type="text" class="form-control" id="cognome" name="cognome" value="<%= user.cognome %>" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="nome_officina" class="form-label">Nome Officina</label>
+                            <input type="text" class="form-control" id="nome_officina" name="nome_officina" value="<%= user.nome_officina || '' %>">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="telefono" class="form-label">Telefono</label>
+                                <input type="tel" class="form-control" id="telefono" name="telefono" value="<%= user.telefono || '' %>">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" value="<%= user.email %>" readonly>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="indirizzo" class="form-label">Indirizzo</label>
+                            <input type="text" class="form-control" id="indirizzo" name="indirizzo" value="<%= user.indirizzo || '' %>">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="citta" class="form-label">Città</label>
+                                <input type="text" class="form-control" id="citta" name="citta" value="<%= user.citta || '' %>">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="cap" class="form-label">CAP</label>
+                                <input type="text" class="form-control" id="cap" name="cap" value="<%= user.cap || '' %>">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="descrizione" class="form-label">Descrizione</label>
+                            <textarea class="form-control" id="descrizione" name="descrizione" rows="3"><%= user.descrizione || '' %></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                        <button type="submit" class="btn btn-primary">Salva Modifiche</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Riparazioni -->
+    <div class="modal fade" id="riparazioniModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-tools me-2"></i>Tutte le Riparazioni
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="riparazioniModalContent">
+                    <!-- Contenuto caricato dinamicamente -->
+                    <div class="text-center">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Caricamento...</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Recensioni -->
+    <div class="modal fade" id="recensioniModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-star me-2"></i>Le Mie Recensioni
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="recensioniModalContent">
+                    <!-- Contenuto caricato dinamicamente -->
+                    <div class="text-center">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Caricamento...</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/meccanico-dashboard.js"></script>
+    <script>
+        // Funzioni JavaScript per gestire le azioni
+        function accettaRichiesta(richiestaId) {
+            document.getElementById('richiesta_id').value = richiestaId;
+            new bootstrap.Modal(document.getElementById('accettaRichiestaModal')).show();
+        }
+
+        function completaRiparazione(riparazioneId) {
+            document.getElementById('riparazione_completa_id').value = riparazioneId;
+            new bootstrap.Modal(document.getElementById('completaRiparazioneModal')).show();
+        }
+
+        function showProfiloModal() {
+            new bootstrap.Modal(document.getElementById('profiloModal')).show();
+        }
+
+        function showRiparazioniModal() {
+            const modal = new bootstrap.Modal(document.getElementById('riparazioniModal'));
+            const contentDiv = document.getElementById('riparazioniModalContent');
+            
+            // Mostra il loader
+            contentDiv.innerHTML = `
+                <div class="text-center">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Caricamento...</span>
+                    </div>
+                </div>
+            `;
+            
+            // Carica le riparazioni
+            fetch('/meccanico/api/riparazioni')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        let content = `
+                            <div class="row mb-3">
+                                <div class="col-md-12">
+                                    <h6>Statistiche Riparazioni</h6>
+                                    <div class="row">
+                                        <div class="col">Totale: <strong>${data.stats.totale}</strong></div>
+                                        <div class="col">In Attesa: <strong>${data.stats.in_attesa}</strong></div>
+                                        <div class="col">In Corso: <strong>${data.stats.in_corso}</strong></div>
+                                        <div class="col">Completate: <strong>${data.stats.completate}</strong></div>
+                                    </div>
+                                    <p class="mt-2">Fatturato Totale: <strong>€${parseFloat(data.stats.fatturato_totale || 0).toFixed(2)}</strong></p>
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Cliente</th>
+                                            <th>Veicolo</th>
+                                            <th>Tipo</th>
+                                            <th>Stato</th>
+                                            <th>Data</th>
+                                            <th>Costo</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                        `;
+                        
+                        if (data.riparazioni && data.riparazioni.length > 0) {
+                            data.riparazioni.forEach(riparazione => {
+                                let badgeClass = 'secondary';
+                                if (riparazione.stato === 'in_attesa') badgeClass = 'warning';
+                                else if (riparazione.stato === 'accettata') badgeClass = 'info';
+                                else if (riparazione.stato === 'in_corso') badgeClass = 'primary';
+                                else if (riparazione.stato === 'completata') badgeClass = 'success';
+                                
+                                content += `
+                                    <tr>
+                                        <td>#${riparazione.id}</td>
+                                        <td>${riparazione.cliente_nome} ${riparazione.cliente_cognome}</td>
+                                        <td>${riparazione.marca || 'N/A'} ${riparazione.modello || ''}</td>
+                                        <td>${riparazione.tipo_riparazione || 'Generale'}</td>
+                                        <td><span class="badge bg-${badgeClass}">${riparazione.stato.charAt(0).toUpperCase() + riparazione.stato.slice(1).replace('_', ' ')}</span></td>
+                                        <td>${new Date(riparazione.data_richiesta).toLocaleDateString('it-IT')}</td>
+                                        <td>${riparazione.costo ? '€' + parseFloat(riparazione.costo).toFixed(2) : '-'}</td>
+                                    </tr>
+                                `;
+                            });
+                        } else {
+                            content += `
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted py-4">
+                                        <i class="fas fa-tools fa-3x mb-3"></i>
+                                        <br>Nessuna riparazione trovata
+                                    </td>
+                                </tr>
+                            `;
+                        }
+                        
+                        content += '</tbody></table></div>';
+                        contentDiv.innerHTML = content;
+                    } else {
+                        contentDiv.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    contentDiv.innerHTML = `<div class="alert alert-danger">Errore durante il caricamento delle riparazioni.</div>`;
+                });
+            
+            modal.show();
+        }
+
+        function showRecensioniModal() {
+            const modal = new bootstrap.Modal(document.getElementById('recensioniModal'));
+            const contentDiv = document.getElementById('recensioniModalContent');
+            
+            // Mostra il loader
+            contentDiv.innerHTML = `
+                <div class="text-center">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Caricamento...</span>
+                    </div>
+                </div>
+            `;
+            
+            // Carica le recensioni
+            fetch('/meccanico/api/recensioni')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        let content = `
+                            <div class="row mb-3">
+                                <div class="col-md-12">
+                                    <h6>Statistiche Recensioni</h6>
+                                    <div class="row">
+                                        <div class="col">Totale: <strong>${data.stats.totale}</strong></div>
+                                        <div class="col">Media: <strong>${data.stats.media ? parseFloat(data.stats.media).toFixed(1) : '0.0'} ⭐</strong></div>
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col">5⭐: ${data.stats.cinque_stelle}</div>
+                                        <div class="col">4⭐: ${data.stats.quattro_stelle}</div>
+                                        <div class="col">3⭐: ${data.stats.tre_stelle}</div>
+                                        <div class="col">2⭐: ${data.stats.due_stelle}</div>
+                                        <div class="col">1⭐: ${data.stats.una_stella}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        
+                        if (data.recensioni && data.recensioni.length > 0) {
+                            content += '<div class="row">';
+                            data.recensioni.forEach(recensione => {
+                                content += `
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <div class="d-flex justify-content-between align-items-start">
+                                                    <h6 class="card-title">${recensione.nome} ${recensione.cognome}</h6>
+                                                    <div class="text-warning">
+                                                        ${'⭐'.repeat(recensione.valutazione)}
+                                                    </div>
+                                                </div>
+                                                ${recensione.commento ? `<p class="card-text">"${recensione.commento}"</p>` : ''}
+                                                ${recensione.riparazione_descrizione ? `<small class="text-muted">Riparazione: ${recensione.riparazione_descrizione}</small><br>` : ''}
+                                                <small class="text-muted">${new Date(recensione.data_recensione).toLocaleDateString('it-IT')}</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                            });
+                            content += '</div>';
+                        } else {
+                            content += `
+                                <div class="text-center text-muted py-4">
+                                    <i class="fas fa-star fa-3x mb-3"></i>
+                                    <br>Nessuna recensione ancora
+                                </div>
+                            `;
+                        }
+                        
+                        contentDiv.innerHTML = content;
+                    } else {
+                        contentDiv.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    contentDiv.innerHTML = `<div class="alert alert-danger">Errore durante il caricamento delle recensioni.</div>`;
+                });
+            
+            modal.show();
+        }
+
+        function showRiparazioniModal() {
+            new bootstrap.Modal(document.getElementById('modalTutteRiparazioni')).show();
+            caricaTutteRiparazioni(); // Funzione per caricare tutte le riparazioni
+        }
+
+        function showRecensioniModal() {
+            new bootstrap.Modal(document.getElementById('modalRecensioni')).show();
+            caricaRecensioni(); // Funzione per caricare le recensioni
+        }
+
+        // Form submissions
+        document.getElementById('accettaRichiestaForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            
+            fetch('/meccanico/accetta-richiesta', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Errore: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Errore durante l\'operazione');
+            });
+        });
+
+        document.getElementById('completaRiparazioneForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            
+            fetch('/meccanico/completa-riparazione', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Errore: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Errore durante l\'operazione');
+            });
+        });
+
+        document.getElementById('profiloForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            
+            fetch('/meccanico/aggiorna-profilo', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Errore: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Errore durante l\'operazione');
+            });
+        });
+
+        // Funzioni per caricare contenuti dinamici
+        function caricaTutteRiparazioni() {
+            fetch('/meccanico/tutte-riparazioni')
+            .then(response => response.json())
+            .then(data => {
+                const contentDiv = document.getElementById('tutteRiparazioniContent');
+                contentDiv.innerHTML = '';
+
+                if (data.length > 0) {
+                    data.forEach(riparazione => {
+                        const card = document.createElement('div');
+                        card.className = 'card mb-3';
+                        card.innerHTML = `
+                            <div class="card-body">
+                                <h6 class="card-title">
+                                    <i class="fas fa-user"></i> ${riparazione.nome} ${riparazione.cognome}
+                                </h6>
+                                <p class="card-text mb-1">
+                                    <strong>Veicolo:</strong> ${riparazione.marca} ${riparazione.modello}
+                                </p>
+                                <p class="card-text mb-2">
+                                    <strong>Costo:</strong> €${parseFloat(riparazione.costo || 0).toFixed(2)}
+                                </p>
+                                <p class="card-text">
+                                    <small class="text-muted">
+                                        <i class="fas fa-calendar"></i> 
+                                        ${new Date(riparazione.data_riparazione).toLocaleDateString('it-IT')}
+                                    </small>
+                                </p>
+                            </div>
+                        `;
+                        contentDiv.appendChild(card);
+                    });
+                } else {
+                    contentDiv.innerHTML = '<p class="text-muted">Nessuna riparazione trovata.</p>';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Errore durante il caricamento delle riparazioni');
+            });
+        }
+
+        function caricaRecensioni() {
+            fetch('/meccanico/recensioni')
+            .then(response => response.json())
+            .then(data => {
+                const contentDiv = document.getElementById('recensioniContent');
+                contentDiv.innerHTML = '';
+
+                if (data.length > 0) {
+                    data.forEach(recensione => {
+                        const card = document.createElement('div');
+                        card.className = 'card mb-3';
+                        card.innerHTML = `
+                            <div class="card-body">
+                                <h6 class="card-title">
+                                    <i class="fas fa-star"></i> Recensione di ${recensione.nome} ${recensione.cognome}
+                                </h6>
+                                <p class="card-text mb-1">
+                                    <strong>Veicolo:</strong> ${recensione.marca} ${recensione.modello}
+                                </p>
+                                <p class="card-text mb-2">
+                                    <strong>Data:</strong> ${new Date(recensione.data_creazione).toLocaleDateString('it-IT')}
+                                </p>
+                                <p class="card-text">
+                                    ${recensione.testo}
+                                </p>
+                            </div>
+                        `;
+                        contentDiv.appendChild(card);
+                    });
+                } else {
+                    contentDiv.innerHTML = '<p class="text-muted">Nessuna recensione trovata.</p>';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Errore durante il caricamento delle recensioni');
+            });
+        }
+
+        // Funzione per filtrare le riparazioni
+        function filtraRiparazioni() {
+            const stato = document.getElementById('filtroStatoRiparazioni').value;
+
+            fetch('/meccanico/tutte-riparazioni?stato=' + stato)
+            .then(response => response.json())
+            .then(data => {
+                const contentDiv = document.getElementById('tutteRiparazioniContent');
+                contentDiv.innerHTML = '';
+
+                if (data.length > 0) {
+                    data.forEach(riparazione => {
+                        const card = document.createElement('div');
+                        card.className = 'card mb-3';
+                        card.innerHTML = `
+                            <div class="card-body">
+                                <h6 class="card-title">
+                                    <i class="fas fa-user"></i> ${riparazione.nome} ${riparazione.cognome}
+                                </h6>
+                                <p class="card-text mb-1">
+                                    <strong>Veicolo:</strong> ${riparazione.marca} ${riparazione.modello}
+                                </p>
+                                <p class="card-text mb-2">
+                                    <strong>Costo:</strong> €${parseFloat(riparazione.costo || 0).toFixed(2)}
+                                </p>
+                                <p class="card-text">
+                                    <small class="text-muted">
+                                        <i class="fas fa-calendar"></i> 
+                                        ${new Date(riparazione.data_riparazione).toLocaleDateString('it-IT')}
+                                    </small>
+                                </p>
+                            </div>
+                        `;
+                        contentDiv.appendChild(card);
+                    });
+                } else {
+                    contentDiv.innerHTML = '<p class="text-muted">Nessuna riparazione trovata per questo stato.</p>';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Errore durante il caricamento delle riparazioni');
+            });
+        }
+    </script>
+</body>
+</html>
