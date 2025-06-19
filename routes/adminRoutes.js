@@ -19,6 +19,9 @@ router.get('/dashboard', isAdmin, adminController.getDashboard);
 
 // Gestione utenti
 router.get('/utenti', isAdmin, adminController.getUtenti);
+router.get('/meccanici/:id', isAdmin, adminController.getMeccanico);
+router.post('/utenti/:id/sospendi', isAdmin, adminController.sospendiUtente);
+router.post('/utenti/:id/riattiva', isAdmin, adminController.riattivaUtente);
 
 // API per i dati dei modali
 router.get('/api/meccanici', isAdmin, adminController.getMeccaniciAPI);

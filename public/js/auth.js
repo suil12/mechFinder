@@ -115,6 +115,37 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+    // Form di login admin
+    const adminLoginForm = document.getElementById('adminLoginForm');
+    
+    // Gestione del form di login admin
+    if (adminLoginForm) {
+        adminLoginForm.addEventListener('submit', function(e) {
+            const email = document.getElementById('adminEmail').value.trim();
+            const password = document.getElementById('adminPassword').value;
+            
+            if (!email) {
+                e.preventDefault();
+                alert('Inserisci l\'email amministratore');
+                return false;
+            }
+            
+            if (!password) {
+                e.preventDefault();
+                alert('Inserisci la password');
+                return false;
+            }
+            
+            // Validazione email formato
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                e.preventDefault();
+                alert('Formato email non valido');
+                return false;
+            }
+        });
+    }
+    
     // Gestione link per passare tra modali
     if (registerLink) {
         registerLink.addEventListener('click', function() {

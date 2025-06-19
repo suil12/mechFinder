@@ -439,15 +439,20 @@
     
     function verificaMeccanico(id) {
       if (confirm('Sei sicuro di voler verificare questo meccanico?')) {
-        fetch(`/admin/meccanici/${id}/verifica`, {
-          method: 'POST'
+        fetch('/admin/verifica-meccanico', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ id: id, azione: 'approva' })
         })
         .then(response => response.json())
         .then(data => {
           if (data.success) {
+            alert(data.message || 'Meccanico verificato con successo!');
             location.reload();
           } else {
-            alert('Errore durante la verifica');
+            alert('Errore: ' + (data.message || data.error || 'Errore sconosciuto'));
           }
         })
         .catch(error => {
@@ -460,19 +465,20 @@
     function rifiutaVerifica(id) {
       const motivo = prompt('Inserisci il motivo del rifiuto (opzionale):');
       if (motivo !== null) {
-        fetch(`/admin/meccanici/${id}/rifiuta`, {
+        fetch('/admin/verifica-meccanico', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ motivo: motivo })
+          body: JSON.stringify({ id: id, azione: 'rifiuta' })
         })
         .then(response => response.json())
         .then(data => {
           if (data.success) {
+            alert(data.message || 'Meccanico rifiutato con successo!');
             location.reload();
           } else {
-            alert('Errore durante il rifiuto');
+            alert('Errore: ' + (data.message || data.error || 'Errore sconosciuto'));
           }
         })
         .catch(error => {

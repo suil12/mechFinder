@@ -53,31 +53,16 @@ router.post('/notifica-letta/:id', isMeccanico, meccanicoController.segnaNotific
 router.get('/api/riparazioni', isMeccanico, meccanicoController.getTutteRiparazioni);
 router.get('/api/recensioni', isMeccanico, meccanicoController.getRecensioni);
 
-// Profilo meccanico (area personale)
-router.get('/profilo', isMeccanico, async (req, res) => {
-    try {
-        const meccanico = await Meccanico.findById(req.user.id);
-        
-        res.render('meccanico/profilo', {
-            title: 'Il Mio Profilo - MechFinder',
-            active: 'profilo',
-            currentUser: meccanico
-        });
-    } catch (err) {
-        console.error('Errore nel caricamento del profilo meccanico:', err);
-        req.flash('error', 'Si è verificato un errore nel caricamento del profilo.');
-        res.redirect('/');
-    }
+// Profilo meccanico (reindirizza alla dashboard)
+router.get('/profilo', isMeccanico, (req, res) => {
+    res.redirect('/meccanico/dashboard');
 });
 
-// Aggiornamento profilo meccanico - usa il controller
-router.post('/profilo', isMeccanico, [
-    body('nome').trim().notEmpty().withMessage('Il nome è obbligatorio'),
-    body('cognome').trim().notEmpty().withMessage('Il cognome è obbligatorio'),
-    body('nome_officina').trim().notEmpty().withMessage('Il nome dell\'officina è obbligatorio'),
-    body('telefono').trim().notEmpty().withMessage('Il telefono è obbligatorio'),
-    body('citta').trim().notEmpty().withMessage('La città è obbligatoria')
-], meccanicoController.aggiornaProfilo);
+// Aggiornamento profilo meccanico - reindirizza alla dashboard  
+router.post('/profilo', isMeccanico, (req, res) => {
+    req.flash('info', 'Le impostazioni del profilo sono disponibili nella dashboard.');
+    res.redirect('/meccanico/dashboard');
+});
 
 // Route per tutte le riparazioni (API per il modal)
 router.get('/tutte-riparazioni', isMeccanico, async (req, res) => {

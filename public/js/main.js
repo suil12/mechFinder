@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // Gestione delle validazioni client-side dei form di registrazione
-    setupFormValidations();
+    // setupFormValidations(); // Rimosso - gestito in auth.js
 });
 
 // Funzione per controllare lo stato dell'autenticazione
@@ -119,92 +119,9 @@ function updateUIForGuestUser() {
 }
 
 // Configurazione delle validazioni client-side dei form
-function setupFormValidations() {
-    // Validazione client-side per il form di registrazione cliente
-    const registerForm = document.getElementById('registerForm');
-    if (registerForm) {
-        registerForm.addEventListener('submit', function(e) {
-            const password = document.getElementById('regPassword').value;
-            const confirmPassword = document.getElementById('regConfirmPassword').value;
-            
-            if (password !== confirmPassword) {
-                e.preventDefault();
-                alert('Le password non coincidono');
-                return false;
-            }
-            
-            if (password.length < 6) {
-                e.preventDefault();
-                alert('La password deve essere di almeno 6 caratteri');
-                return false;
-            }
-            
-            const termini = document.getElementById('regTermini').checked;
-            if (!termini) {
-                e.preventDefault();
-                alert('Devi accettare i termini e condizioni');
-                return false;
-            }
-        });
-    }
-    
-    // Validazione client-side per il form di registrazione meccanico
-    const registerMeccanicoForm = document.getElementById('registerMeccanicoForm');
-    if (registerMeccanicoForm) {
-        registerMeccanicoForm.addEventListener('submit', function(e) {
-            const password = document.getElementById('regMecPassword').value;
-            const confirmPassword = document.getElementById('regMecConfirmPassword').value;
-            
-            if (password !== confirmPassword) {
-                e.preventDefault();
-                alert('Le password non coincidono');
-                return false;
-            }
-            
-            if (password.length < 6) {
-                e.preventDefault();
-                alert('La password deve essere di almeno 6 caratteri');
-                return false;
-            }
-            
-            const termini = document.getElementById('regMecTermini').checked;
-            if (!termini) {
-                e.preventDefault();
-                alert('Devi accettare i termini e condizioni');
-                return false;
-            }
-            
-            // Validazione campi specifici per meccanico
-            const officina = document.getElementById('regMecOfficina').value.trim();
-            if (!officina) {
-                e.preventDefault();
-                alert('Il nome dell\'officina è obbligatorio');
-                return false;
-            }
-            
-            const specializzazione = document.getElementById('regMecSpecializzazione').value;
-            if (!specializzazione) {
-                e.preventDefault();
-                alert('La specializzazione è obbligatoria');
-                return false;
-            }
-            
-            const telefono = document.getElementById('regMecTelefono').value.trim();
-            if (!telefono) {
-                e.preventDefault();
-                alert('Il telefono è obbligatorio');
-                return false;
-            }
-            
-            const citta = document.getElementById('regMecCitta').value.trim();
-            if (!citta) {
-                e.preventDefault();
-                alert('La città è obbligatoria');
-                return false;
-            }
-        });
-    }
-}
+// function setupFormValidations() {
+//     // Rimossa - gestita in auth.js per evitare conflitti
+// }
 
 // Inizializza la ricerca avanzata
 function initSearch() {
@@ -418,7 +335,7 @@ async function loadFeaturedMechanics() {
                     ${'★'.repeat(Math.floor(mec.valutazione || 0))}${'☆'.repeat(5 - Math.floor(mec.valutazione || 0))}
                     <span class="rating-text">${(mec.valutazione || 0).toFixed(1)}</span>
                 </div>
-                <a href="/meccanici/${mec.id}" class="btn-contact">Visualizza profilo</a>
+                <!-- Rimosso bottone "Visualizza profilo" -->
             </div>
         `).join('');
         

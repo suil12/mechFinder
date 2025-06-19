@@ -1,6 +1,6 @@
 /* Header della pagina */
 .mechanics-header {
-    background: var(--gradient-primary), url('/media/img/bg.jpg');
+    background: var(--gradient-primary), url('/media/img/bg2.webp');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
@@ -296,26 +296,7 @@
     flex-wrap: wrap;
 }
 
-.btn-profile {
-    background: linear-gradient(135deg, var(--primary-blue), var(--accent-blue));
-    border: none;
-    border-radius: 8px;
-    padding: 0.6rem 1.2rem;
-    color: var(--accent-blue);
-    font-weight: 600;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    flex: 1;
-    min-width: 120px;
-    font-size: 0.85rem;
-    text-align: center;
-}
-
-.btn-profile:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
-    color: var(--accent-blue);
-}
+/* Rimossi stili per .btn-profile - bottone eliminato */
 
 .btn-quote {
     background: white;
@@ -421,7 +402,7 @@
         flex-direction: column;
     }
     
-    .btn-profile,
+    /* Rimosso riferimento a .btn-profile - bottone eliminato */
     .btn-quote {
         min-width: auto;
     }

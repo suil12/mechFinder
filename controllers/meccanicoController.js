@@ -115,8 +115,15 @@ const meccanicoController = {
     // Accetta una richiesta di riparazione
     accettaRichiesta: async (req, res) => {
         try {
+            console.log('Richiesta accettazione ricevuta:', req.body);
             const { riparazione_id, descrizione_preventivo, costo_preventivo } = req.body;
             const meccanicoId = req.user.id;
+            
+            // Validazione input
+            if (!riparazione_id || !descrizione_preventivo || !costo_preventivo) {
+                console.log('Dati mancanti:', { riparazione_id, descrizione_preventivo, costo_preventivo });
+                return res.json({ success: false, message: 'Tutti i campi sono obbligatori.' });
+            }
             
             // Verifica che la riparazione sia ancora disponibile
             const riparazione = await db.get(
@@ -125,16 +132,21 @@ const meccanicoController = {
             );
             
             if (!riparazione) {
+                console.log('Riparazione non trovata o non più disponibile:', riparazione_id);
                 return res.json({ success: false, message: 'Riparazione non più disponibile.' });
             }
+            
+            console.log('Riparazione trovata:', riparazione.id);
             
             // Aggiorna la riparazione con preventivo
             await db.run(`
                 UPDATE riparazioni 
-                SET id_meccanico = ?, stato = 'accettata', data_accettamento = ?, 
+                SET id_meccanico = ?, stato = 'accettata', data_accettazione = ?, 
                     descrizione_preventivo = ?, costo = ?
                 WHERE id = ?
             `, [meccanicoId, new Date().toISOString(), descrizione_preventivo, costo_preventivo, riparazione_id]);
+            
+            console.log('Riparazione aggiornata con successo');
             
             // Crea notifica per il cliente
             await db.run(`
@@ -152,6 +164,7 @@ const meccanicoController = {
                         'riparazione_accettata', ?)
             `, [JSON.stringify({ riparazione_id, meccanico_id: meccanicoId })]);
             
+            console.log('Notifiche create con successo');
             res.json({ success: true, message: 'Richiesta accettata con successo!' });
         } catch (error) {
             console.error('Errore nell\'accettazione richiesta:', error);

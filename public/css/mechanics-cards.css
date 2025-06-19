@@ -149,35 +149,7 @@
     text-align: center;
 }
 
-.btn-mechanic-profile {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    background-color: var(--accent-blue);
-    color: white;
-    padding: 0.7rem 1.5rem;
-    border-radius: var(--radius-full);
-    font-weight: 500;
-    transition: var(--transition);
-    width: 100%;
-    text-decoration: none;
-}
-
-.btn-mechanic-profile:hover {
-    background-color: var(--accent-orange);
-    color: white;
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-md);
-}
-
-.btn-mechanic-profile i {
-    transition: transform 0.3s ease;
-}
-
-.btn-mechanic-profile:hover i {
-    transform: translateX(5px);
-}
+/* Rimossi stili per .btn-mechanic-profile - bottone eliminato */
 
 /* Media queries */
 @media (max-width: 991px) {

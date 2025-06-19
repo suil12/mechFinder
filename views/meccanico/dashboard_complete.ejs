@@ -436,11 +436,6 @@
     <script src="/js/meccanico-dashboard.js"></script>
     <script>
         // Funzioni JavaScript per gestire le azioni
-        function accettaRichiesta(richiestaId) {
-            document.getElementById('richiesta_id').value = richiestaId;
-            new bootstrap.Modal(document.getElementById('accettaRichiestaModal')).show();
-        }
-
         function completaRiparazione(riparazioneId) {
             document.getElementById('riparazione_completa_id').value = riparazioneId;
             new bootstrap.Modal(document.getElementById('completaRiparazioneModal')).show();
@@ -626,27 +621,6 @@
 
 
         // Form submissions
-        document.getElementById('accettaRichiestaForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const formData = new FormData(this);
-            
-            fetch('/meccanico/accetta-richiesta', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    location.reload();
-                } else {
-                    alert('Errore: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Errore durante l\'operazione');
-            });
-        });
 
         document.getElementById('completaRiparazioneForm').addEventListener('submit', function(e) {
             e.preventDefault();

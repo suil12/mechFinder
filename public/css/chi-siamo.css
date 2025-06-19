@@ -2,7 +2,7 @@
 
 /* Header stile meccanici */
 .mechanics-header {
-    background: var(--gradient-primary), url('/media/img/bg.jpg');
+    background: var(--gradient-primary), url('/media/img/bg2.webp');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
@@ -70,7 +70,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.6)), url('/media/img/bg.jpg');
+    background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.6)), url('/media/img/bg2.webp');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
@@ -182,7 +182,7 @@
 .values-section {
     position: relative;
     padding: 100px 0;
-    color: white;
+    color: rgb(0, 0, 0);
     overflow: hidden;
 }
 
@@ -243,7 +243,7 @@
 .value-icon {
     width: 70px;
     height: 70px;
-    background: rgba(255,255,255,0.2);
+    background: var(--accent-blue);
     border: 2px solid rgba(255,255,255,0.3);
     border-radius: 50%;
     display: flex;
@@ -256,8 +256,8 @@
 }
 
 .value-card:hover .value-icon {
-    background: rgba(255,255,255,0.3);
-    border-color: rgba(255,255,255,0.5);
+    background: rgba(25, 75, 255, 0.3);
+    border-color: rgba(17, 23, 97, 0.5);
     transform: scale(1.1);
 }
 

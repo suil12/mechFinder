@@ -89,7 +89,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="regConfirmPassword" class="form-label">Conferma Password</label>
-                        <input type="password" class="form-control" id="regConfirmPassword" name="conferma_password" required>
+                        <input type="password" class="form-control" id="regConfirmPassword" name="password_confirm" required>
                     </div>
                     <div class="mb-3">
                         <label for="regTelefono" class="form-label">Telefono (opzionale)</label>
@@ -143,13 +143,13 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="regMecConfirmPassword" class="form-label">Conferma Password</label>
-                            <input type="password" class="form-control" id="regMecConfirmPassword" name="conferma_password" required>
+                            <input type="password" class="form-control" id="regMecConfirmPassword" name="password_confirm" required>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="regMecOfficina" class="form-label">Nome Officina</label>
-                            <input type="text" class="form-control" id="regMecOfficina" name="nome_officina" required>
+                            <input type="text" class="form-control" id="regMecOfficina" name="officina" required>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="regMecSpecializzazione" class="form-label">Specializzazione</label>
@@ -192,6 +192,45 @@
                 <div class="mt-3 text-center">
                     <p>Hai già un account? <a href="#" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#loginModal">Accedi qui</a></p>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal di Login Admin -->
+<div class="modal fade" id="adminLoginModal" tabindex="-1" aria-labelledby="adminLoginModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="adminLoginModalLabel">
+                    <i class="fas fa-shield-alt me-2"></i>Accesso Amministratore
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="adminLoginForm" action="/auth/login/admin" method="POST">
+                    <div class="mb-3">
+                        <label for="adminEmail" class="form-label">
+                            <i class="fas fa-user me-2"></i>Email Amministratore
+                        </label>
+                        <input type="email" class="form-control" id="adminEmail" name="email" required placeholder="admin@mechfinder.it">
+                    </div>
+                    <div class="mb-3">
+                        <label for="adminPassword" class="form-label">
+                            <i class="fas fa-lock me-2"></i>Password
+                        </label>
+                        <input type="password" class="form-control" id="adminPassword" name="password" required placeholder="Password amministratore">
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="adminRememberMe" name="rememberMe">
+                        <label class="form-check-label" for="adminRememberMe">Ricordami su questo dispositivo</label>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-sign-in-alt me-2"></i>Accedi al Pannello Admin
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

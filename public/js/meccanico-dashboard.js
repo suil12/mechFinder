@@ -123,30 +123,35 @@ function initializeModalForms() {
     }
 
     // Form submit accetta richiesta
-    const formAccettaRichiesta = document.getElementById('formAccettaRichiesta');
+    const formAccettaRichiesta = document.getElementById('accettaRichiestaForm');
     if (formAccettaRichiesta) {
         formAccettaRichiesta.addEventListener('submit', function(e) {
             e.preventDefault();
             const formData = new FormData(this);
-            const id = formData.get('id_richiesta');
+            const id = formData.get('riparazione_id');
             
-            fetch(`/meccanico/richiesta/${id}/accetta-inattesa`, {
+            fetch(`/meccanico/accetta-richiesta`, {
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.success) {
-                    bootstrap.Modal.getInstance(document.getElementById('modalAccettaRichiesta')).hide();
+                    bootstrap.Modal.getInstance(document.getElementById('accettaRichiestaModal')).hide();
                     alert('Richiesta accettata! Il cliente riceverà una notifica con il costo proposto.');
                     location.reload();
                 } else {
-                    alert(data.message);
+                    alert(data.message || 'Errore sconosciuto');
                 }
             })
             .catch(error => {
-                console.error('Errore:', error);
-                alert('Errore nell\'accettazione della richiesta');
+                console.error('Errore dettagliato:', error);
+                alert('Errore nell\'accettazione della richiesta: ' + error.message);
             });
         });
     }
@@ -208,8 +213,8 @@ function mostraDettagliRichiesta(id) {
 // Accetta richiesta
 function accettaRichiesta(id) {
     // Nuovo flusso: apri modal per proporre costo
-    document.getElementById('idRichiestaAccetta').value = id;
-    new bootstrap.Modal(document.getElementById('modalAccettaRichiesta')).show();
+    document.getElementById('richiesta_id').value = id;
+    new bootstrap.Modal(document.getElementById('accettaRichiestaModal')).show();
 }
 
 // Rifiuta richiesta

@@ -163,10 +163,7 @@
                                                 
                                                 <!-- Pulsanti azione -->
                                                 <div class="mechanic-actions">
-                                                    <a href="/meccanici/<%= meccanico.id %>" class="btn-profile">
-                                                        <i class="fas fa-user me-1"></i>
-                                                        Profilo
-                                                    </a>
+                                                    <!-- Rimosso bottone "Profilo" -->
                                                     <% if (isAuthenticated && isCliente) { %>
                                                         <a href="/riparazioni/richiedi/<%= meccanico.id %>" class="btn-quote">
                                                             <i class="fas fa-calculator me-1"></i>

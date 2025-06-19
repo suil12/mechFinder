@@ -31,6 +31,25 @@ exports.registerCliente = async (req, res) => {
     }
 
     try {
+        // Verifica che le password coincidano
+        if (req.body.password !== req.body.password_confirm) {
+            req.flash('error', 'Le password non coincidono');
+            return res.redirect('/#registerModal');
+        }
+        
+        // Verifica lunghezza password
+        if (req.body.password.length < 6) {
+            req.flash('error', 'La password deve essere di almeno 6 caratteri');
+            return res.redirect('/#registerModal');
+        }
+        
+        // Verifica se l'email è già registrata
+        const emailExists = await exports.checkEmailExists(req.body.email);
+        if (emailExists) {
+            req.flash('error', 'Email già registrata');
+            return res.redirect('/#registerModal');
+        }
+        
         // Hash della password
         const hashedPassword = await bcrypt.hash(req.body.password, 10);
         
@@ -58,7 +77,7 @@ exports.registerCliente = async (req, res) => {
             }
             
             req.flash('success', 'Registrazione completata con successo!');
-            res.redirect('/cliente/profilo');
+            res.redirect('/cliente/dashboard');
         });
     } catch (err) {
         console.error('Errore nella registrazione cliente:', err);
@@ -76,6 +95,25 @@ exports.registerMeccanico = async (req, res) => {
     }
 
     try {
+        // Verifica che le password coincidano
+        if (req.body.password !== req.body.password_confirm) {
+            req.flash('error', 'Le password non coincidono');
+            return res.redirect('/#registerMeccanicoModal');
+        }
+        
+        // Verifica lunghezza password
+        if (req.body.password.length < 6) {
+            req.flash('error', 'La password deve essere di almeno 6 caratteri');
+            return res.redirect('/#registerMeccanicoModal');
+        }
+        
+        // Verifica se l'email è già registrata
+        const emailExists = await exports.checkEmailExists(req.body.email);
+        if (emailExists) {
+            req.flash('error', 'Email già registrata');
+            return res.redirect('/#registerMeccanicoModal');
+        }
+        
         // Hash  password
         const hashedPassword = await bcrypt.hash(req.body.password, 10);
         
@@ -108,7 +146,7 @@ exports.registerMeccanico = async (req, res) => {
             }
             
             req.flash('success', 'Registrazione completata con successo! Il tuo account è in attesa di verifica.');
-            res.redirect('/meccanico/profilo');
+            res.redirect('/');
         });
     } catch (err) {
         console.error('Errore nella registrazione meccanico:', err);
