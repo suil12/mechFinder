@@ -206,22 +206,182 @@ function setupFormValidations() {
     }
 }
 
-// Inizializza la ricerca
+// Inizializza la ricerca avanzata
 function initSearch() {
-    const searchButton = document.querySelector('.search-button');
-    const searchInput = document.querySelector('.search-input');
+    const searchInput = document.getElementById('searchInput');
+    const searchForm = document.getElementById('searchForm');
+    const searchSuggestions = document.getElementById('searchSuggestions');
+    const searchType = document.getElementById('searchType');
+    const searchTags = document.querySelectorAll('.search-tag');
     
-    if (searchButton && searchInput) {
+    let suggestionTimeout;
+    let currentSuggestionIndex = -1;
+    
+    // Gestione tag clickabili
+    if (searchTags.length > 0) {
+        searchTags.forEach(tag => {
+            tag.addEventListener('click', () => {
+                const searchTerm = tag.dataset.search;
+                const searchTypeValue = tag.dataset.type;
+                
+                if (searchInput) {
+                    searchInput.value = searchTerm;
+                }
+                if (searchType) {
+                    searchType.value = searchTypeValue;
+                }
+                
+                // Submetti il form
+                if (searchForm) {
+                    searchForm.submit();
+                }
+            });
+        });
+    }
+    
+    // Autocompletamento
+    if (searchInput && searchSuggestions) {
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.trim();
+            
+            clearTimeout(suggestionTimeout);
+            
+            if (query.length < 2) {
+                hideSuggestions();
+                return;
+            }
+            
+            suggestionTimeout = setTimeout(() => {
+                fetchSuggestions(query);
+            }, 300);
+        });
+        
+        // Gestione navigazione con tastiera
+        searchInput.addEventListener('keydown', (e) => {
+            const suggestions = searchSuggestions.querySelectorAll('.suggestion-item');
+            
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                currentSuggestionIndex = Math.min(currentSuggestionIndex + 1, suggestions.length - 1);
+                updateSuggestionHighlight();
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                currentSuggestionIndex = Math.max(currentSuggestionIndex - 1, -1);
+                updateSuggestionHighlight();
+            } else if (e.key === 'Enter' && currentSuggestionIndex >= 0) {
+                e.preventDefault();
+                suggestions[currentSuggestionIndex].click();
+            } else if (e.key === 'Escape') {
+                hideSuggestions();
+            }
+        });
+        
+        // Nasconde suggerimenti quando si clicca fuori
+        document.addEventListener('click', (e) => {
+            if (!searchInput.contains(e.target) && !searchSuggestions.contains(e.target)) {
+                hideSuggestions();
+            }
+        });
+    }
+    
+    // Gestione form submission
+    if (searchForm) {
+        searchForm.addEventListener('submit', (e) => {
+            const query = searchInput ? searchInput.value.trim() : '';
+            if (!query) {
+                e.preventDefault();
+                return;
+            }
+            hideSuggestions();
+        });
+    }
+    
+    // Funzioni di supporto
+    async function fetchSuggestions(query) {
+        try {
+            const response = await fetch(`/api/search/suggestions?q=${encodeURIComponent(query)}`);
+            const data = await response.json();
+            
+            if (data.suggestions && data.suggestions.length > 0) {
+                showSuggestions(data.suggestions);
+            } else {
+                hideSuggestions();
+            }
+        } catch (error) {
+            console.error('Errore nel recupero suggerimenti:', error);
+            hideSuggestions();
+        }
+    }
+    
+    function showSuggestions(suggestions) {
+        let html = '';
+        
+        suggestions.forEach((suggestion, index) => {
+            html += `
+                <div class="suggestion-item" data-index="${index}" data-text="${suggestion.text}" data-type="${suggestion.type}">
+                    <i class="${suggestion.icon} suggestion-icon"></i>
+                    <div class="suggestion-text">
+                        <div>${suggestion.text}</div>
+                        ${suggestion.location ? `<small class="text-muted">${suggestion.location}</small>` : ''}
+                        ${suggestion.description ? `<small class="text-muted">${suggestion.description}</small>` : ''}
+                    </div>
+                    <span class="suggestion-category">${suggestion.category}</span>
+                </div>
+            `;
+        });
+        
+        searchSuggestions.innerHTML = html;
+        searchSuggestions.classList.add('show');
+        currentSuggestionIndex = -1;
+        
+        // Aggiungi event listeners ai suggerimenti
+        const suggestionItems = searchSuggestions.querySelectorAll('.suggestion-item');
+        suggestionItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const text = item.dataset.text;
+                const type = item.dataset.type;
+                
+                searchInput.value = text;
+                if (searchType) {
+                    searchType.value = type;
+                }
+                
+                hideSuggestions();
+                searchForm.submit();
+            });
+        });
+    }
+    
+    function hideSuggestions() {
+        searchSuggestions.classList.remove('show');
+        currentSuggestionIndex = -1;
+    }
+    
+    function updateSuggestionHighlight() {
+        const suggestions = searchSuggestions.querySelectorAll('.suggestion-item');
+        
+        suggestions.forEach((item, index) => {
+            if (index === currentSuggestionIndex) {
+                item.style.backgroundColor = 'var(--gray-light)';
+            } else {
+                item.style.backgroundColor = '';
+            }
+        });
+    }
+    
+    // Fallback per ricerca semplice (compatibilità)
+    const searchButton = document.querySelector('.search-button');
+    const searchInputFallback = document.querySelector('.search-input');
+    
+    if (searchButton && searchInputFallback) {
         searchButton.addEventListener('click', () => {
-            const searchTerm = searchInput.value.trim();
+            const searchTerm = searchInputFallback.value.trim();
             if (searchTerm) {
-                // Reindirizza alla pagina di ricerca con il termine di ricerca
                 window.location.href = `/search?q=${encodeURIComponent(searchTerm)}`;
             }
         });
         
-        // Permetti anche di premere Enter per cercare
-        searchInput.addEventListener('keypress', (e) => {
+        searchInputFallback.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 searchButton.click();
             }

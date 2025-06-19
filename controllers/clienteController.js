@@ -57,18 +57,6 @@ const clienteController = {
                 LIMIT 5
             `, [clienteId]);
             
-            // Meccanici preferiti (con cui ha fatto più riparazioni)
-            const meccaniciPreferiti = await db.all(`
-                SELECT m.id, m.nome, m.cognome, m.nome_officina, m.specializzazione, 
-                       m.valutazione, m.avatar, COUNT(r.id) as num_riparazioni
-                FROM riparazioni r
-                JOIN meccanici m ON r.id_meccanico = m.id
-                WHERE r.id_cliente = ? AND r.stato = 'completata'
-                GROUP BY m.id
-                ORDER BY num_riparazioni DESC
-                LIMIT 3
-            `, [clienteId]);
-            
             // Statistiche
             const totalRiparazioni = await db.get(
                 'SELECT COUNT(*) as count FROM riparazioni WHERE id_cliente = ?',
@@ -103,7 +91,6 @@ const clienteController = {
                 riparazioniAttive,
                 tutteRiparazioni,
                 riparazioniCompletate,
-                meccaniciPreferiti,
                 notifiche,
                 stats: {
                     totalRiparazioni: totalRiparazioni ? totalRiparazioni.count : 0,

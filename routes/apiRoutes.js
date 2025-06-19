@@ -380,4 +380,88 @@ router.get('/recensioni/featured', async (req, res) => {
     }
 });
 
+// API per suggerimenti di ricerca
+router.get('/search/suggestions', async (req, res) => {
+    try {
+        const query = req.query.q;
+        
+        if (!query || query.length < 2) {
+            return res.json({ suggestions: [] });
+        }
+        
+        const searchTerm = `%${query}%`;
+        const suggestions = [];
+        
+        // Cerca meccanici
+        const meccanici = await db.query(
+            `SELECT nome_officina, nome, cognome, citta, specializzazione
+             FROM meccanici 
+             WHERE verificato = 1 AND (
+                 nome_officina LIKE ? OR 
+                 nome LIKE ? OR 
+                 cognome LIKE ? OR 
+                 citta LIKE ? OR 
+                 specializzazione LIKE ?
+             )
+             ORDER BY valutazione DESC 
+             LIMIT 5`,
+            [searchTerm, searchTerm, searchTerm, searchTerm, searchTerm]
+        );
+        
+        meccanici.forEach(meccanico => {
+            suggestions.push({
+                text: meccanico.nome_officina || `${meccanico.nome} ${meccanico.cognome}`,
+                category: 'meccanico',
+                icon: 'fas fa-user-cog',
+                location: meccanico.citta,
+                type: 'meccanici'
+            });
+        });
+        
+        // Cerca servizi
+        const servizi = await db.query(
+            `SELECT nome, descrizione 
+             FROM servizi 
+             WHERE nome LIKE ? OR descrizione LIKE ?
+             LIMIT 5`,
+            [searchTerm, searchTerm]
+        );
+        
+        servizi.forEach(servizio => {
+            suggestions.push({
+                text: servizio.nome,
+                category: 'servizio',
+                icon: 'fas fa-tools',
+                description: servizio.descrizione,
+                type: 'servizi'
+            });
+        });
+        
+        // Cerca città
+        const citta = await db.query(
+            `SELECT DISTINCT citta 
+             FROM meccanici 
+             WHERE verificato = 1 AND citta LIKE ?
+             ORDER BY citta
+             LIMIT 3`,
+            [searchTerm]
+        );
+        
+        citta.forEach(c => {
+            suggestions.push({
+                text: c.citta,
+                category: 'città',
+                icon: 'fas fa-map-marker-alt',
+                type: 'meccanici'
+            });
+        });
+        
+        res.json({ suggestions: suggestions.slice(0, 8) });
+        
+    } catch (error) {
+        console.error('Errore nei suggerimenti:', error);
+        res.json({ suggestions: [] });
+    }
+});
+
 module.exports = router;

@@ -83,7 +83,7 @@ router.get('/search', async (req, res) => {
             );
         }
         
-        res.render('search-results', {
+        res.render('search-result', {
             title: `Risultati ricerca: ${query} - MechFinder`,
             active: 'search',
             query,

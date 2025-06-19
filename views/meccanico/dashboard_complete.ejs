@@ -623,15 +623,7 @@
             modal.show();
         }
 
-        function showRiparazioniModal() {
-            new bootstrap.Modal(document.getElementById('modalTutteRiparazioni')).show();
-            caricaTutteRiparazioni(); // Funzione per caricare tutte le riparazioni
-        }
 
-        function showRecensioniModal() {
-            new bootstrap.Modal(document.getElementById('modalRecensioni')).show();
-            caricaRecensioni(); // Funzione per caricare le recensioni
-        }
 
         // Form submissions
         document.getElementById('accettaRichiestaForm').addEventListener('submit', function(e) {
@@ -700,132 +692,9 @@
             });
         });
 
-        // Funzioni per caricare contenuti dinamici
-        function caricaTutteRiparazioni() {
-            fetch('/meccanico/tutte-riparazioni')
-            .then(response => response.json())
-            .then(data => {
-                const contentDiv = document.getElementById('tutteRiparazioniContent');
-                contentDiv.innerHTML = '';
 
-                if (data.length > 0) {
-                    data.forEach(riparazione => {
-                        const card = document.createElement('div');
-                        card.className = 'card mb-3';
-                        card.innerHTML = `
-                            <div class="card-body">
-                                <h6 class="card-title">
-                                    <i class="fas fa-user"></i> ${riparazione.nome} ${riparazione.cognome}
-                                </h6>
-                                <p class="card-text mb-1">
-                                    <strong>Veicolo:</strong> ${riparazione.marca} ${riparazione.modello}
-                                </p>
-                                <p class="card-text mb-2">
-                                    <strong>Costo:</strong> €${parseFloat(riparazione.costo || 0).toFixed(2)}
-                                </p>
-                                <p class="card-text">
-                                    <small class="text-muted">
-                                        <i class="fas fa-calendar"></i> 
-                                        ${new Date(riparazione.data_riparazione).toLocaleDateString('it-IT')}
-                                    </small>
-                                </p>
-                            </div>
-                        `;
-                        contentDiv.appendChild(card);
-                    });
-                } else {
-                    contentDiv.innerHTML = '<p class="text-muted">Nessuna riparazione trovata.</p>';
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Errore durante il caricamento delle riparazioni');
-            });
-        }
 
-        function caricaRecensioni() {
-            fetch('/meccanico/recensioni')
-            .then(response => response.json())
-            .then(data => {
-                const contentDiv = document.getElementById('recensioniContent');
-                contentDiv.innerHTML = '';
 
-                if (data.length > 0) {
-                    data.forEach(recensione => {
-                        const card = document.createElement('div');
-                        card.className = 'card mb-3';
-                        card.innerHTML = `
-                            <div class="card-body">
-                                <h6 class="card-title">
-                                    <i class="fas fa-star"></i> Recensione di ${recensione.nome} ${recensione.cognome}
-                                </h6>
-                                <p class="card-text mb-1">
-                                    <strong>Veicolo:</strong> ${recensione.marca} ${recensione.modello}
-                                </p>
-                                <p class="card-text mb-2">
-                                    <strong>Data:</strong> ${new Date(recensione.data_creazione).toLocaleDateString('it-IT')}
-                                </p>
-                                <p class="card-text">
-                                    ${recensione.testo}
-                                </p>
-                            </div>
-                        `;
-                        contentDiv.appendChild(card);
-                    });
-                } else {
-                    contentDiv.innerHTML = '<p class="text-muted">Nessuna recensione trovata.</p>';
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Errore durante il caricamento delle recensioni');
-            });
-        }
-
-        // Funzione per filtrare le riparazioni
-        function filtraRiparazioni() {
-            const stato = document.getElementById('filtroStatoRiparazioni').value;
-
-            fetch('/meccanico/tutte-riparazioni?stato=' + stato)
-            .then(response => response.json())
-            .then(data => {
-                const contentDiv = document.getElementById('tutteRiparazioniContent');
-                contentDiv.innerHTML = '';
-
-                if (data.length > 0) {
-                    data.forEach(riparazione => {
-                        const card = document.createElement('div');
-                        card.className = 'card mb-3';
-                        card.innerHTML = `
-                            <div class="card-body">
-                                <h6 class="card-title">
-                                    <i class="fas fa-user"></i> ${riparazione.nome} ${riparazione.cognome}
-                                </h6>
-                                <p class="card-text mb-1">
-                                    <strong>Veicolo:</strong> ${riparazione.marca} ${riparazione.modello}
-                                </p>
-                                <p class="card-text mb-2">
-                                    <strong>Costo:</strong> €${parseFloat(riparazione.costo || 0).toFixed(2)}
-                                </p>
-                                <p class="card-text">
-                                    <small class="text-muted">
-                                        <i class="fas fa-calendar"></i> 
-                                        ${new Date(riparazione.data_riparazione).toLocaleDateString('it-IT')}
-                                    </small>
-                                </p>
-                            </div>
-                        `;
-                        contentDiv.appendChild(card);
-                    });
-                } else {
-                    contentDiv.innerHTML = '<p class="text-muted">Nessuna riparazione trovata per questo stato.</p>';
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Errore durante il caricamento delle riparazioni');
-            });
-        }
     </script>
 </body>
 </html>

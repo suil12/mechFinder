@@ -33,25 +33,31 @@
                             <p class="hero-subtitle">Connettiti con professionisti qualificati della tua zona</p>
                             <div class="d-flex justify-content-center w-100">
                                 <div class="search-container">
-                                    <form action="/search" method="GET" class="search-form">
+                                    <form action="/search" method="GET" class="search-form" id="searchForm">
                                         <div class="input-group">
                                             <span class="input-group-text">
                                                 <i class="fas fa-map-marker-alt"></i>
                                             </span>
-                                            <input type="text" name="q" class="form-control search-input-custom" placeholder="Cerca meccanici, servizi o città..." value="<%= query %>">
+                                            <input type="text" name="q" id="searchInput" class="form-control search-input-custom" placeholder="Cerca meccanici, servizi o città..." value="<%= query %>" autocomplete="off">
+                                            <!-- Dropdown per suggerimenti -->
+                                            <div id="searchSuggestions" class="search-suggestions"></div>
                                             <button type="submit" class="btn btn-search">
                                                 <i class="fas fa-search"></i> Cerca
                                             </button>
                                         </div>
+                                        <!-- Filtro tipo ricerca (nascosto per default) -->
+                                        <input type="hidden" name="tipo" id="searchType" value="all">
                                     </form>
                                 </div>
                             </div>
                             <div class="search-tags mt-3">
-                                <span class="badge rounded-pill bg-light text-dark">Meccanica</span>
-                                <span class="badge rounded-pill bg-light text-dark">Elettronica</span>
-                                <span class="badge rounded-pill bg-light text-dark">Gomme</span>
-                                <span class="badge rounded-pill bg-light text-dark">Carrozzeria</span>
-                                <span class="badge rounded-pill bg-light text-dark">Tagliandi</span>
+                                <span class="search-tag badge rounded-pill bg-light text-dark" data-search="Meccanica Generale" data-type="servizi">Meccanica</span>
+                                <span class="search-tag badge rounded-pill bg-light text-dark" data-search="Elettronica" data-type="servizi">Elettronica</span>
+                                <span class="search-tag badge rounded-pill bg-light text-dark" data-search="Cambio Gomme" data-type="servizi">Gomme</span>
+                                <span class="search-tag badge rounded-pill bg-light text-dark" data-search="Carrozzeria" data-type="servizi">Carrozzeria</span>
+                                <span class="search-tag badge rounded-pill bg-light text-dark" data-search="Tagliandi" data-type="servizi">Tagliandi</span>
+                                <span class="search-tag badge rounded-pill bg-light text-dark" data-search="Milano" data-type="meccanici">Milano</span>
+                                <span class="search-tag badge rounded-pill bg-light text-dark" data-search="Roma" data-type="meccanici">Roma</span>
                             </div>
                         </div>
                     </div>
@@ -141,7 +147,7 @@
                                 <div class="stat-icon">
                                     <i class="fas fa-car"></i>
                                 </div>
-                                <h3 class="stat-number counter" data-target="15000">0</h3>
+                                <h3 class="stat-number counter" data-target="15000">100+</h3>
                                 <p class="stat-title">Riparazioni Completate</p>
                             </div>
                         </div>

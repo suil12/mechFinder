@@ -399,8 +399,10 @@ const meccanicoController = {
             });
         } catch (error) {
             console.error('Errore nel caricamento recensioni:', error);
-            req.flash('error', 'Errore nel caricamento delle recensioni.');
-            res.redirect('/meccanico/dashboard');
+            res.json({
+                success: false,
+                message: 'Errore nel caricamento delle recensioni'
+            });
         }
     },
 
